@@ -6,15 +6,15 @@ spring:
     name: shyam
 
   datasource:
-    url: jdbc:postgresql://dpg-d752qefpm1nc7397agdg-a.singapore-postgres.render.com:5432/shyam_jewelleres
-    username: shyam_jewelleres_user
-    password: aFurVOpX895CLKOAOsz9Mv05bQF5uZzW
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -22,8 +22,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: akashkumarcucek@gmail.com
-    password: znxycljsrrkqppmb
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -32,6 +32,6 @@ spring:
             enable: true
 
   redis:
-    host: redis-14888.cce179.ap-south-1-1.ec2.cloud.redislabs.com
-    port: 14888
-    password: DIVhQgJkVH6sHdSfr0Vx6MlzeJdYZAYQ
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}

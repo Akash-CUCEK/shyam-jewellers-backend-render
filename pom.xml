@@ -101,22 +101,9 @@
 			<version>2.8.6</version>
 		</dependency>
 
-		<!-- 🟦 Azure SQL / SQL Server DRIVER (IMPORTANT) -->
 		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>mssql-jdbc</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- 🛫 Flyway (DB migration) -->
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
-		<!-- 🟦 Flyway SQL Server support (IMPORTANT) -->
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-sqlserver</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 		</dependency>
 
 

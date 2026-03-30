@@ -13,16 +13,18 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+@Entity
+@Table(name = "orders")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "orders")
 @Builder
 public class Order {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_seq")
+    @SequenceGenerator(name = "orders_seq", sequenceName = "orders_seq", allocationSize = 1)
     private Long id;
 
     private String customerName;
@@ -32,7 +34,6 @@ public class Order {
 
     private LocalDate orderDate;
     private LocalTime orderTime;
-
 
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
@@ -55,13 +56,12 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private Role createdByRole;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // In Order entity
-    @ElementCollection
-    @CollectionTable(name = "order_product_ids", joinColumns = @JoinColumn(name = "order_id"))
-    @Column(name = "product_id")
-    private List<Long> productIds;
-
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> items;
 }

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(name = "products")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,14 +17,17 @@ import java.util.UUID;
 public class Products {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "products_seq")
+    @SequenceGenerator(name = "products_seq", sequenceName = "products_seq", allocationSize = 1)
+    private Long productIds;
 
     @Column(unique = true)
     private String name;
 
-    @Column(nullable = false)
-    private String category;
+    // 🔥 Correct relation
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     @Column(nullable = false)
     private BigDecimal price;
@@ -55,12 +59,16 @@ public class Products {
 
     private Integer availableStock;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
     private String createdBy;
     private String updatedBy;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
@@ -72,12 +80,5 @@ public class Products {
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    @PostPersist
-    public void setAutoName() {
-        if (this.name == null) {
-            this.name = this.category + " #" + this.id;
-        }
     }
 }

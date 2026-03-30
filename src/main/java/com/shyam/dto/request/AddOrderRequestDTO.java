@@ -3,26 +3,30 @@ package com.shyam.dto.request;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class AddOrderRequestDTO {
+
     private String customerName;
     private String customerEmail;
     private String customerPhone;
     private String address;
-    private List<Long> products;
+
+    private List<ProductDTO> products;
+
     private String orderStatus;
     private String deliveryType;
+    private String paymentMethod;
+
     private BigDecimal totalCost;
     private BigDecimal dueAmount;
-    private String paymentMethod;
+
     private String notes;
-    private String createdByRole;
     private String createdBy;
+    private String createdByRole;
 }

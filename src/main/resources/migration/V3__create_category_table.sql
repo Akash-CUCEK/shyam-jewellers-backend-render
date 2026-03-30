@@ -1,11 +1,11 @@
 CREATE TABLE category (
-                          category_id BIGINT PRIMARY KEY IDENTITY(1,1),
+                          category_id BIGSERIAL PRIMARY KEY,
                           name VARCHAR(255) NOT NULL,
-                          show_on_home BIT NOT NULL DEFAULT 0,
+                          show_on_home BOOLEAN NOT NULL DEFAULT FALSE,
                           image_url VARCHAR(500),
-                          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                           created_by VARCHAR(255),
-                          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                           updated_by VARCHAR(255),
-                          status BIT NOT NULL
+                          status BOOLEAN NOT NULL
 );

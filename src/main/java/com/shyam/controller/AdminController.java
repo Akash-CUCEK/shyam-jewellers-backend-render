@@ -4,22 +4,16 @@ import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
 import com.shyam.service.AdminService;
-import com.shyam.service.CategoryService;
-import com.shyam.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/auth/api/v1/admin")
@@ -29,8 +23,8 @@ public class AdminController {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
     private final AdminService adminService;
-    private final ProductService productService;
-    private final CategoryService categoryService;
+//    private final ProductService productService;
+//    private final CategoryService categoryService;
 
     @Operation(summary = "Login a admin user", description = "Login a Admin User.")
     @PostMapping("/logIn")
@@ -182,105 +176,105 @@ public class AdminController {
         return new BaseResponseDTO<>(response,null);
     }
 
-    @Operation(summary = "Add new product")
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @PostMapping("/addProduct")
-    public BaseResponseDTO<ProductAddResponseDTO> addProduct(
-            @Valid @RequestBody ProductAddRequestDTO dto
-    ) {
-        log.info("Received request for adding product");
-        return new BaseResponseDTO<>(
-                productService.addProduct(dto),
-                null
-        );
-    }
+//    @Operation(summary = "Add new product")
+//    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+//    @PostMapping("/addProduct")
+//    public BaseResponseDTO<ProductAddResponseDTO> addProduct(
+//            @Valid @RequestBody ProductAddRequestDTO dto
+//    ) {
+//        log.info("Received request for adding product");
+//        return new BaseResponseDTO<>(
+//                productService.addProduct(dto),
+//                null
+//        );
+//    }
 
-    @Operation(summary = "Update product")
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @PutMapping
-    public BaseResponseDTO<UpdateResponseDTO> updateProduct(
-            @Valid @RequestBody UpdateRequestDTO dto
-    ) {
-        return new BaseResponseDTO<>(
-                productService.updateProduct(dto),
-                null
-        );
-    }
-
-
-    @Operation(summary = "Get product by product id")
-    @GetMapping("/getProductById/{productId}")
-    public BaseResponseDTO<AllProductResponseDTO> getProductById(
-            @PathVariable Long productId
-    ) {
-        return new BaseResponseDTO<>(
-                productService.getProductById(productId),
-                null
-        );
-    }
-
-    @Operation(summary = "Delete product")
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @DeleteMapping
-    public BaseResponseDTO<DeleteResponseDTO> deleteProduct(
-            @Valid @RequestBody DeleteProductRequestDTO dto
-    ) {
-        return new BaseResponseDTO<>(
-                productService.deleteProduct(dto),
-                null
-        );
-    }
-
-    @PostMapping("/getAllCategory")
-    public BaseResponseDTO<GetCategoryResponseDTO> getAllCategories() {
-        log.info("Received request for getting all category");
-        var response = categoryService.getAllCategories();
-        return new BaseResponseDTO<>(response,null);
-    }
-
-    @PostMapping("/getCategory")
-    public BaseResponseDTO<GetCategoryByIdResponseDTO> getCategory(
-            @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO
-    ) {
-        log.info("Received request for get category by Id");
-        var response = categoryService.getCategory(getCategoryByIdRequestDTO);
-        return new BaseResponseDTO<>(response,null);
-    }
-
-    @PostMapping("/addCategory")
-    public BaseResponseDTO<AddCategoryResponseDTO> addCategories(
-            @RequestBody AddCategoryRequestDTO addCategoryRequestDTO
-    ) {
-        log.info("Received request for adding category");
-        var response =  categoryService.addCategories(addCategoryRequestDTO);
-        return new BaseResponseDTO<>(response,null);
-    }
-
-    @PutMapping("/updateCategory")
-    public BaseResponseDTO<UpdateCategoryResponseDTO> updateCategories(
-            @RequestBody AddCategoryRequestDTO updateCategoryRequestDTO
-    ) {
-        log.info("Received request for updating category");
-        var response =  categoryService.updateCategoryRequestDTO(updateCategoryRequestDTO);
-        return new BaseResponseDTO<>(response,null);
-    }
-
-    @DeleteMapping("/deleteCategory")
-    public BaseResponseDTO<UpdateCategoryResponseDTO> deleteCategory(
-            @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO
-    ) {
-        log.info("Received request for deleting category");
-        var response =  categoryService.deleteCategory(getCategoryByIdRequestDTO);
-        return new BaseResponseDTO<>(response,null);
-    }
-
-    @PostMapping("/uploadExcel")
-    public ResponseEntity<?> uploadExcel(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("createdBy") String createdBy
-    ) {
-        log.info("Received excel request for adding category");
-        return categoryService.uploadExcel(file,createdBy);
-    }
+//    @Operation(summary = "Update product")
+//    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+//    @PutMapping
+//    public BaseResponseDTO<UpdateResponseDTO> updateProduct(
+//            @Valid @RequestBody UpdateRequestDTO dto
+//    ) {
+//        return new BaseResponseDTO<>(
+//                productService.updateProduct(dto),
+//                null
+//        );
+//    }
+//
+//
+//    @Operation(summary = "Get product by product id")
+//    @GetMapping("/getProductById/{productId}")
+//    public BaseResponseDTO<AllProductResponseDTO> getProductById(
+//            @PathVariable Long productId
+//    ) {
+//        return new BaseResponseDTO<>(
+//                productService.getProductById(productId),
+//                null
+//        );
+//    }
+//
+//    @Operation(summary = "Delete product")
+//    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+//    @DeleteMapping
+//    public BaseResponseDTO<DeleteResponseDTO> deleteProduct(
+//            @Valid @RequestBody DeleteProductRequestDTO dto
+//    ) {
+//        return new BaseResponseDTO<>(
+//                productService.deleteProduct(dto),
+//                null
+//        );
+//    }
+//
+//    @PostMapping("/getAllCategory")
+//    public BaseResponseDTO<GetCategoryResponseDTO> getAllCategories() {
+//        log.info("Received request for getting all category");
+//        var response = categoryService.getAllCategories();
+//        return new BaseResponseDTO<>(response,null);
+//    }
+//
+//    @PostMapping("/getCategory")
+//    public BaseResponseDTO<GetCategoryByIdResponseDTO> getCategory(
+//            @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO
+//    ) {
+//        log.info("Received request for get category by Id");
+//        var response = categoryService.getCategory(getCategoryByIdRequestDTO);
+//        return new BaseResponseDTO<>(response,null);
+//    }
+//
+//    @PostMapping("/addCategory")
+//    public BaseResponseDTO<AddCategoryResponseDTO> addCategories(
+//            @RequestBody AddCategoryRequestDTO addCategoryRequestDTO
+//    ) {
+//        log.info("Received request for adding category");
+//        var response =  categoryService.addCategories(addCategoryRequestDTO);
+//        return new BaseResponseDTO<>(response,null);
+//    }
+//
+//    @PutMapping("/updateCategory")
+//    public BaseResponseDTO<UpdateCategoryResponseDTO> updateCategories(
+//            @RequestBody AddCategoryRequestDTO updateCategoryRequestDTO
+//    ) {
+//        log.info("Received request for updating category");
+//        var response =  categoryService.updateCategoryRequestDTO(updateCategoryRequestDTO);
+//        return new BaseResponseDTO<>(response,null);
+//    }
+//
+//    @DeleteMapping("/deleteCategory")
+//    public BaseResponseDTO<UpdateCategoryResponseDTO> deleteCategory(
+//            @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO
+//    ) {
+//        log.info("Received request for deleting category");
+//        var response =  categoryService.deleteCategory(getCategoryByIdRequestDTO);
+//        return new BaseResponseDTO<>(response,null);
+//    }
+//
+//    @PostMapping("/uploadExcel")
+//    public ResponseEntity<?> uploadExcel(
+//            @RequestParam("file") MultipartFile file,
+//            @RequestParam("createdBy") String createdBy
+//    ) {
+//        log.info("Received excel request for adding category");
+//        return categoryService.uploadExcel(file,createdBy);
+//    }
 
 }

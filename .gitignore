@@ -35,4 +35,4 @@ build/
 ### Ignore environment/config secrets ###
 .env
 .env.*
-application.yml
+application-local.yml
