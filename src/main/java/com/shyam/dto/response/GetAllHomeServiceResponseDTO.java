@@ -2,7 +2,6 @@ package com.shyam.dto.response;
 
 import java.io.Serializable;
 import java.util.List;
-
 import lombok.*;
 
 @Getter
@@ -11,5 +10,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetAllHomeServiceResponseDTO implements Serializable {
-    private List<HomeServiceResponseDTO> getAllServices;
+  private List<HomeServiceResponseDTO> getAllServices;
 }

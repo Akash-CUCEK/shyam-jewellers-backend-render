@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CategoryRequestDTO {
-    private String category;
+  private String category;
 }

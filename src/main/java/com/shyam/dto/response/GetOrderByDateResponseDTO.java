@@ -2,8 +2,6 @@ package com.shyam.dto.response;
 
 import java.io.Serializable;
 import java.util.List;
-
-
 import lombok.*;
 
 @Getter
@@ -12,5 +10,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class GetOrderByDateResponseDTO implements Serializable {
-    private List<GetOrderByIdResponseDTO> getOrderByDateResponseDTOList;
+  private List<GetOrderByIdResponseDTO> getOrderByDateResponseDTOList;
 }

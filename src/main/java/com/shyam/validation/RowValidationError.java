@@ -6,8 +6,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RowValidationError {
-    private int rowNumber;
-    private String name;
-    private String status;
-    private String reason;
+  private int rowNumber;
+  private String name;
+  private String status;
+  private String reason;
 }

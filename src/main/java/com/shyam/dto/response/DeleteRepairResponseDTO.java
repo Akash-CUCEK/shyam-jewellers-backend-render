@@ -1,7 +1,6 @@
 package com.shyam.dto.response;
 
 import java.io.Serializable;
-
 import lombok.*;
 
 @Getter
@@ -10,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteRepairResponseDTO implements Serializable {
-    private String response;
+  private String response;
 }

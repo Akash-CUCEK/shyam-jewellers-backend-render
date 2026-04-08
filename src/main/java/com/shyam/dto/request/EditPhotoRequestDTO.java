@@ -7,8 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class EditPhotoRequestDTO {
-    private String imgUrl;
-    private Integer position;
+  private String imgUrl;
+  private Integer position;
 }

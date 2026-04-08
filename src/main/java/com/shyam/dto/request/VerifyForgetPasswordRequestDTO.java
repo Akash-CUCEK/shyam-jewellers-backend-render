@@ -1,6 +1,5 @@
 package com.shyam.dto.request;
 
-
 import lombok.*;
 
 @Getter
@@ -9,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class VerifyForgetPasswordRequestDTO {
-    private String otp;
+  private String otp;
 }

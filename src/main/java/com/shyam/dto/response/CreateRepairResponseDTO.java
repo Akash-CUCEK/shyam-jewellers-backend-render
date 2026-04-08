@@ -8,8 +8,6 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class CreateRepairResponseDTO implements Serializable {
-    private String response;
+  private String response;
 }
-

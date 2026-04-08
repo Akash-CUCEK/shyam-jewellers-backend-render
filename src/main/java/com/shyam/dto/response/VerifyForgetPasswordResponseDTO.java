@@ -1,9 +1,7 @@
 package com.shyam.dto.response;
 
-
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,5 +9,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class VerifyForgetPasswordResponseDTO implements Serializable {
-    private String response;
+  private String response;
 }

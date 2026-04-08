@@ -16,15 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/public")
 public class PublicController {
 
-    private final AdminService adminService;
+  private final AdminService adminService;
 
-    @Operation(summary = "Get Offer Section", description = "Get offer photo.")
-    @PostMapping("/getOfferPhoto")
-    public BaseResponseDTO<GetOfferPhotoResponseDTO> getoffer(
-    ){
-        log.info("Received request to get offer photo");
-        var response = adminService.getOfferPhoto();
-        return new BaseResponseDTO<>(response,null);
-    }
-
+  @Operation(summary = "Get Offer Section", description = "Get offer photo.")
+  @PostMapping("/getOfferPhoto")
+  public BaseResponseDTO<GetOfferPhotoResponseDTO> getoffer() {
+    log.info("Received request to get offer photo");
+    var response = adminService.getOfferPhoto();
+    return new BaseResponseDTO<>(response, null);
+  }
 }

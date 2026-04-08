@@ -9,11 +9,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditRepairRequestDTO {
-    private Long serviceId;
-    private Status status;
-    private String email;
-    private String name;
-    private String address;
-    private String mobileNumber;
-    private String notes;
+  private Long serviceId;
+  private Status status;
+  private String email;
+  private String name;
+  private String address;
+  private String mobileNumber;
+  private String notes;
 }

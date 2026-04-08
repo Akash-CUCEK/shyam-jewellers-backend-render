@@ -1,8 +1,7 @@
 package com.shyam.dto.response;
 
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.*;
 
 @Getter
 @Setter
@@ -10,6 +9,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class ProductAddResponseDTO implements Serializable {
-    private String name;
-    private String message;
+  private String name;
+  private String message;
 }

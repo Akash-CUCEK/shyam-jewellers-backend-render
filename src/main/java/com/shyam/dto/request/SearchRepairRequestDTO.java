@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchRepairRequestDTO {
-    private String keyword;
+  private String keyword;
 }

@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerifyAdminOtpRequestDTO {
-    private String email;
-    private String otp;
+  private String email;
+  private String otp;
 }

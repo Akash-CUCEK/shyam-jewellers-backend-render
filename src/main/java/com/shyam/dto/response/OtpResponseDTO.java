@@ -1,8 +1,7 @@
 package com.shyam.dto.response;
 
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.*;
 
 @Builder
 @Getter
@@ -10,6 +9,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OtpResponseDTO implements Serializable {
-    private String message;
-    private String token;
+  private String message;
+  private String token;
 }

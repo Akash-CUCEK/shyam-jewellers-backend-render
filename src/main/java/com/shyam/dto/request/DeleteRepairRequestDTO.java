@@ -1,6 +1,5 @@
 package com.shyam.dto.request;
 
-
 import lombok.*;
 
 @Getter
@@ -9,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteRepairRequestDTO {
-    private Long serviceId;
+  private Long serviceId;
 }

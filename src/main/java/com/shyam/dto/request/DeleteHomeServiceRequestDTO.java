@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteHomeServiceRequestDTO {
-    private Long serviceId;
+  private Long serviceId;
 }

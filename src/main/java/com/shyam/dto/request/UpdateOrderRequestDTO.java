@@ -1,9 +1,8 @@
 package com.shyam.dto.request;
 
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,21 +11,21 @@ import java.util.List;
 @Builder
 public class UpdateOrderRequestDTO {
 
-    private Long orderId;
+  private Long orderId;
 
-    private String customerName;
-    private String customerEmail;
-    private String customerPhone;
-    private String address;
+  private String customerName;
+  private String customerEmail;
+  private String customerPhone;
+  private String address;
 
-    private List<Long> products;
+  private List<Long> products;
 
-    private String orderStatus;
-    private String deliveryType;
+  private String orderStatus;
+  private String deliveryType;
 
-    private BigDecimal totalCost;
-    private BigDecimal dueAmount;
+  private BigDecimal totalCost;
+  private BigDecimal dueAmount;
 
-    private String paymentMethod;
-    private String notes;
+  private String paymentMethod;
+  private String notes;
 }

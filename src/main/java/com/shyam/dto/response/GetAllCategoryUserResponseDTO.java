@@ -1,9 +1,7 @@
 package com.shyam.dto.response;
 
-import lombok.*;
-
 import java.util.List;
-
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,5 +9,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetAllCategoryUserResponseDTO {
-    private List<GetCategoryUserResponseDTO> getCategoryUserResponseDTOS;
+  private List<GetCategoryUserResponseDTO> getCategoryUserResponseDTOS;
 }

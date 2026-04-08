@@ -2,6 +2,7 @@ package com.shyam.config;
 
 import com.shyam.common.jwt.JwtAuthEntryPoint;
 import com.shyam.common.jwt.JwtAuthFilter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,84 +17,74 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
-
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
+  private final JwtAuthFilter jwtAuthFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+    http.csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**")
+                    .permitAll()
+                    .requestMatchers(
+                        "/auth/api/v1/admin/logIn",
+                        "/auth/api/v1/admin/verifyOtp",
+                        "/auth/api/v1/admin/forgetPassword",
+                        "/auth/api/v1/admin/verifyPasswordOtp",
+                        "/api/v1/public/**")
+                    .permitAll()
+                    .requestMatchers("/api/v1/auth/**")
+                    .permitAll()
+                    .requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        "/refreshToken")
+                    .permitAll()
 
-                        .requestMatchers(
-                                "/auth/api/v1/admin/logIn",
-                                "/auth/api/v1/admin/verifyOtp",
-                                "/auth/api/v1/admin/forgetPassword",
-                                "/auth/api/v1/admin/verifyPasswordOtp",
-                                "/api/v1/public/**"
-                        ).permitAll()
+                    // 🔒 EVERYTHING ELSE NEEDS TOKEN
+                    .anyRequest()
+                    .authenticated())
+        .exceptionHandling(ex -> ex.authenticationEntryPoint(new JwtAuthEntryPoint()))
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+    return http.build();
+  }
 
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources/**",
-                                "/webjars/**",
-                                "/refreshToken"
-                ).permitAll()
+  @Bean
+  public BCryptPasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-                        // 🔒 EVERYTHING ELSE NEEDS TOKEN
-                        .anyRequest().authenticated()
-                )
-                .exceptionHandling(ex ->
-                        ex.authenticationEntryPoint(new JwtAuthEntryPoint())
-                )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
 
-        return http.build();
-    }
+    CorsConfiguration configuration = new CorsConfiguration();
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    configuration.setAllowedOriginPatterns(
+        List.of("http://localhost:*", "https://*.azurestaticapps.net"));
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
-        CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setAllowCredentials(true);
 
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
-                "https://*.azurestaticapps.net"
-        ));
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
 
-        configuration.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS"
-        ));
-
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-    }
+    return source;
+  }
 }

@@ -1,7 +1,5 @@
 package com.shyam.dto.request;
 
-
-
 import lombok.*;
 
 @Getter
@@ -10,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ForgetPasswordRequestDTO {
-    private String email;
+  private String email;
 }

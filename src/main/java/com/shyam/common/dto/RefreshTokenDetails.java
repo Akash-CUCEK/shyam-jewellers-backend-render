@@ -1,3 +1,3 @@
 package com.shyam.common.dto;
 
-public record RefreshTokenDetails(String role, String email) {}
+public record RefreshTokenDetails(String role, String email, String deviceId) {}

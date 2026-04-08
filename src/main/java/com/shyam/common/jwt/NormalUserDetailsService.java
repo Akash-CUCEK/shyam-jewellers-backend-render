@@ -10,17 +10,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NormalUserDetailsService implements UserDetailsService {
 
-    private final UsersRepo usersRepo;
+  private final UsersRepo usersRepo;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users user = usersRepo.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    Users user =
+        usersRepo
+            .findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        return User.builder()
-                .username(user.getEmail())
-                .password("OTP_AUTH_USER")
-                .authorities("USERS")
-                .build();
-    }
+    return User.builder()
+        .username(user.getEmail())
+        .password("OTP_AUTH_USER")
+        .authorities("USERS")
+        .build();
+  }
 }

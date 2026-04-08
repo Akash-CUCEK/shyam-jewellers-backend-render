@@ -1,9 +1,7 @@
 package com.shyam.dto.request;
 
-
-import lombok.*;
-
 import java.time.LocalDate;
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,5 +9,5 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class GetAllOrderRequestDTO {
-    private LocalDate orderDate;
+  private LocalDate orderDate;
 }

@@ -1,9 +1,8 @@
 package com.shyam.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
+import lombok.*;
 
 @Entity
 @Table(name = "order_items")
@@ -14,18 +13,18 @@ import java.math.BigDecimal;
 @Builder
 public class OrderItem {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_items_seq")
-    @SequenceGenerator(name = "order_items_seq", sequenceName = "order_items_seq", allocationSize = 1)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_items_seq")
+  @SequenceGenerator(name = "order_items_seq", sequenceName = "order_items_seq", allocationSize = 1)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+  @ManyToOne
+  @JoinColumn(name = "order_id")
+  private Order order;
 
-    private Long productId;
+  private Long productId;
 
-    private Integer quantity;
+  private Integer quantity;
 
-    private BigDecimal price;
+  private BigDecimal price;
 }

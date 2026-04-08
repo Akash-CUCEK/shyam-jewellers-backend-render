@@ -8,10 +8,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddCategoryRequestDTO {
-    private String name;
-    private String createdBy;
-    private Boolean status;
-    private String imageUrl;
-    private Boolean showOnHome;
-    private String updatedBy;
+  private String name;
+  private String createdBy;
+  private Boolean status;
+  private String imageUrl;
+  private Boolean showOnHome;
+  private String updatedBy;
 }

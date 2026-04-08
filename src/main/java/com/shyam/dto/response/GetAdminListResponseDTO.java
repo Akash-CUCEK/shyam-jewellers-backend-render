@@ -1,9 +1,8 @@
 package com.shyam.dto.response;
 
-import lombok.*;
-
 import java.io.Serializable;
 import java.util.List;
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,5 +10,5 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class GetAdminListResponseDTO implements Serializable {
-    private List<GetAllAdminResponseDTO> getAllAdminResponseDTOList;
+  private List<GetAllAdminResponseDTO> getAllAdminResponseDTOList;
 }

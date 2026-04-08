@@ -1,5 +1,6 @@
 package com.shyam.dto.response;
 
+import com.shyam.entity.Category;
 import java.math.BigDecimal;
 import lombok.*;
 
@@ -8,15 +9,13 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AllProductResponseDTO {
-  private Long id;
+public class GetAllProductsResponseDTO {
+  private Long productIds;
   private String name;
+  private Category category;
   private BigDecimal price;
-  private Integer discountPercentage;
-  private BigDecimal finalPrice;
   private BigDecimal weight;
-  private String imageUrl;
-  private String gender;
+  private String materialType;
   private Boolean isAvailable;
-  private Integer availableStock;
+  private String imageUrl;
 }

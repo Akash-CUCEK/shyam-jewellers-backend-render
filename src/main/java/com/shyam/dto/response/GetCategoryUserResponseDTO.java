@@ -1,6 +1,5 @@
 package com.shyam.dto.response;
 
-
 import lombok.*;
 
 @Getter
@@ -9,8 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetCategoryUserResponseDTO {
-    private Long categoryId;
-    private String name;
-    private String imageUrl;
-    private Boolean showOnHome;
+  private Long categoryId;
+  private String name;
+  private String imageUrl;
+  private Boolean showOnHome;
 }

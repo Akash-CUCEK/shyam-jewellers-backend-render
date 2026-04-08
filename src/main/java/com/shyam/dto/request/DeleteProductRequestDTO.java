@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteProductRequestDTO {
-    private String name;
+  private String name;
 }

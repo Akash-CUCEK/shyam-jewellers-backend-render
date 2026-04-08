@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class GetAdminRequestDTO {
-    private String email;
+  private String email;
 }

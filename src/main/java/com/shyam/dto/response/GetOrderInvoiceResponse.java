@@ -1,8 +1,7 @@
 package com.shyam.dto.response;
 
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.*;
 
 @Getter
 @Setter
@@ -10,7 +9,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetOrderInvoiceResponse implements Serializable {
-    private byte[] invoicePdfBytes;
-    private String fileName;
+  private byte[] invoicePdfBytes;
+  private String fileName;
 }
-

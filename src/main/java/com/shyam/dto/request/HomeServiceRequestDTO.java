@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HomeServiceRequestDTO {
-    private Long serviceId;
+  private Long serviceId;
 }

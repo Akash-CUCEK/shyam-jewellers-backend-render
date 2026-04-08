@@ -1,8 +1,7 @@
 package com.shyam.dto.request;
 
-import lombok.*;
-
 import java.math.BigDecimal;
+import lombok.*;
 
 @Getter
 @Setter
@@ -10,5 +9,5 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PriceRequestDTO {
-    private BigDecimal price;
+  private BigDecimal price;
 }

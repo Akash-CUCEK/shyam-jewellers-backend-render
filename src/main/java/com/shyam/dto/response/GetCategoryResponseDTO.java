@@ -1,11 +1,10 @@
 package com.shyam.dto.response;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class GetCategoryResponseDTO implements Serializable {
-    List<GetCategoriesResponseDTO> getCategoriesResponseDTO;
+  List<GetCategoriesResponseDTO> getCategoriesResponseDTO;
 }

@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VerifyAdminRequestDTO {
-    private String email;
-    private String otp;
-    private String password;
+  private String email;
+  private String otp;
+  private String password;
 }

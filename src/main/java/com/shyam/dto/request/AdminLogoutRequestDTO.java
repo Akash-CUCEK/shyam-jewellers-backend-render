@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class AdminLogoutRequestDTO {
-    private String token;
+  private String token;
 }

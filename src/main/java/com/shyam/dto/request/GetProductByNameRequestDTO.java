@@ -1,9 +1,7 @@
 package com.shyam.dto.request;
 
-import lombok.*;
-
 import java.io.Serializable;
-import java.util.List;
+import lombok.*;
 
 @Getter
 @Setter
@@ -11,5 +9,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetProductByNameRequestDTO implements Serializable {
-    private String name;
+  private String name;
 }

@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RepairRequestRequestDTO {
-    private Long serviceId;
+  private Long serviceId;
 }

@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GetOrderByIdRequestDTO {
-    private Long orderId;
+  private Long orderId;
 }

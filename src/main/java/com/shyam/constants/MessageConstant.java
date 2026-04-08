@@ -1,30 +1,29 @@
 package com.shyam.constants;
 
 public class MessageConstant {
-    private MessageConstant(){
+  private MessageConstant() {}
 
-    }
-
-    public static final String MESSAGE_CODE_LOGIN_SEND_OTP = "MSG_SEND_OTP_001";
-    public static final String MESSAGE_CODE_LOG_OUT = "MSG_LOG_OUT_002";
-    public static final String MESSAGE_CODE_EDIT_ADMIN = "MSG_EDIT_ADMIN_003";
-    public static final String MESSAGE_CODE_CHANGE_PASSWORD_ADMIN = "MSG_CHANGE_PASSWORD_ADMIN_004";
-    public static final String MESSAGE_CODE_REGISTER_ADMIN = "MSG_ADMIN_REGISTER_005";
-    public static final String MESSAGE_CODE_UPDATE_OFFER_ADMIN ="MSG_OFFER_PHOTO_006";
-    public static final String MESSAGE_CODE_CREATE_ORDER = "MSG_CREATE_ORDER_007";
-    public static final String MESSAGE_CODE_PRODUCT_ADDED = "MSG_PRODUCT_ADDED_008";
-    public static final String MESSAGE_CODE_PRODUCT_UPDATED = "MSG_PRODUCT_UPDATED_009";
-    public static final String MESSAGE_CODE_PRODUCT_DELETED = "MSG_PRODUCT_DELETED_O10";
-    public static final String MESSAGE_CODE_DELETE_ADMIN = "MSG_DELETE_ADMIN_011";
-    public static final String MESSAGE_CODE_FORGET_ADMIN_PASSWORD = "MSG_FORGET_PASSWORD_ADMIN_012";
-    public static final String MESSAGE_CODE_FORGET_ADMIN_PASSWORD_SEND_OTP = "MSG_FORGET_PASSWORD_ADMIN_013";
-    public static final String MESSAGE_CODE_ADD_CATEGORY = "MSG_ADD_CATEGORY_014";
-    public static final String MESSAGE_CODE_UPDATE_CATEGORY = "MSG_UPDATE_CATEGORY_015";
-    public static final String MESSAGE_CODE_EDIT_HOME_SERVICE ="MSG_EDIT_HOME_SERVICE_016";
-    public static final String MESSAGE_CODE_DELETE_HOME_SERVICE = "MSG_DELETE_HOME_SERVICE_017";
-    public static final String MESSAGE_CODE_CREATE_HOME_SERVICE = "MSG_CREATE_HOME_SERVICE_018";
-    public static final String MESSAGE_CODE_CREATE_REPAIR_SERVICE = "MSG_CREATE_REPAIR_SERVICE_019";
-    public static final String MESSAGE_CODE_EDIT_REPAIR_SERVICE ="MSG_EDIT_REPAIR_SERVICE_020";
-    public static final String MESSAGE_CODE_DELETE_REPAIR_SERVICE ="MSG_DELETE_REPAIR_SERVICE_021";
-    public static final String MESSAGE_CODE_DELETE_CATEGORY ="MSG_DELETE_CATEGORY_022";
+  public static final String MESSAGE_CODE_LOGIN_SEND_OTP = "MSG_SEND_OTP_001";
+  public static final String MESSAGE_CODE_LOG_OUT = "MSG_LOG_OUT_002";
+  public static final String MESSAGE_CODE_EDIT_ADMIN = "MSG_EDIT_ADMIN_003";
+  public static final String MESSAGE_CODE_CHANGE_PASSWORD_ADMIN = "MSG_CHANGE_PASSWORD_ADMIN_004";
+  public static final String MESSAGE_CODE_REGISTER_ADMIN = "MSG_ADMIN_REGISTER_005";
+  public static final String MESSAGE_CODE_UPDATE_OFFER_ADMIN = "MSG_OFFER_PHOTO_006";
+  public static final String MESSAGE_CODE_CREATE_ORDER = "MSG_CREATE_ORDER_007";
+  public static final String MESSAGE_CODE_PRODUCT_ADDED = "MSG_PRODUCT_ADDED_008";
+  public static final String MESSAGE_CODE_PRODUCT_UPDATED = "MSG_PRODUCT_UPDATED_009";
+  public static final String MESSAGE_CODE_PRODUCT_DELETED = "MSG_PRODUCT_DELETED_O10";
+  public static final String MESSAGE_CODE_DELETE_ADMIN = "MSG_DELETE_ADMIN_011";
+  public static final String MESSAGE_CODE_FORGET_ADMIN_PASSWORD = "MSG_FORGET_PASSWORD_ADMIN_012";
+  public static final String MESSAGE_CODE_FORGET_ADMIN_PASSWORD_SEND_OTP =
+      "MSG_FORGET_PASSWORD_ADMIN_013";
+  public static final String MESSAGE_CODE_ADD_CATEGORY = "MSG_ADD_CATEGORY_014";
+  public static final String MESSAGE_CODE_UPDATE_CATEGORY = "MSG_UPDATE_CATEGORY_015";
+  public static final String MESSAGE_CODE_EDIT_HOME_SERVICE = "MSG_EDIT_HOME_SERVICE_016";
+  public static final String MESSAGE_CODE_DELETE_HOME_SERVICE = "MSG_DELETE_HOME_SERVICE_017";
+  public static final String MESSAGE_CODE_CREATE_HOME_SERVICE = "MSG_CREATE_HOME_SERVICE_018";
+  public static final String MESSAGE_CODE_CREATE_REPAIR_SERVICE = "MSG_CREATE_REPAIR_SERVICE_019";
+  public static final String MESSAGE_CODE_EDIT_REPAIR_SERVICE = "MSG_EDIT_REPAIR_SERVICE_020";
+  public static final String MESSAGE_CODE_DELETE_REPAIR_SERVICE = "MSG_DELETE_REPAIR_SERVICE_021";
+  public static final String MESSAGE_CODE_DELETE_CATEGORY = "MSG_DELETE_CATEGORY_022";
 }

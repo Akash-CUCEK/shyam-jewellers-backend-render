@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetCategoryByIdRequestDTO {
-    private Long id;
+  private Long id;
 }

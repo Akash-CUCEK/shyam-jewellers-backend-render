@@ -2,9 +2,8 @@ package com.shyam.entity;
 
 import com.shyam.common.constants.Status;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "repair_service")
@@ -15,30 +14,33 @@ import java.time.LocalDateTime;
 @Builder
 public class RepairService {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "repair_service_seq")
-    @SequenceGenerator(name = "repair_service_seq", sequenceName = "repair_service_seq", allocationSize = 1)
-    private Long serviceId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "repair_service_seq")
+  @SequenceGenerator(
+      name = "repair_service_seq",
+      sequenceName = "repair_service_seq",
+      allocationSize = 1)
+  private Long serviceId;
 
-    private String name;
+  private String name;
 
-    private String address;
+  private String address;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+  @Enumerated(EnumType.STRING)
+  private Status status;
 
-    @Column(name = "mobile_number")
-    private String mobileNumber;
+  @Column(name = "mobile_number")
+  private String mobileNumber;
 
-    private String notes;
+  private String notes;
 
-    private String createdBy;
+  private String createdBy;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+  @Column(name = "created_at")
+  private LocalDateTime createdAt;
 
-    private String updatedBy;
+  private String updatedBy;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 }

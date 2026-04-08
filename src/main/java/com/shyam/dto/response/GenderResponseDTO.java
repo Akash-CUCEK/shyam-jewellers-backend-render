@@ -1,10 +1,8 @@
 package com.shyam.dto.response;
 
-
-import lombok.*;
-
 import java.io.Serializable;
 import java.util.List;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,5 +10,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GenderResponseDTO implements Serializable {
-    private List<AllProductResponseDTO> products;
+  private List<AllProductResponseDTO> products;
 }

@@ -5,29 +5,27 @@ import com.shyam.dto.response.*;
 import org.springframework.http.ResponseEntity;
 
 public interface AdminService {
-    AdminLogInResponseDTO logIn(AdminLogInRequestDTO adminLogInRequestDTO );
+  ResponseEntity<VerifyAdminResponseDTO> logIn(AdminLogInRequestDTO adminLogInRequestDTO);
 
-    ResponseEntity<VerifyAdminResponseDTO> verifyOtp(VerifyAdminOtpRequestDTO verifyAdminOtpRequestDTO );
+  ForgetPasswordResponseDTO forgetPassword(ForgetPasswordRequestDTO forgetPasswordRequestDTO);
 
-    EditAdminResponseDTO edit(EditAdminRequestDTO editAdminRequestDTO );
+  VerifyForgetPasswordResponseDTO forgetVerifyOtp(VerifyAdminRequestDTO verifyAdminRequestDTO);
 
-    ChangePasswordResponseDTO changePassword(ChangePasswordRequestDTO changePasswordRequestDTO );
+  AdminLogoutResponseDTO logout(String accessToken, String refreshToken);
 
-    RegisterResponseDTO registerAdmin(RegisterRequestDTO registerRequestDTO );
+  EditAdminResponseDTO edit(EditAdminRequestDTO editAdminRequestDTO);
 
-    EditPhotoResponseDTO offerUpdate(EditPhotoRequestDTO editPhotoRequestDTO);
+  ChangePasswordResponseDTO changePassword(ChangePasswordRequestDTO changePasswordRequestDTO);
 
-    GetOfferPhotoResponseDTO getOfferPhoto();
+  RegisterResponseDTO registerAdmin(RegisterRequestDTO registerRequestDTO);
 
-    GetAdminListResponseDTO getAllAdmin();
+  EditPhotoResponseDTO offerUpdate(EditPhotoRequestDTO editPhotoRequestDTO);
 
-    DeleteAdminResponseDTO deleteAdmin(DeleteAdminRequestDTO deleteAdmin);
+  GetOfferPhotoResponseDTO getOfferPhoto();
 
-    GetAdminResponseDTO getAdmin(GetAdminRequestDTO getAdminRequestDTO);
+  GetAdminListResponseDTO getAllAdmin();
 
-    ForgetPasswordResponseDTO forgetPassword(ForgetPasswordRequestDTO forgetPasswordRequestDTO);
+  DeleteAdminResponseDTO deleteAdmin(DeleteAdminRequestDTO deleteAdmin);
 
-    VerifyForgetPasswordResponseDTO forgetVerifyOtp(VerifyAdminRequestDTO verifyAdminRequestDTO);
-
-    AdminLogoutResponseDTO logout(String accessToken, String refreshToken);
+  GetAdminResponseDTO getAdmin(GetAdminRequestDTO getAdminRequestDTO);
 }

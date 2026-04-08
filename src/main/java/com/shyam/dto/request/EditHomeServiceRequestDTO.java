@@ -10,12 +10,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditHomeServiceRequestDTO {
-    private Long serviceId;
-    private String name;
-    private String address;
-    private Status status;
-    private String phoneNumber;
-    private ServiceType serviceType;
-    private String notes;
-    private String updatedBy;
+  private Long serviceId;
+  private String name;
+  private String address;
+  private Status status;
+  private String phoneNumber;
+  private ServiceType serviceType;
+  private String notes;
+  private String updatedBy;
 }

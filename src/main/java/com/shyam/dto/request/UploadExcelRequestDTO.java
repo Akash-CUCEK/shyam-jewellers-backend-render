@@ -1,4 +1,5 @@
 package com.shyam.dto.request;
+
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,6 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UploadExcelRequestDTO {
-    private MultipartFile file ;
-    private String createdBy;
+  private MultipartFile file;
+  private String createdBy;
 }

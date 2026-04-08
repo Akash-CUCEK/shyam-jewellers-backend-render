@@ -1,8 +1,7 @@
 package com.shyam.dto.response;
 
-import lombok.*;
-
 import java.io.Serializable;
+import lombok.*;
 
 @Getter
 @Setter
@@ -10,9 +9,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetOfferPhotoResponseDTO implements Serializable {
-    private String imgUrl1;
-    private String imgUrl2;
-    private String imgUrl3;
-    private String imgUrl4;
-    private String imgUrl5;
+  private String imgUrl1;
+  private String imgUrl2;
+  private String imgUrl3;
+  private String imgUrl4;
+  private String imgUrl5;
 }

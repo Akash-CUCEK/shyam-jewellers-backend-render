@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class GetAdminResponseDTO implements Serializable {
-    private String name;
-    private String phoneNumber;
-    private String imageUrl;
+  private String name;
+  private String phoneNumber;
+  private String imageUrl;
 }

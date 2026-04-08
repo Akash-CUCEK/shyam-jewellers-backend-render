@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditRepairResponseDTO implements Serializable {
-    private String response;
+  private String response;
 }
