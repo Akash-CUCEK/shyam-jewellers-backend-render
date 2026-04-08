@@ -183,7 +183,7 @@ public class AdminController {
 
   @Operation(summary = "Update product")
   @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @PutMapping
+  @PutMapping("/updateProduct")
   public BaseResponseDTO<UpdateResponseDTO> updateProduct(
       @Valid @RequestBody UpdateRequestDTO dto) {
     return new BaseResponseDTO<>(productService.updateProduct(dto), null);
@@ -197,7 +197,7 @@ public class AdminController {
 
   @Operation(summary = "Delete product")
   @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @DeleteMapping
+  @DeleteMapping("/deleteProduct")
   public BaseResponseDTO<DeleteResponseDTO> deleteProduct(
       @Valid @RequestBody DeleteProductRequestDTO dto) {
     return new BaseResponseDTO<>(productService.deleteProduct(dto), null);
