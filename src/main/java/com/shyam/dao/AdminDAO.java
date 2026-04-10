@@ -25,27 +25,15 @@ public class AdminDAO {
   private final OfferPhotoRepository offerPhotoRepository;
 
   public AdminUsers findUserByEmail(String username) {
-    try {
-      return adminRepository
-          .findByEmail(username)
-          .orElseThrow(
-              () ->
-                  new SYMException(
-                      HttpStatus.NOT_FOUND,
-                      SYMErrorType.GENERIC_EXCEPTION,
-                      ErrorCodeConstants.ERROR_CODE_USER_NOT_FOUND_BY_MAIL,
-                      String.format("No user found with the provided email address."),
-                      String.format(
-                          "Login attempted with email %s which does not exist", username)));
-    } catch (Exception e) {
-      logger.error("Error while finding user: {}", username, e);
-      throw new SYMException(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
-          String.format("No User found"),
-          e.getMessage());
-    }
+    return adminRepository
+            .findByEmail(username)
+            .orElseThrow(() -> new SYMException(
+                    HttpStatus.NOT_FOUND,
+                    SYMErrorType.GENERIC_EXCEPTION,
+                    ErrorCodeConstants.ERROR_CODE_USER_NOT_FOUND_BY_MAIL,
+                    "No user found with the provided email address.",
+                    "Login attempted with email " + username
+            ));
   }
 
   public AdminUsers save(AdminUsers adminUsers) {

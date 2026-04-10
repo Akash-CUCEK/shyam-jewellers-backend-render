@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminServiceImp implements AdminService {
 
   private static final Logger logger = LoggerFactory.getLogger(AdminServiceImp.class);
@@ -46,7 +48,7 @@ public class AdminServiceImp implements AdminService {
 
   @Override
   public ResponseEntity<VerifyAdminResponseDTO> logIn(AdminLogInRequestDTO adminLogInRequestDTO) {
-
+    log.info("Processing to Login in service layer --");
     AdminUsers admin = adminDAO.findUserByEmail(adminLogInRequestDTO.getEmail());
     if (!passwordEncoder.matches(adminLogInRequestDTO.getPassword(), admin.getPassword())) {
       throw new SYMException(
@@ -88,6 +90,7 @@ public class AdminServiceImp implements AdminService {
   @Override
   public ForgetPasswordResponseDTO forgetPassword(
       ForgetPasswordRequestDTO forgetPasswordRequestDTO) {
+    log.info("Processing forget password started in service layer --");
     var admin = adminDAO.findUserByEmail(forgetPasswordRequestDTO.getEmail());
     var otp = generateOTP();
     admin.setOtp(otp);
