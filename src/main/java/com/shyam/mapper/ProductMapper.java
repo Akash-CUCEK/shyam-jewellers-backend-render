@@ -47,25 +47,25 @@ public class ProductMapper {
     p.setUpdatedBy(dto.getUpdatedBy());
   }
 
-//  public ProductResponseDTO toProductResponse(Products p) {
-//    return ProductResponseDTO.builder()
-//            .id(p.getProductIds())
-//            .name(p.getName())
-//            .category(p.getCategory().getName()) // ✅ correct
-//            .price(p.getPrice())
-//            .discountPercentage(p.getDiscountPercentage())
-//            .weight(p.getWeight())
-//            .materialType(p.getMaterialType())
-//            .skuCode(p.getSkuCode())
-//            .shortDescription(p.getShortDescription())
-//            .fullDescription(p.getFullDescription())
-//            .gender(p.getGender())
-//            .averageRating(p.getAverageRating())
-//            .isAvailable(p.getIsAvailable())
-//            .availableStock(p.getAvailableStock())
-//            .imageUrl(p.getImageUrl())
-//            .build();
-//  }
+  //  public ProductResponseDTO toProductResponse(Products p) {
+  //    return ProductResponseDTO.builder()
+  //            .id(p.getProductIds())
+  //            .name(p.getName())
+  //            .category(p.getCategory().getName()) // ✅ correct
+  //            .price(p.getPrice())
+  //            .discountPercentage(p.getDiscountPercentage())
+  //            .weight(p.getWeight())
+  //            .materialType(p.getMaterialType())
+  //            .skuCode(p.getSkuCode())
+  //            .shortDescription(p.getShortDescription())
+  //            .fullDescription(p.getFullDescription())
+  //            .gender(p.getGender())
+  //            .averageRating(p.getAverageRating())
+  //            .isAvailable(p.getIsAvailable())
+  //            .availableStock(p.getAvailableStock())
+  //            .imageUrl(p.getImageUrl())
+  //            .build();
+  //  }
 
   public AllProductResponseDTO toAllProductResponse(Products p) {
 
@@ -94,22 +94,22 @@ public class ProductMapper {
 
   public ProductResponseDTO toProductResponse(Products p) {
     return ProductResponseDTO.builder()
-            .id(p.getProductIds())
-            .name(p.getName())
-            .category(p.getCategory().getName())
-            .price(p.getPrice())
-            .discountPercentage(p.getDiscountPercentage())
-            .weight(p.getWeight())
-            .materialType(p.getMaterialType())
-            .skuCode(p.getSkuCode())
-            .shortDescription(p.getShortDescription())
-            .fullDescription(p.getFullDescription())
-            .gender(p.getGender())
-            .averageRating(p.getAverageRating())
-            .isAvailable(p.getIsAvailable())
-            .availableStock(p.getAvailableStock())
-            .imageUrl(p.getImageUrl())
-            .build();
+        .id(p.getProductIds())
+        .name(p.getName())
+        .category(p.getCategory().getName())
+        .price(p.getPrice())
+        .discountPercentage(p.getDiscountPercentage())
+        .weight(p.getWeight())
+        .materialType(p.getMaterialType())
+        .skuCode(p.getSkuCode())
+        .shortDescription(p.getShortDescription())
+        .fullDescription(p.getFullDescription())
+        .gender(p.getGender())
+        .averageRating(p.getAverageRating())
+        .isAvailable(p.getIsAvailable())
+        .availableStock(p.getAvailableStock())
+        .imageUrl(p.getImageUrl())
+        .build();
   }
 
   public ProductAddResponseDTO toAddProductResponse(Products p, String msg) {

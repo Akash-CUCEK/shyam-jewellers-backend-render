@@ -81,7 +81,9 @@ public class ProductServiceImp implements ProductService {
     }
 
     // 🔍 Category fetch
-    Category category = categoryRepository.findById(dto.getCategoryId())
+    Category category =
+        categoryRepository
+            .findById(dto.getCategoryId())
             .orElseThrow(() -> new RuntimeException("Category not found"));
 
     // 🔄 Update mapping
@@ -91,9 +93,7 @@ public class ProductServiceImp implements ProductService {
     productDAO.save(product);
 
     // 📤 Response
-    return UpdateResponseDTO.builder()
-            .message("Product updated successfully")
-            .build();
+    return UpdateResponseDTO.builder().message("Product updated successfully").build();
   }
 
   @Override
@@ -156,11 +156,11 @@ public class ProductServiceImp implements ProductService {
     return productMapper.toGenderResponse(productDAO.getGenderProduct(dto.getGender()));
   }
 
-//  @Override
-//  public ProductResponseDTO getNameProduct(GetProductByNameRequestDTO dto) {
-//    log.info("Processing to get product based on name");
-////    return productMapper.toProductResponse(productDAO.findProduct(dto.getName()));
-//  }
+  //  @Override
+  //  public ProductResponseDTO getNameProduct(GetProductByNameRequestDTO dto) {
+  //    log.info("Processing to get product based on name");
+  ////    return productMapper.toProductResponse(productDAO.findProduct(dto.getName()));
+  //  }
 
   @Override
   public PageResponseDTO<AllProductResponseDTO> getProductsByCategory(

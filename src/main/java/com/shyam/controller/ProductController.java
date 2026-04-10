@@ -64,12 +64,12 @@ public class ProductController {
     return new BaseResponseDTO<>(productService.getProductsByAbovePrice(price, pageable), null);
   }
 
-//  @Operation(summary = "Get product by name")
-//  @PostMapping("/getProductsByName")
-//  public BaseResponseDTO<ProductResponseDTO> getProductByName(
-//      @Valid @RequestBody GetProductByNameRequestDTO dto) {
-//    return new BaseResponseDTO<>(productService.getNameProduct(dto), null);
-//  }
+  //  @Operation(summary = "Get product by name")
+  //  @PostMapping("/getProductsByName")
+  //  public BaseResponseDTO<ProductResponseDTO> getProductByName(
+  //      @Valid @RequestBody GetProductByNameRequestDTO dto) {
+  //    return new BaseResponseDTO<>(productService.getNameProduct(dto), null);
+  //  }
 
   @Operation(summary = "Get products by gender")
   @PostMapping("/getProductsByGender")

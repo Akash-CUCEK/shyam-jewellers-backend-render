@@ -21,11 +21,17 @@ public class EmailService {
       log.info("Sending mail....");
       MimeMessage message = javaMailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
       helper.setTo(to);
       helper.setSubject(subject);
       helper.setText(body, true);
+
       javaMailSender.send(message);
-    } catch (MessagingException e) {
+
+      log.info("Mail sent successfully");
+
+    } catch (Exception e) {
+      log.error("Failed to send email ", e);
       throw new RuntimeException("Failed to send email", e);
     }
   }

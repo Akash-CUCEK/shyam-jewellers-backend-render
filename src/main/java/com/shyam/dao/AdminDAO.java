@@ -43,7 +43,7 @@ public class AdminDAO {
           HttpStatus.INTERNAL_SERVER_ERROR,
           SYMErrorType.GENERIC_EXCEPTION,
           ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
-          String.format("Failed to find user with email %s", username),
+          String.format("No User found"),
           e.getMessage());
     }
   }

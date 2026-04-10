@@ -14,7 +14,6 @@ import com.shyam.dao.UserDAO;
 import com.shyam.dto.request.OtpRequestDTO;
 import com.shyam.dto.request.logInRequestDTO;
 import com.shyam.dto.response.LogInResponseDTO;
-import com.shyam.dto.response.LogoutResponseDTO;
 import com.shyam.dto.response.OtpResponseDTO;
 import com.shyam.mapper.UserMapper;
 import com.shyam.service.UserService;
@@ -92,22 +91,23 @@ public class UserServiceImp implements UserService {
                 .build());
   }
 
-//  @Override
-//  public LogoutResponseDTO logout(String accessToken, String refreshToken) {
-//    logger.info("Processing request for log out");
-//    long expiryInSeconds =
-//        (JwtUtil.getExpiry(accessToken).getTime() - System.currentTimeMillis()) / 1000;
-//
-//    if (expiryInSeconds > 0) {
-//      logger.info("Black listing token");
-//      tokenBlacklistService.blacklistToken(accessToken, expiryInSeconds);
-//    }
-//
-//    if (refreshToken != null) {
-//      logger.info("Deleting refresh token");
-//      refreshTokenService.deleteByRefreshToken(refreshToken);
-//    }
-//
-//    return userMapper.mapToUserLogoutInMessage(messageSourceUtil.getMessage(MESSAGE_CODE_LOG_OUT));
-//  }
+  //  @Override
+  //  public LogoutResponseDTO logout(String accessToken, String refreshToken) {
+  //    logger.info("Processing request for log out");
+  //    long expiryInSeconds =
+  //        (JwtUtil.getExpiry(accessToken).getTime() - System.currentTimeMillis()) / 1000;
+  //
+  //    if (expiryInSeconds > 0) {
+  //      logger.info("Black listing token");
+  //      tokenBlacklistService.blacklistToken(accessToken, expiryInSeconds);
+  //    }
+  //
+  //    if (refreshToken != null) {
+  //      logger.info("Deleting refresh token");
+  //      refreshTokenService.deleteByRefreshToken(refreshToken);
+  //    }
+  //
+  //    return
+  // userMapper.mapToUserLogoutInMessage(messageSourceUtil.getMessage(MESSAGE_CODE_LOG_OUT));
+  //  }
 }

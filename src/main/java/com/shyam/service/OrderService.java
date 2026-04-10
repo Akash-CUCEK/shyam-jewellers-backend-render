@@ -8,6 +8,7 @@ import com.shyam.dto.response.*;
 
 public interface OrderService {
   AddOrderResponseDTO createOrder(AddOrderRequestDTO addOrderRequestDTO);
+
   AddOrderResponseDTO updateOrder(UpdateOrderRequestDTO updateOrderRequestDTO);
 
   GetOrderByIdResponseDTO getOrderById(GetOrderByIdRequestDTO getOrderByIdRequestDTO);
@@ -17,6 +18,4 @@ public interface OrderService {
   GetTotalOrderMonthResponse getTotalOrderMonth();
 
   GetOrderInvoiceResponse getOrderInvoice(GetOrderInvoiceRequest getOrderInvoiceRequest);
-
-
 }

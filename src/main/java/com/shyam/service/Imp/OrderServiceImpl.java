@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class OrderServiceImpl implements OrderService {
 
-
   private final OrderMapper orderMapper;
   private final MessageSourceUtil messageSourceUtil;
   private final OrderDAO orderDAO;
@@ -57,9 +56,7 @@ public class OrderServiceImpl implements OrderService {
     Order order = orderDAO.findOrderByOrderId(dto.getOrderId());
     orderMapper.updateOrderEntity(order, dto);
     orderDAO.save(order);
-    return AddOrderResponseDTO.builder()
-            .message("Order updated successfully")
-            .build();
+    return AddOrderResponseDTO.builder().message("Order updated successfully").build();
   }
 
   /* ===================== GET ORDER BY ID ===================== */
@@ -76,26 +73,21 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public OrderListPageResponseDTO getAllOrders(int page, int size) {
 
-    Pageable pageable = PageRequest.of(
-            page,
-            size,
-            Sort.by(Sort.Order.desc("updatedAt"))
-    );
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("updatedAt")));
 
     Page<Order> orderPage = orderRepository.findAll(pageable);
 
-    List<OrderListResponseDTO> list = orderPage.getContent()
-            .stream()
-            .map(orderMapper::mapToOrderListDTO)
-            .toList();
+    List<OrderListResponseDTO> list =
+        orderPage.getContent().stream().map(orderMapper::mapToOrderListDTO).toList();
 
     return OrderListPageResponseDTO.builder()
-            .orders(list)
-            .currentPage(orderPage.getNumber())
-            .totalPages(orderPage.getTotalPages())
-            .totalElements(orderPage.getTotalElements())
-            .build();
+        .orders(list)
+        .currentPage(orderPage.getNumber())
+        .totalPages(orderPage.getTotalPages())
+        .totalElements(orderPage.getTotalElements())
+        .build();
   }
+
   /* ===================== TOTAL ORDERS THIS MONTH ===================== */
 
   @Override

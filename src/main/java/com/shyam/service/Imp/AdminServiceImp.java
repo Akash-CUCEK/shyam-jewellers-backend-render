@@ -8,6 +8,7 @@ import com.shyam.common.exception.domain.SYMException;
 import com.shyam.common.jwt.JwtUtil;
 import com.shyam.common.redis.service.TokenBlacklistService;
 import com.shyam.common.service.RefreshTokenService;
+import com.shyam.common.util.MapperUtil;
 import com.shyam.common.util.MessageSourceUtil;
 import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.dao.AdminDAO;
@@ -149,10 +150,10 @@ public class AdminServiceImp implements AdminService {
       logger.info("Blacklisting the token...");
       tokenBlacklistService.blacklistToken(accessToken, expiryInSeconds);
     }
-//    if (refreshToken != null) {
-//      logger.info("Deleting the refresh token...");
-//      refreshTokenService.delete(refreshToken);
-//    }
+    //    if (refreshToken != null) {
+    //      logger.info("Deleting the refresh token...");
+    //      refreshTokenService.delete(refreshToken);
+    //    }
 
     return adminMapper.mapToAdminLogoutInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_LOG_OUT));
@@ -196,7 +197,23 @@ public class AdminServiceImp implements AdminService {
 
   @Override
   public RegisterResponseDTO registerAdmin(RegisterRequestDTO registerRequestDTO) {
-    adminMapper.registerAdmin(registerRequestDTO);
+    if (adminDAO.findByEmail(registerRequestDTO.getEmail()).isPresent()) {
+      throw new SYMException(
+          HttpStatus.CONFLICT,
+          SYMErrorType.GENERIC_EXCEPTION,
+          ErrorCodeConstants.ERROR_CODE_EMAIL_ALREADY_EXISTS,
+          "Email already registered!",
+          "Attempted to register with existing email: " + registerRequestDTO.getEmail());
+    }
+
+    var newUser = new AdminUsers();
+    newUser.setName(registerRequestDTO.getName());
+    newUser.setEmail(registerRequestDTO.getEmail());
+    newUser.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+    newUser.setPhoneNumber(registerRequestDTO.getPhoneNumber());
+    newUser.setRole(MapperUtil.parseRole("ADMIN"));
+    sendVerificationEmailForRegistration(
+        registerRequestDTO.getName(), registerRequestDTO.getEmail());
     return adminMapper.mapToRegisterAdminInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_REGISTER_ADMIN));
   }
@@ -272,6 +289,24 @@ public class AdminServiceImp implements AdminService {
             + "Regards,\n"
             + "Shyam Jewellers\n"
             + "Security Team";
+
+    emailService.sendEmail(email, subject, body);
+  }
+
+  private void sendVerificationEmailForRegistration(String name, String email) {
+    var subject = "Welcome to Shyam Jewellers Admin Portal";
+    var body =
+        "Hello "
+            + name
+            + ",\n\n"
+            + "Welcome to Shyam Jewellers Admin Panel.\n"
+            + "Your admin account has been created successfully.\n\n"
+            + "Login Email: "
+            + email
+            + "\n\n"
+            + "Your temporary password will be shared with you personally.\n"
+            + "Please log in and change your password after the first login.\n\n"
+            + "Regards,\nTeam Shyam Jewellers";
 
     emailService.sendEmail(email, subject, body);
   }

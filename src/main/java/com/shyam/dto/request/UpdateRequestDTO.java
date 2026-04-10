@@ -1,8 +1,6 @@
 package com.shyam.dto.request;
 
 import java.math.BigDecimal;
-
-import com.shyam.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

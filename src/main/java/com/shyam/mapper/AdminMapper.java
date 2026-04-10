@@ -2,11 +2,7 @@ package com.shyam.mapper;
 
 import com.shyam.common.constants.Role;
 import com.shyam.common.email.EmailService;
-import com.shyam.common.exception.domain.SYMErrorType;
-import com.shyam.common.exception.domain.SYMException;
 import com.shyam.common.redis.service.TokenBlacklistService;
-import com.shyam.common.util.MapperUtil;
-import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.dao.AdminDAO;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
@@ -19,7 +15,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -79,41 +74,6 @@ public class AdminMapper {
 
   public ChangePasswordResponseDTO mapToAdminChangePasswordInMessage(String message) {
     return ChangePasswordResponseDTO.builder().response(message).build();
-  }
-
-  public void registerAdmin(RegisterRequestDTO registerRequestDTO) {
-    if (adminDAO.findByEmail(registerRequestDTO.getEmail()).isPresent()) {
-      throw new SYMException(
-          HttpStatus.CONFLICT,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_EMAIL_ALREADY_EXISTS,
-          "Email already registered!",
-          "Attempted to register with existing email: " + registerRequestDTO.getEmail());
-    }
-
-    AdminUsers newUser = new AdminUsers();
-    newUser.setName(registerRequestDTO.getName());
-    newUser.setEmail(registerRequestDTO.getEmail());
-    newUser.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
-    newUser.setPhoneNumber(registerRequestDTO.getPhoneNumber());
-    newUser.setRole(MapperUtil.parseRole("ADMIN"));
-
-    adminDAO.save(newUser);
-    var subject = "Welcome to Shyam Jewellers Admin Portal";
-    var body =
-        "Hello "
-            + registerRequestDTO.getName()
-            + ",\n\n"
-            + "Welcome to Shyam Jewellers Admin Panel.\n"
-            + "Your admin account has been created successfully.\n\n"
-            + "Login Email: "
-            + registerRequestDTO.getEmail()
-            + "\n\n"
-            + "Your temporary password will be shared with you personally.\n"
-            + "Please log in and change your password after the first login.\n\n"
-            + "Regards,\nTeam Shyam Jewellers";
-
-    emailService.sendEmail(registerRequestDTO.getEmail(), subject, body);
   }
 
   public RegisterResponseDTO mapToRegisterAdminInMessage(String message) {
