@@ -2,9 +2,10 @@ package com.shyam.service.Imp;
 
 import static com.shyam.constants.MessageConstant.*;
 
-import com.shyam.common.email.EmailService;
+import com.shyam.common.constants.Role;
 import com.shyam.common.exception.domain.SYMErrorType;
 import com.shyam.common.exception.domain.SYMException;
+import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.common.jwt.JwtUtil;
 import com.shyam.common.redis.service.TokenBlacklistService;
 import com.shyam.common.service.RefreshTokenService;
@@ -12,15 +13,22 @@ import com.shyam.common.util.MapperUtil;
 import com.shyam.common.util.MessageSourceUtil;
 import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.dao.AdminDAO;
+import com.shyam.dto.NotificationMessage;
+import com.shyam.dto.NotificationType;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
 import com.shyam.entity.AdminUsers;
+import com.shyam.entity.OfferPhoto;
 import com.shyam.mapper.AdminMapper;
+import com.shyam.mapper.UserMapper;
+import com.shyam.publisher.NotificationPublisher;
 import com.shyam.service.AdminService;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -29,8 +37,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,32 +49,68 @@ public class AdminServiceImp implements AdminService {
   private final AdminMapper adminMapper;
   private final MessageSourceUtil messageSourceUtil;
   private final AdminDAO adminDAO;
-  private final BCryptPasswordEncoder passwordEncoder;
+  private final UserMapper userMapper;
   private final TokenBlacklistService tokenBlacklistService;
-  private final EmailService emailService;
   private final RefreshTokenService refreshTokenService;
+  private final NotificationPublisher notificationPublisher;
 
   @Override
-  public ResponseEntity<VerifyAdminResponseDTO> logIn(AdminLogInRequestDTO adminLogInRequestDTO) {
-    log.info("Processing to Login in service layer --");
-    AdminUsers admin = adminDAO.findUserByEmail(adminLogInRequestDTO.getEmail());
-    if (!passwordEncoder.matches(adminLogInRequestDTO.getPassword(), admin.getPassword())) {
+  @Transactional
+  public LogInResponseDTO initiateLogin(String email) {
+    logger.info("Processing login initiation for admin: {}", email);
+    AdminUsers admin = adminDAO.findUserByEmail(email);
+    var otp = generateOTP();
+    admin.setOtp(otp);
+    admin.setOtpGeneratedTime(LocalDateTime.now());
+    adminDAO.save(admin);
+    NotificationMessage message =
+        new NotificationMessage(admin.getEmail(), null, otp, NotificationType.LOGIN);
+    notificationPublisher.publish(message);
+    return userMapper.mapToUserLogInMessage(
+        messageSourceUtil.getMessage(MESSAGE_CODE_LOGIN_SEND_OTP));
+  }
+
+  @Override
+  public ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(
+      String email, String otp) {
+    logger.info("Processing OTP verification for admin login");
+    var admin = adminDAO.findUserByEmail(email);
+
+    if (admin.getOtpGeneratedTime() == null
+        || admin.getOtpGeneratedTime().plusMinutes(5).isBefore(LocalDateTime.now())) {
       throw new SYMException(
           HttpStatus.UNAUTHORIZED,
           SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_PASSWORD_NOT_MATCHING,
-          "Please enter correct password !",
-          "Entered password is wrong, please enter correct password");
+          ErrorCodeConstants.ERROR_CODE_AUTHZ_OTP_EXPIRED,
+          "OTP expired",
+          "OTP expired for email: " + email);
     }
 
-    var role = admin.getRole().name();
+    if (!Objects.equals(admin.getOtp(), otp)) {
+      throw new SYMException(
+          HttpStatus.UNAUTHORIZED,
+          SYMErrorType.GENERIC_EXCEPTION,
+          ErrorCodeConstants.ERROR_CODE_AUTHZ_INVALID_OTP,
+          "Invalid OTP",
+          "Invalid OTP for email: " + email);
+    }
 
-    var accessToken = JwtUtil.generateAccessToken(admin.getEmail(), role);
+    // Clear OTP fields after successful verification
+    admin.setOtp(null);
+    admin.setOtpGeneratedTime(null);
+    adminDAO.save(admin);
+
+    // Generate tokens
+    var accessToken = JwtUtil.generateAccessToken(email, admin.getRole().name());
     var refreshToken = JwtUtil.generateRefreshToken();
+    refreshTokenService.store(email, admin.getRole().name(), refreshToken);
 
-    var deviceId = adminLogInRequestDTO.getDeviceId();
-
-    refreshTokenService.store(admin.getEmail(), role, refreshToken, deviceId);
+    VerifyAdminResponseDTO response =
+        VerifyAdminResponseDTO.builder()
+            .token(accessToken)
+            .refreshToken(refreshToken)
+            .message("Login successful")
+            .build();
 
     ResponseCookie cookie =
         ResponseCookie.from("refreshToken", refreshToken)
@@ -79,73 +123,11 @@ public class AdminServiceImp implements AdminService {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(
-            VerifyAdminResponseDTO.builder()
-                .message("Welcome Admin!")
-                .token(accessToken)
-                .refreshToken(refreshToken)
-                .build());
+        .body(new BaseResponseDTO<>(response, null));
   }
 
   @Override
-  public ForgetPasswordResponseDTO forgetPassword(
-      ForgetPasswordRequestDTO forgetPasswordRequestDTO) {
-    log.info("Processing forget password started in service layer --");
-    var admin = adminDAO.findUserByEmail(forgetPasswordRequestDTO.getEmail());
-    var otp = generateOTP();
-    admin.setOtp(otp);
-    admin.setOtpGeneratedTime(LocalDateTime.now());
-    adminDAO.save(admin);
-    sendVerificationEmail(forgetPasswordRequestDTO.getEmail(), otp);
-    return adminMapper.mapToAdminForgetPasswordMessage(
-        messageSourceUtil.getMessage(MESSAGE_CODE_FORGET_ADMIN_PASSWORD_SEND_OTP));
-  }
-
-  @Override
-  public VerifyForgetPasswordResponseDTO forgetVerifyOtp(
-      VerifyAdminRequestDTO verifyAdminRequestDTO) {
-    logger.info("Processing the verify otp for password reset");
-    var admin = adminDAO.findUserByEmail(verifyAdminRequestDTO.getEmail());
-    if (admin.getOtpGeneratedTime() == null
-        || admin.getOtpGeneratedTime().plusMinutes(5).isBefore(LocalDateTime.now())) {
-      throw new SYMException(
-          HttpStatus.UNAUTHORIZED,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_AUTHZ_OTP_EXPIRED,
-          "OTP expired",
-          "OTP expired for email: " + verifyAdminRequestDTO.getEmail());
-    }
-    if (!Objects.equals(verifyAdminRequestDTO.getOtp(), admin.getOtp())) {
-      throw new SYMException(
-          HttpStatus.UNAUTHORIZED,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_AUTHZ_INVALID_OTP,
-          "Invalid OTP",
-          "Invalid OTP for email: " + verifyAdminRequestDTO.getEmail());
-    }
-    var password = passwordEncoder.encode(verifyAdminRequestDTO.getPassword());
-    if (passwordEncoder.matches(admin.getPassword(), password)) {
-      logger.info(
-          "New password cannot be same as the old password! {} , {}",
-          verifyAdminRequestDTO.getPassword(),
-          password);
-      throw new SYMException(
-          HttpStatus.BAD_REQUEST,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_SAME_AS_OLD_PASSWORD,
-          "New password cannot be same as the old password!",
-          "Same password used while attempting to forgot password");
-    }
-    admin.setPassword(password);
-    admin.setOtp(null);
-    admin.setOtpGeneratedTime(null);
-    adminDAO.save(admin);
-    return adminMapper.mapToVerifyForgetOtpInMessage(
-        messageSourceUtil.getMessage(MESSAGE_CODE_FORGET_ADMIN_PASSWORD));
-  }
-
-  @Override
-  public AdminLogoutResponseDTO logout(String accessToken, String refreshToken) {
+  public AdminLogoutResponseDTO logout(String accessToken, String refreshToken, String deviceId) {
     logger.info("Processing to logout the admin");
     long expiryInSeconds =
         (JwtUtil.getExpiry(accessToken).getTime() - System.currentTimeMillis()) / 1000;
@@ -153,52 +135,33 @@ public class AdminServiceImp implements AdminService {
       logger.info("Blacklisting the token...");
       tokenBlacklistService.blacklistToken(accessToken, expiryInSeconds);
     }
-    //    if (refreshToken != null) {
-    //      logger.info("Deleting the refresh token...");
-    //      refreshTokenService.delete(refreshToken);
-    //    }
+    if (refreshToken != null) {
+      logger.info("Deleting admin refresh token...");
+      refreshTokenService.delete(JwtUtil.getUsername(accessToken), JwtUtil.getRole(accessToken));
+    }
 
     return adminMapper.mapToAdminLogoutInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_LOG_OUT));
   }
 
   @Override
+  @Transactional
   public EditAdminResponseDTO edit(EditAdminRequestDTO editAdminRequestDTO) {
-    adminMapper.edit(editAdminRequestDTO);
+    logger.info("Processing edit  ");
+    var admin = adminDAO.findUserByEmail(editAdminRequestDTO.getEmail());
+    admin.setName(editAdminRequestDTO.getName());
+    admin.setPhoneNumber(editAdminRequestDTO.getPhoneNumber());
+    admin.setImageUrl(editAdminRequestDTO.getImageUrl());
+    adminDAO.save(admin);
+    NotificationMessage message =
+        new NotificationMessage(admin.getEmail(), null, null, NotificationType.UPDATE);
+    notificationPublisher.publish(message);
     return adminMapper.mapToAdminEditInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_EDIT_ADMIN));
   }
 
   @Override
-  public ChangePasswordResponseDTO changePassword(
-      ChangePasswordRequestDTO changePasswordRequestDTO) {
-    logger.info("Processing to change password");
-    var adminUser = adminDAO.findUserByEmail(changePasswordRequestDTO.getEmail());
-    if (!passwordEncoder.matches(changePasswordRequestDTO.getPassword(), adminUser.getPassword())) {
-      logger.info("Incorrect password.");
-      throw new SYMException(
-          HttpStatus.UNAUTHORIZED,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_PASSWORD_NOT_MATCHING,
-          "Please enter correct password !",
-          "Entered password is wrong, please enter correct password");
-    }
-    if (passwordEncoder.matches(
-        changePasswordRequestDTO.getNewPassword(), adminUser.getPassword())) {
-      throw new SYMException(
-          HttpStatus.BAD_REQUEST,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_SAME_AS_OLD_PASSWORD,
-          "New password cannot be same as the old password!",
-          "Same password used while attempting to change password");
-    }
-    adminUser.setPassword(passwordEncoder.encode(changePasswordRequestDTO.getNewPassword()));
-    adminDAO.save(adminUser);
-    return adminMapper.mapToAdminChangePasswordInMessage(
-        messageSourceUtil.getMessage(MESSAGE_CODE_CHANGE_PASSWORD_ADMIN));
-  }
-
-  @Override
+  @Transactional
   public RegisterResponseDTO registerAdmin(RegisterRequestDTO registerRequestDTO) {
     if (adminDAO.findByEmail(registerRequestDTO.getEmail()).isPresent()) {
       throw new SYMException(
@@ -212,23 +175,45 @@ public class AdminServiceImp implements AdminService {
     var newUser = new AdminUsers();
     newUser.setName(registerRequestDTO.getName());
     newUser.setEmail(registerRequestDTO.getEmail());
-    newUser.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
     newUser.setPhoneNumber(registerRequestDTO.getPhoneNumber());
     newUser.setRole(MapperUtil.parseRole("ADMIN"));
-    sendVerificationEmailForRegistration(
-        registerRequestDTO.getName(), registerRequestDTO.getEmail());
+    adminDAO.save(newUser);
+    NotificationMessage message =
+        new NotificationMessage(
+            registerRequestDTO.getEmail(), null, null, NotificationType.WELCOME);
+    notificationPublisher.publish(message);
     return adminMapper.mapToRegisterAdminInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_REGISTER_ADMIN));
   }
 
   @Override
+  @Transactional
   public EditPhotoResponseDTO offerUpdate(EditPhotoRequestDTO editPhotoRequestDTO) {
-    adminMapper.offerUpdate(editPhotoRequestDTO);
+    logger.info("Processing to save offer section");
+    OfferPhoto offer = adminDAO.getLatestOfferPhoto();
+    if (offer == null) {
+      offer = new OfferPhoto();
+    }
+
+    switch (editPhotoRequestDTO.getPosition()) {
+      case 1 -> offer.setImgUrl1(editPhotoRequestDTO.getImgUrl());
+      case 2 -> offer.setImgUrl2(editPhotoRequestDTO.getImgUrl());
+      case 3 -> offer.setImgUrl3(editPhotoRequestDTO.getImgUrl());
+      case 4 -> offer.setImgUrl4(editPhotoRequestDTO.getImgUrl());
+      case 5 -> offer.setImgUrl5(editPhotoRequestDTO.getImgUrl());
+      default -> throw new IllegalArgumentException(
+          "Invalid image position: " + editPhotoRequestDTO.getPosition());
+    }
+    offer.setCreatedAt(LocalDateTime.now());
+    offer.setUpdatedAt(LocalDateTime.now());
+
+    adminDAO.saveOffer(offer);
     return adminMapper.mapToEditPhotoRequestDTOAdminInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_UPDATE_OFFER_ADMIN));
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetOfferPhotoResponseDTO getOfferPhoto() {
     logger.info("Getting offer photos");
     var offer = adminDAO.getLatestOfferPhoto();
@@ -252,65 +237,44 @@ public class AdminServiceImp implements AdminService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetAdminListResponseDTO getAllAdmin() {
-    return adminMapper.getAllAdmin();
+
+    logger.info("Processing request to get all admins");
+
+    var roles = List.of(Role.ADMIN, Role.SUPER_ADMIN);
+
+    var admins = adminDAO.findByRoleIn(roles);
+
+    var responseDTOList =
+        admins.stream().map(adminMapper::mapToGetAllAdminDTO).collect(Collectors.toList());
+
+    return GetAdminListResponseDTO.builder().getAllAdminResponseDTOList(responseDTOList).build();
   }
 
   @Override
+  @Transactional
   public DeleteAdminResponseDTO deleteAdmin(DeleteAdminRequestDTO deleteAdmin) {
-    adminMapper.deleteAdmin(deleteAdmin);
+    var admin = adminDAO.findUserByEmail(deleteAdmin.getEmail());
+    adminDAO.delete(admin);
     return adminMapper.mapToDeleteAdminInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_DELETE_ADMIN));
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetAdminResponseDTO getAdmin(GetAdminRequestDTO getAdminRequestDTO) {
-    logger.info("Processing for getting admin ");
-    return adminMapper.getAdmin(getAdminRequestDTO.getEmail());
+
+    logger.info("Processing request to get admin");
+
+    var admin = adminDAO.findByEmail(getAdminRequestDTO.getEmail());
+
+    return adminMapper.mapToGetAdminDTO(admin.get());
   }
 
   private String generateOTP() {
     Random random = new Random();
     int otpValue = 100000 + random.nextInt(900000);
     return String.valueOf(otpValue);
-  }
-
-  private void sendVerificationEmail(String email, String otp) {
-    var subject = "Shyam Jewellers Admin Login - OTP Verification";
-
-    var body =
-        "Dear Admin,\n\n"
-            + "We received a request to sign in to your Shyam Jewellers Admin Account.\n\n"
-            + "━━━━━━━━━━━━━━━━━━━━\n"
-            + "🔐 Your One-Time Password (OTP)\n"
-            + otp
-            + "\n"
-            + "━━━━━━━━━━━━━━━━━━━━\n\n"
-            + "⏱ This OTP is valid for 5 minutes.\n"
-            + "⚠ Please do not share this code with anyone.\n\n"
-            + "If you did not initiate this request, please contact support immediately.\n\n"
-            + "Regards,\n"
-            + "Shyam Jewellers\n"
-            + "Security Team";
-
-    emailService.sendEmail(email, subject, body);
-  }
-
-  private void sendVerificationEmailForRegistration(String name, String email) {
-    var subject = "Welcome to Shyam Jewellers Admin Portal";
-    var body =
-        "Hello "
-            + name
-            + ",\n\n"
-            + "Welcome to Shyam Jewellers Admin Panel.\n"
-            + "Your admin account has been created successfully.\n\n"
-            + "Login Email: "
-            + email
-            + "\n\n"
-            + "Your temporary password will be shared with you personally.\n"
-            + "Please log in and change your password after the first login.\n\n"
-            + "Regards,\nTeam Shyam Jewellers";
-
-    emailService.sendEmail(email, subject, body);
   }
 }

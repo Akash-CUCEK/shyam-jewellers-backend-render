@@ -16,28 +16,27 @@ public class RefreshTokenService {
 
   private static final Duration REFRESH_TOKEN_TTL = Duration.ofDays(1);
 
-  private String buildKey(String email, String role, String deviceId) {
-    return "refresh:" + role + ":" + email + ":" + deviceId;
+  private String buildKey(String email, String role) {
+    return "refresh:" + role + ":" + email + ":";
   }
 
-  public void store(String email, String role, String refreshToken, String deviceId) {
-    String key = buildKey(email, role, deviceId);
+  public void store(String email, String role, String refreshToken) {
+    String key = buildKey(email, role);
     String hashedToken = passwordEncoder.encode(refreshToken);
     redisTemplate.opsForValue().set(key, hashedToken, REFRESH_TOKEN_TTL);
   }
 
-  public RefreshTokenDetails validate(
-      String refreshToken, String email, String role, String deviceId) {
-    String key = buildKey(email, role, deviceId);
+  public RefreshTokenDetails validate(String refreshToken, String email, String role) {
+    String key = buildKey(email, role);
     String storedHash = redisTemplate.opsForValue().get(key);
 
     if (storedHash != null && passwordEncoder.matches(refreshToken, storedHash)) {
-      return new RefreshTokenDetails(role, email, deviceId);
+      return new RefreshTokenDetails(role, email);
     }
     return null;
   }
 
-  public void delete(String email, String role, String deviceId) {
-    redisTemplate.delete(buildKey(email, role, deviceId));
+  public void delete(String email, String role) {
+    redisTemplate.delete(buildKey(email, role));
   }
 }

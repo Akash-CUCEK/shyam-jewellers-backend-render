@@ -133,6 +133,7 @@ public class OrderMapper {
         .deliveryType(order.getDeliveryType())
         .totalCost(order.getTotalCost().doubleValue())
         .dueAmount(order.getDueAmount().doubleValue())
+        .paymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : null)
         .paymentMethod(order.getPaymentMethod().name())
         .notes(order.getNotes())
         .createdById(order.getCreatedBy())
@@ -189,6 +190,7 @@ public class OrderMapper {
         .orderDate(order.getOrderDate())
         .orderTime(order.getOrderTime())
         .orderStatus(order.getOrderStatus().name())
+        .paymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : null)
         .totalCost(order.getTotalCost().doubleValue())
 
         // 🔥 total items count

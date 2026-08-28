@@ -47,7 +47,7 @@ public class ProductDAO {
   }
 
   public Page<Products> getProductsByCategory(String category, Pageable pageable) {
-    return productRepository.findByCategoryAndIsAvailableTrue(category, pageable);
+    return productRepository.findByCategory_NameIgnoreCaseAndIsAvailableTrue(category, pageable);
   }
 
   public Page<Products> getAllProduct(Pageable pageable) {

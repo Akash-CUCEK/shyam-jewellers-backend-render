@@ -15,7 +15,6 @@ import com.shyam.entity.Products;
 import com.shyam.mapper.ProductMapper;
 import com.shyam.repository.CategoryRepository;
 import com.shyam.service.ProductService;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -38,6 +38,7 @@ public class ProductServiceImp implements ProductService {
   private final CategoryRepository categoryRepository;
 
   @Override
+  @Transactional(readOnly = true)
   public Page<BaseResponseDTO<GetAllProductsResponseDTO>> getAllProducts(int page, int size) {
 
     Pageable pageable =
@@ -49,7 +50,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
-  @Transactional
+  @jakarta.transaction.Transactional
   public ProductAddResponseDTO addProduct(ProductAddRequestDTO dto, MultipartFile image) {
 
     log.info("Uploading image to Cloudinary...");
@@ -70,7 +71,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
-  @Transactional
+  @jakarta.transaction.Transactional
   public UpdateResponseDTO updateProduct(UpdateRequestDTO dto) {
 
     // 🔍 Product fetch
@@ -97,7 +98,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
-  @Transactional
+  @jakarta.transaction.Transactional
   public DeleteResponseDTO deleteProduct(DeleteProductRequestDTO dto) {
     log.info("Processing to delete product");
     Products product = productDAO.findProduct(dto.getName());
@@ -107,6 +108,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public PageResponseDTO<AllProductResponseDTO> getProductsUnderPrice(
       BigDecimal price, Pageable pageable) {
     Page<Products> page = productDAO.getProductsUnderPrice(price, pageable);
@@ -124,6 +126,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public PageResponseDTO<AllProductResponseDTO> getProductsByAbovePrice(
       BigDecimal price, Pageable pageable) {
     Page<Products> page = productDAO.getProductsAbovePrice(price, pageable);
@@ -151,6 +154,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GenderResponseDTO getGenderProduct(GenderRequestDTO dto) {
     log.info("Processing to get product based on gender");
     return productMapper.toGenderResponse(productDAO.getGenderProduct(dto.getGender()));
@@ -163,6 +167,7 @@ public class ProductServiceImp implements ProductService {
   //  }
 
   @Override
+  @Transactional(readOnly = true)
   public PageResponseDTO<AllProductResponseDTO> getProductsByCategory(
       String category, Pageable pageable) {
     log.info("Processing to get product based on category");
@@ -188,12 +193,14 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Page<AllProductResponseDTO> getAllProduct(Pageable pageable) {
     log.info("Processing to get all product");
     return productDAO.getAllProduct(pageable).map(productMapper::toAllProductResponse);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public AllProductResponseDTO getProductById(Long productId) {
     Products product =
         productDAO
@@ -211,6 +218,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public PageResponseDTO<AllProductResponseDTO> getByMaterialType(
       String materialType, Pageable pageable) {
     log.info("Processing to get all products based on material type");
@@ -235,6 +243,7 @@ public class ProductServiceImp implements ProductService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public Page<AllProductResponseDTO> getFilteredProducts(
       ProductFilterRequestDTO dto, Pageable pageable) {
     log.info("Processing to get filter product");

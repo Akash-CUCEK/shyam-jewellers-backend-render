@@ -1,0 +1,113 @@
+plugins {
+    id 'org.springframework.boot' version '3.1.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'com.diffplug.spotless' version '6.25.0'
+}
+
+group = 'com.shyam'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // 🌐 Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // 🗄️ JPA / Hibernate
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // 🔐 Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 🔑 OAuth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // ✉️ Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // ⚡ Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // 🧾 JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // 📄 PDF
+    implementation 'com.itextpdf:itextpdf:5.5.13.3'
+
+    // 📊 Excel
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
+
+    // 📘 Swagger / OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    // 📧 Thymeleaf for email templates
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // 🐘 PostgreSQL
+    implementation 'org.postgresql:postgresql'
+
+    // ☁️ Cloudinary
+    implementation 'com.cloudinary:cloudinary-http44:1.32.0'
+
+    // ✅ Validation
+    implementation 'org.hibernate.validator:hibernate-validator'
+
+    // 🧰 Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 🧪 Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // H2 for development
+    runtimeOnly 'com.h2database:h2'
+
+    // Micrometer for metrics
+    implementation 'io.micrometer:micrometer-core'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // For JSON logging
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+
+    // Actuator for exposing metrics and health
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Apache Kafka
+    implementation 'org.springframework.kafka:spring-kafka:3.1.4'
+}
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+spotless {
+    java {
+        googleJavaFormat('1.18.0')
+        removeUnusedImports()
+    }
+}
+
+// Configure Spring Boot plugin
+// springBoot {
+//     excludeDevlets = true
+// }
+
+// Configure the bootJar task to exclude Lombok (though it's compileOnly, just to be safe)
+// bootJar {
+//     exclude('**/lombok/**')
+// }

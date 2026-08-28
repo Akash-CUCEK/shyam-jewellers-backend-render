@@ -8,6 +8,7 @@ import com.shyam.dto.request.UpdateOrderRequestDTO;
 import com.shyam.dto.response.*;
 import com.shyam.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Order", description = "Order management endpoints")
 public class OrderController {
   private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
   private final OrderService orderService;
@@ -54,6 +56,7 @@ public class OrderController {
     return new BaseResponseDTO<>(response, null);
   }
 
+  @Operation(summary = "Get all orders", description = "Retrieve a paginated list of all orders.")
   @GetMapping("/admin/orders")
   @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
   public BaseResponseDTO<OrderListPageResponseDTO> getAllOrders(

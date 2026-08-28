@@ -19,12 +19,13 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
   @Query("SELECT p FROM Products p WHERE LOWER(p.gender) = LOWER(:gender)")
   List<Products> findProductByGender(@Param("gender") String gender);
 
-  Page<Products> findByCategoryAndIsAvailableTrue(String category, Pageable pageable);
+  Page<Products> findByCategory_NameIgnoreCaseAndIsAvailableTrue(
+      String category, Pageable pageable);
 
   @Query(
       """
     SELECT p FROM Products p
-    WHERE (:category IS NULL OR p.category = :category)
+    WHERE (:category IS NOT NULL AND LOWER(p.category.name) = LOWER(:category))
       AND (:minPrice IS NULL OR p.price >= :minPrice)
       AND (:maxPrice IS NULL OR p.price <= :maxPrice)
       AND (:minWeight IS NULL OR p.weight >= :minWeight)

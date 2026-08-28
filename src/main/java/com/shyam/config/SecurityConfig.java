@@ -38,8 +38,8 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
                     .requestMatchers(
-                        "/auth/api/v1/admin/logIn",
-                        "/auth/api/v1/admin/verifyOtp",
+                        "/auth/api/v1/admin/initiateLogin",
+                        "/auth/api/v1/admin/verifyLoginOtp",
                         "/auth/api/v1/admin/forgetPassword",
                         "/auth/api/v1/admin/verifyPasswordOtp",
                         "/api/v1/public/**")

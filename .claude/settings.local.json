@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rtk gradlew *)",
+      "Bash(rtk find *)",
+      "Bash(rtk grep *)",
+      "Bash(grep -r \"\\\\\".\\\\{20,\\\\}\" \"/c/2026/shyam-jewellers-backend/src/main/java\" --include=\"*.java\")",
+      "Bash(rtk read *)",
+      "Bash(rtk ls *)",
+      "Bash(/c/Program Files/Apache/Maven/apache-maven-3.9.6/bin/mvn *)",
+      "Bash(choco install *)",
+      "Bash(java *)",
+      "Bash(rtk curl *)",
+      "Bash(jps *)",
+      "Bash(timeout 20 ./gradlew bootRun --no-daemon)",
+      "Bash(mkdir -p /c/temp)",
+      "Bash(mv src/main/java/com/shyam/common/kafka /c/temp/kafka_backup)",
+      "Bash(rtk git *)",
+      "Bash(gradle bootRun *)",
+      "Bash(rtk wc *)",
+      "Bash(dir C:\\\\2026\\\\shyam-jewellers-backend\\\\src\\\\main\\\\java\\\\com\\\\shyam\\\\nnotification *)",
+      "Bash(dir C:\\\\2026\\\\shyam-jewellers-backend\\\\src\\\\main\\\\java\\\\com\\\\shyam *)",
+      "Bash(pkill *)"
+    ]
+  }
+}

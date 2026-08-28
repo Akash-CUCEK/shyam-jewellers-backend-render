@@ -10,6 +10,7 @@ import lombok.*;
 public class GetAllAdminResponseDTO {
   private Long id;
   private String name;
+  private String role;
   private String email;
   private String phoneNumber;
 }

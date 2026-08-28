@@ -8,6 +8,7 @@ import com.shyam.service.AdminService;
 import com.shyam.service.CategoryService;
 import com.shyam.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,42 +25,46 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/auth/api/v1/admin")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Admin", description = "Admin management endpoints")
 public class AdminController {
 
   private final AdminService adminService;
   private final ProductService productService;
   private final CategoryService categoryService;
 
-  @Operation(summary = "Login a admin user", description = "Login a Admin User.")
-  @PostMapping("/logIn")
-  public ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> logIn(
-      @RequestBody AdminLogInRequestDTO adminLogInRequestDTO) {
-    log.info("Received request for login admin");
-    ResponseEntity<VerifyAdminResponseDTO> responseEntity =
-        adminService.logIn(adminLogInRequestDTO);
-    return ResponseEntity.status(responseEntity.getStatusCode())
-        .headers(responseEntity.getHeaders())
-        .body(new BaseResponseDTO<>(responseEntity.getBody(), null));
-  }
+  @Operation(
+          summary = "Initiate admin login",
+          description = "Step 1: Send OTP to admin email"
+  )
+  @PostMapping("/initiateLogin")
+  public BaseResponseDTO<LogInResponseDTO> initiateLogin(
+          @RequestBody AdminLogInRequestDTO adminLogInRequestDTO) {
 
-  @Operation(summary = "Reset Password", description = "Reset Password")
-  @PostMapping("/forgetPassword")
-  public BaseResponseDTO<ForgetPasswordResponseDTO> forgetPasswordOtp(
-      @RequestBody ForgetPasswordRequestDTO forgetPasswordRequestDTO) {
-    log.info("Received request for password reset");
-    var response = adminService.forgetPassword(forgetPasswordRequestDTO);
+    log.info(
+            "Received request to initiate admin login for: {}",
+            adminLogInRequestDTO.getEmail()
+    );
+
+    var response =
+            adminService.initiateLogin(
+                    adminLogInRequestDTO.getEmail()
+            );
+
     return new BaseResponseDTO<>(response, null);
   }
 
   @Operation(
-      summary = "Verify otp for password reset",
-      description = "Verify otp for password reset")
-  @PostMapping("/verifyPasswordOtp")
-  public BaseResponseDTO<VerifyForgetPasswordResponseDTO> forgetVerifyPassword(
+      summary = "Verify admin login OTP",
+      description = "Step 2: Verify OTP and complete login")
+  @PostMapping("/verifyLoginOtp")
+  public ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(
       @RequestBody VerifyAdminRequestDTO verifyAdminRequestDTO) {
-    log.info("Received request for verify otp for password reset");
-    var response = adminService.forgetVerifyOtp(verifyAdminRequestDTO);
-    return new BaseResponseDTO<>(response, null);
+    log.info("Received request to verify admin login OTP for: {}", verifyAdminRequestDTO.getEmail());
+    ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> response =
+        adminService.verifyLoginOtp(verifyAdminRequestDTO.getEmail(), verifyAdminRequestDTO.getOtp());
+    return ResponseEntity.status(response.getStatusCode())
+        .headers(response.getHeaders())
+        .body(response.getBody());
   }
 
   @Operation(summary = "Offer Section", description = "Adding offer photo.")
@@ -76,11 +81,12 @@ public class AdminController {
   @PostMapping("/logout")
   public ResponseEntity<BaseResponseDTO<AdminLogoutResponseDTO>> logout(
       @RequestHeader("Authorization") String authorization,
-      @CookieValue(value = "refreshToken", required = false) String refreshToken) {
+      @CookieValue(value = "refreshToken", required = false) String refreshToken,
+      @RequestHeader(value = "X-Device-Id", required = false) String deviceId) {
     log.info("Received request for logout");
     var accessToken = authorization.replace("Bearer ", "");
 
-    AdminLogoutResponseDTO response = adminService.logout(accessToken, refreshToken);
+    AdminLogoutResponseDTO response = adminService.logout(accessToken, refreshToken, deviceId);
 
     ResponseCookie deleteCookie =
         ResponseCookie.from("refreshToken", "")
@@ -96,6 +102,7 @@ public class AdminController {
         .body(new BaseResponseDTO<>(response, null));
   }
 
+  @Operation(summary = "Edit admin", description = "Edit admin details.")
   @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
   @PostMapping("/editAdmin")
   public BaseResponseDTO<EditAdminResponseDTO> edit(
@@ -105,22 +112,11 @@ public class AdminController {
     return new BaseResponseDTO<>(response, null);
   }
 
-  @Operation(summary = "Change password", description = "Admin change password.")
-  @PostMapping("/changePassword")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  public BaseResponseDTO<ChangePasswordResponseDTO> changePassword(
-      @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO) {
-    log.info("Received request for change password");
-    var response = adminService.changePassword(changePasswordRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
-
   @Operation(summary = "Register new Admin", description = "new admin register.")
   @PostMapping("/registerAdmin")
   @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
   public BaseResponseDTO<RegisterResponseDTO> registerAdmin(
-      @RequestBody RegisterRequestDTO registerRequestDTO,
-      @RequestHeader("Authorization") String authHeader) {
+      @RequestBody RegisterRequestDTO registerRequestDTO) {
     log.info("Received request for register admin for");
     var response = adminService.registerAdmin(registerRequestDTO);
     return new BaseResponseDTO<>(response, null);
@@ -128,7 +124,6 @@ public class AdminController {
 
   @Operation(summary = "Get Admin", description = "Get Admin.")
   @PostMapping("/getAdminByEmail")
-  @PreAuthorize("hasRole('SUPER_ADMIN')")
   public BaseResponseDTO<GetAdminResponseDTO> getAllAdmin(
       @RequestBody GetAdminRequestDTO getAdminRequestDTO) {
     log.info("Received request for getting admin ");
@@ -156,6 +151,9 @@ public class AdminController {
     return new BaseResponseDTO<>(response, null);
   }
 
+  @Operation(
+      summary = "Get all products",
+      description = "Retrieve a paginated list of all products.")
   @PostMapping("/getAllProduct")
   public Page<BaseResponseDTO<GetAllProductsResponseDTO>> getAllProducts(
       @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -163,6 +161,9 @@ public class AdminController {
     return productService.getAllProducts(page, size);
   }
 
+  @Operation(
+      summary = "Get all categories",
+      description = "Retrieve a paginated list of all categories.")
   @PostMapping("/getAllCategory")
   public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(
       @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -170,6 +171,7 @@ public class AdminController {
     return categoryService.getAllCategories(page, size);
   }
 
+  @Operation(summary = "Add product", description = "Add a new product with image.")
   @PostMapping(value = "/addProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public BaseResponseDTO<ProductAddResponseDTO> addProduct(
       @RequestParam("data") String data, @RequestParam("image") MultipartFile image)
@@ -203,6 +205,9 @@ public class AdminController {
     return new BaseResponseDTO<>(productService.deleteProduct(dto), null);
   }
 
+  @Operation(
+      summary = "Get category by ID",
+      description = "Retrieve a specific category by its ID.")
   @PostMapping("/getCategory")
   public BaseResponseDTO<GetCategoryByIdResponseDTO> getCategory(
       @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
@@ -211,6 +216,7 @@ public class AdminController {
     return new BaseResponseDTO<>(response, null);
   }
 
+  @Operation(summary = "Add category", description = "Add a new category.")
   @PostMapping("/addCategory")
   public BaseResponseDTO<AddCategoryResponseDTO> addCategories(
       @RequestBody AddCategoryRequestDTO addCategoryRequestDTO) {
@@ -219,6 +225,7 @@ public class AdminController {
     return new BaseResponseDTO<>(response, null);
   }
 
+  @Operation(summary = "Update category", description = "Update an existing category.")
   @PutMapping("/updateCategory")
   public BaseResponseDTO<UpdateCategoryResponseDTO> updateCategories(
       @RequestBody AddCategoryRequestDTO updateCategoryRequestDTO) {
@@ -227,6 +234,7 @@ public class AdminController {
     return new BaseResponseDTO<>(response, null);
   }
 
+  @Operation(summary = "Delete category", description = "Delete a category by its ID.")
   @DeleteMapping("/deleteCategory")
   public BaseResponseDTO<UpdateCategoryResponseDTO> deleteCategory(
       @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
@@ -235,6 +243,7 @@ public class AdminController {
     return new BaseResponseDTO<>(response, null);
   }
 
+  @Operation(summary = "Upload Excel", description = "Upload an Excel file to add categories.")
   @PostMapping("/uploadExcel")
   public ResponseEntity<?> uploadExcel(
       @RequestParam("file") MultipartFile file, @RequestParam("createdBy") String createdBy) {

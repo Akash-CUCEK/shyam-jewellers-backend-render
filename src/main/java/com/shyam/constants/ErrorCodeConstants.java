@@ -13,4 +13,5 @@ public class ErrorCodeConstants {
   public static final String ERROR_CODE_EMAIL_ALREADY_EXISTS = "SYM_ADMIN_EMAIL_EXIST_008";
   public static final String ERROR_CODE_PRODUCT_NOT_FOUND = "PRODUCT_NOT_FOUND_009";
   public static final String ERROR_CODE_VALIDATION = "CATEGORY_SAME_NAME_010";
+  public static final String ERROR_CODE_INTERNAL_SERVER_ERROR = "Internal error!";
 }

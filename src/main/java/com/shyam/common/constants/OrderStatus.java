@@ -2,8 +2,15 @@ package com.shyam.common.constants;
 
 public enum OrderStatus {
   CREATED,
+  PENDING_PAYMENT,
+  PAYMENT_SUCCESS,
+  PAYMENT_FAILED,
   CONFIRMED,
+  PROCESSING,
+  SHIPPED,
+  DELIVERED,
   CANCELLED,
   COMPLETED,
-  PENDING
+  PENDING,
+  REFUNDED
 }

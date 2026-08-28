@@ -8,6 +8,8 @@ import com.shyam.common.exception.dto.ErrorMessagesDTO;
 import com.shyam.common.exception.dto.ErrorResponseDTO;
 import com.shyam.common.jwt.JwtUtil;
 import com.shyam.common.service.RefreshTokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,10 +23,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Refresh Token", description = "Refresh token endpoints")
 public class RefreshTokenController {
 
   private final RefreshTokenService refreshTokenService;
 
+  @Operation(summary = "Refresh token", description = "Refresh access token using refresh token.")
   @PostMapping("/refreshToken")
   public ResponseEntity<BaseResponseDTO<RefreshTokenResponseDTO>> refresh(
       @CookieValue(value = "refreshToken", required = false) String cookieToken,
@@ -32,33 +36,33 @@ public class RefreshTokenController {
 
     log.info("Received refresh token request");
 
-    // 🔥 Extract data (web + mobile)
+    // *** Extract data (web + mobile)
     String refreshToken = request != null ? request.getRefreshToken() : cookieToken;
     String email = request != null ? request.getEmail() : null;
     String role = request != null ? request.getRole() : null;
     String deviceId = request != null ? request.getDeviceId() : null;
 
-    // ❌ Invalid request
+    // !!! Invalid request
     if (refreshToken == null || email == null || role == null || deviceId == null) {
       return ResponseEntity.status(401).body(buildError("Invalid refresh request"));
     }
 
-    // ✅ Validate token
-    var details = refreshTokenService.validate(refreshToken, email, role, deviceId);
+    // *** Validate token
+    var details = refreshTokenService.validate(refreshToken, email, role);
 
     if (details == null) {
       return ResponseEntity.status(401).body(buildError("Invalid refresh token"));
     }
 
-    // 🔁 ROTATION
-    refreshTokenService.delete(email, role, deviceId);
+    // <<>> ROTATION
+    refreshTokenService.delete(email, role);
 
     String newAccessToken = JwtUtil.generateAccessToken(email, role);
     String newRefreshToken = JwtUtil.generateRefreshToken();
 
-    refreshTokenService.store(email, role, newRefreshToken, deviceId);
+    refreshTokenService.store(email, role, newRefreshToken);
 
-    // 🌐 Cookie for web
+    // *** Cookie for web
     ResponseCookie cookie =
         ResponseCookie.from("refreshToken", newRefreshToken)
             .httpOnly(true)
@@ -75,7 +79,7 @@ public class RefreshTokenController {
                 new RefreshTokenResponseDTO(newAccessToken, newRefreshToken), null));
   }
 
-  // 🔥 Helper method (OUTSIDE main method)
+  // *** Helper method (OUTSIDE main method)
   private BaseResponseDTO<RefreshTokenResponseDTO> buildError(String message) {
     ErrorResponseDTO error =
         new ErrorResponseDTO(

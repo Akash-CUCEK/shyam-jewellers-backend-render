@@ -4,6 +4,7 @@ import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.response.GetOfferPhotoResponseDTO;
 import com.shyam.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/api/v1/public")
+@Tag(name = "Public", description = "Publicly accessible endpoints")
 public class PublicController {
 
   private final AdminService adminService;

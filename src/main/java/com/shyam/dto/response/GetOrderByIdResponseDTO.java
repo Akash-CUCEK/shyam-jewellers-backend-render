@@ -25,6 +25,7 @@ public class GetOrderByIdResponseDTO implements Serializable {
   private String deliveryType;
   private Double totalCost;
   private Double dueAmount;
+  private String paymentStatus;
   private String paymentMethod;
   private String notes;
   private String createdById;

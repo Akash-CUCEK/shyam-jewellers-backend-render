@@ -16,6 +16,7 @@ public class OrderListResponseDTO {
   private LocalTime orderTime;
 
   private String orderStatus;
+  private String paymentStatus;
 
   private Double totalCost;
 

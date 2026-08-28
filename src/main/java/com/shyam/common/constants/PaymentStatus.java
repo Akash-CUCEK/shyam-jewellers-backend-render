@@ -1,8 +1,14 @@
 package com.shyam.common.constants;
 
 public enum PaymentStatus {
+  CREATED,
   PENDING,
-  COMPLETED,
+  PROCESSING,
+  SUCCESS,
   FAILED,
-  REFUNDED
+  CANCELLED,
+  REFUND_INITIATED,
+  REFUNDED,
+  EXPIRED,
+  COMPLETED
 }

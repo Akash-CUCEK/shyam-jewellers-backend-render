@@ -5,6 +5,7 @@ import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
 import com.shyam.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/public")
+@Tag(name = "Product", description = "Product management endpoints")
 public class ProductController {
 
   private final ProductService productService;
@@ -33,12 +35,18 @@ public class ProductController {
     return new BaseResponseDTO<>(productService.getProductById(productId), null);
   }
 
+  @Operation(
+      summary = "Get products by category",
+      description = "Retrieve products filtered by category.")
   @GetMapping("/category/{category}")
   public BaseResponseDTO<PageResponseDTO<AllProductResponseDTO>> getByCategory(
       @PathVariable String category, Pageable pageable) {
     return new BaseResponseDTO<>(productService.getProductsByCategory(category, pageable), null);
   }
 
+  @Operation(
+      summary = "Get products by material type",
+      description = "Retrieve products filtered by material type.")
   @GetMapping("/materialType/{materialType}")
   public BaseResponseDTO<PageResponseDTO<AllProductResponseDTO>> getByMaterialType(
       @PathVariable String materialType, Pageable pageable) {

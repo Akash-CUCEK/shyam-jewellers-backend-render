@@ -9,6 +9,4 @@ import lombok.*;
 @AllArgsConstructor
 public class AdminLogInRequestDTO {
   private String email;
-  private String password;
-  private String deviceId;
 }

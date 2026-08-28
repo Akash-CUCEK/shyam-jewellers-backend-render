@@ -1,21 +1,18 @@
 package com.shyam.service;
 
+import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
 import org.springframework.http.ResponseEntity;
 
 public interface AdminService {
-  ResponseEntity<VerifyAdminResponseDTO> logIn(AdminLogInRequestDTO adminLogInRequestDTO);
+  LogInResponseDTO initiateLogin(String email);
 
-  ForgetPasswordResponseDTO forgetPassword(ForgetPasswordRequestDTO forgetPasswordRequestDTO);
+  ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(String email, String otp);
 
-  VerifyForgetPasswordResponseDTO forgetVerifyOtp(VerifyAdminRequestDTO verifyAdminRequestDTO);
-
-  AdminLogoutResponseDTO logout(String accessToken, String refreshToken);
+  AdminLogoutResponseDTO logout(String accessToken, String refreshToken, String deviceId);
 
   EditAdminResponseDTO edit(EditAdminRequestDTO editAdminRequestDTO);
-
-  ChangePasswordResponseDTO changePassword(ChangePasswordRequestDTO changePasswordRequestDTO);
 
   RegisterResponseDTO registerAdmin(RegisterRequestDTO registerRequestDTO);
 

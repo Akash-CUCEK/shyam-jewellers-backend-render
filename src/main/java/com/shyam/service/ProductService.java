@@ -23,9 +23,6 @@ public interface ProductService {
 
   GenderResponseDTO getGenderProduct(@Valid GenderRequestDTO genderRequestDTO);
 
-  //  ProductResponseDTO getNameProduct(@Valid GetProductByNameRequestDTO
-  // getProductByNameRequestDTO);
-
   PageResponseDTO<AllProductResponseDTO> getProductsByCategory(String category, Pageable pageable);
 
   Page<AllProductResponseDTO> getAllProduct(Pageable pageable);

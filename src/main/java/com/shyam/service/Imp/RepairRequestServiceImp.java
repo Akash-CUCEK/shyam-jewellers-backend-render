@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +24,14 @@ public class RepairRequestServiceImp implements RepairRequestService {
   private final MessageSourceUtil messageSourceUtil;
 
   @Override
+  @Transactional(readOnly = true)
   public GetAllRepairResponseDTO getAllRepairRequests() {
     List<RepairService> repairRequest = repairRequestDAO.findAllRepairRequest();
     return RepairRequestMapper.getAllRepairRequests(repairRequest);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public RepairRequestResponseDTO getRepairRequestById(
       RepairRequestRequestDTO repairRequestRequestDTO) {
     var service = repairRequestDAO.findRepairRequest(repairRequestRequestDTO.getServiceId());
@@ -36,6 +39,7 @@ public class RepairRequestServiceImp implements RepairRequestService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetAllRepairResponseDTO searchRepairRequest(
       SearchRepairRequestDTO searchRepairRequestDTO) {
     List<RepairService> services =
@@ -44,6 +48,7 @@ public class RepairRequestServiceImp implements RepairRequestService {
   }
 
   @Override
+  @Transactional
   public CreateRepairResponseDTO createRepairRequest(
       CreateRepairRequestDTO createRepairRequestDTO) {
     var service = RepairRequestMapper.createRepairRequest(createRepairRequestDTO);
@@ -53,6 +58,7 @@ public class RepairRequestServiceImp implements RepairRequestService {
   }
 
   @Override
+  @Transactional
   public EditRepairResponseDTO editRepairRequest(EditRepairRequestDTO editRepairRequestDTO) {
     var service = repairRequestDAO.findRepairRequest(editRepairRequestDTO.getServiceId());
     var serviceMapper = RepairRequestMapper.editRepairRequest(service, editRepairRequestDTO);
@@ -62,6 +68,7 @@ public class RepairRequestServiceImp implements RepairRequestService {
   }
 
   @Override
+  @Transactional
   public DeleteRepairResponseDTO deleteRepairRequest(
       DeleteRepairRequestDTO deleteRepairRequestDTO) {
     var service = repairRequestDAO.findRepairRequest(deleteRepairRequestDTO.getServiceId());

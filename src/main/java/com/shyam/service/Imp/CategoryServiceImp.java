@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -47,6 +48,7 @@ public class CategoryServiceImp implements CategoryService {
   private final CategoryExcelValidation categoryExcelValidation;
 
   @Override
+  @Transactional(readOnly = true)
   public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(int page, int size) {
 
     log.info("Processing the request for get category");
@@ -61,6 +63,7 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
+  @Transactional
   public AddCategoryResponseDTO addCategories(AddCategoryRequestDTO addCategoryRequestDTO) {
 
     log.info("Processing the request for adding category");
@@ -93,6 +96,7 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
+  @Transactional
   public UpdateCategoryResponseDTO updateCategoryRequestDTO(AddCategoryRequestDTO dto) {
     log.info("Processing the request for updating category");
 
@@ -112,6 +116,7 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetCategoryByIdResponseDTO getCategory(
       GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
     log.info("Received request for getting category By Id ");
@@ -120,6 +125,7 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
+  @Transactional
   public UpdateCategoryResponseDTO deleteCategory(
       GetCategoryByIdRequestDTO updateCategoryRequestDTO) {
     log.info("Received request for deleting category By Id ");
@@ -130,6 +136,7 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
+  @Transactional
   public ResponseEntity<?> uploadExcel(MultipartFile file, String createdBy) {
     log.info("Processing the request for upload excel sheet");
     try {
@@ -194,6 +201,7 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetAllCategoryUserResponseDTO getAllCategoriesUser() {
     return null;
   }
@@ -210,6 +218,7 @@ public class CategoryServiceImp implements CategoryService {
   //  }
 
   @Override
+  @Transactional(readOnly = true)
   public GetCategoryUserResponseDTO getCategoryUser(
       GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
     log.info("Processing to get category for the user");

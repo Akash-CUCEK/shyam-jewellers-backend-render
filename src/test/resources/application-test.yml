@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:shyam_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  mail:
+    host: localhost
+    port: 2525
+    username:
+    password:
+
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    ssl: false
+
+cloudinary:
+  cloud_name: test
+  api_key: test
+  api_secret: test
+
+jwt:
+  secret: test-jwt-secret-for-context-loads-32bytes
+
+payment:
+  currency: INR
+  request-ttl-minutes: 20
+  gateway:
+    provider: MOCK
+    signature-secret: test-payment-signature-secret-32bytes
+    checkout-base-url: https://payments.example.local/checkout
+  urls:
+    callback-url: http://localhost/api/v1/payments/verify
+    success-url: http://localhost/payment/success
+    failure-url: http://localhost/payment/failure

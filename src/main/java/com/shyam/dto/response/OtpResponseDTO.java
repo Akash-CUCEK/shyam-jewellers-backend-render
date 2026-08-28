@@ -11,4 +11,5 @@ import lombok.*;
 public class OtpResponseDTO implements Serializable {
   private String message;
   private String token;
+  private String refreshToken;
 }

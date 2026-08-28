@@ -6,21 +6,21 @@ spring:
     name: shyam
 
   datasource:
-    url: jdbc:postgresql://dpg-d752qefpm1nc7397agdg-a.singapore-postgres.render.com:5432/shyam_jewelleres
-    username: shyam_jewelleres_user
-    password: aFurVOpX895CLKOAOsz9Mv05bQF5uZzW
+    url: jdbc:postgresql://localhost:5473/shyam_jewellers
+    username: postgres
+    password: Akash@5473
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: ${JPA_SHOW_SQL:true}
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: akashkumarcucek@gmail.com
-    password: saeb hgyi zmvx ybam
+    username: shyamjewellersteam@gmail.com
+    password: luco bccv ubqj umqy
     properties:
       mail:
         smtp:
@@ -28,13 +28,70 @@ spring:
           starttls:
             enable: true
 
-  redis:
-    host: redis-14888.cce179.ap-south-1-1.ec2.cloud.redislabs.com
-    port: 14888
-    password: DIVhQgJkVH6sHdSfr0Vx6MlzeJdYZAYQ
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      ssl:
+        enabled: false
 
-# ✅ IMPORTANT: spring ke bahar
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: com.shyam.dto
+        spring.json.value.default.type: com.shyam.dto.NotificationMessage
+
+
 cloudinary:
-  cloud_name: djaiqzoes
-  api_key: 397331224838283
-  api_secret: mnjrSFnVGJcZfp1PKDbr7W3bDJs
+  cloud_name: ${CLOUDINARY_CLOUD_NAME:}
+  api_key: ${CLOUDINARY_API_KEY:}
+  api_secret: ${CLOUDINARY_API_SECRET:}
+
+
+jwt:
+  secret: 12345678901234567890123456789012
+
+
+payment:
+  currency: ${PAYMENT_CURRENCY:INR}
+
+  request-ttl-minutes: ${PAYMENT_REQUEST_TTL_MINUTES:20}
+
+  gateway:
+    provider: ${PAYMENT_GATEWAY_PROVIDER:MOCK}
+
+    signature-secret: ${PAYMENT_GATEWAY_SIGNATURE_SECRET:}
+
+    checkout-base-url: ${PAYMENT_GATEWAY_CHECKOUT_BASE_URL:https://payments.example.local/checkout}
+
+  urls:
+    callback-url: ${PAYMENT_CALLBACK_URL:http://localhost:8080/api/v1/payments/verify}
+
+    success-url: ${PAYMENT_SUCCESS_URL:http://localhost:3000/payment/success}
+
+    failure-url: ${PAYMENT_FAILURE_URL:http://localhost:3000/payment/failure}
+
+
+app:
+  kafka:
+
+    topic:
+      notifications: notification-topic
+
+    group:
+      id:
+        notifications: notification-group

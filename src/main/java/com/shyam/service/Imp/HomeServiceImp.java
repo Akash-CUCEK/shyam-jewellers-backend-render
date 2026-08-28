@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,12 +23,14 @@ public class HomeServiceImp implements HomeService {
   private final MessageSourceUtil messageSourceUtil;
 
   @Override
+  @Transactional(readOnly = true)
   public GetAllHomeServiceResponseDTO getAllHomeServiceRequests() {
     List<ServiceHome> services = homeServiceDAO.getAllHomeServiceRequests();
     return HomeServiceMapper.getAllHomeServiceRequests(services);
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetAllHomeServiceResponseDTO searchHomeServiceRequest(
       SearchHomeServiceRequestDTO searchHomeServiceRequestDTO) {
     List<ServiceHome> services =
@@ -36,6 +39,7 @@ public class HomeServiceImp implements HomeService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public HomeServiceResponseDTO getHomeServiceRequestById(
       HomeServiceRequestDTO homeServiceRequestDTO) {
     var service = homeServiceDAO.findHomeService(homeServiceRequestDTO.getServiceId());
@@ -43,11 +47,13 @@ public class HomeServiceImp implements HomeService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetAllHomeServiceResponseDTO getAllUserServiceRequests() {
     return null;
   }
 
   @Override
+  @Transactional
   public CreateHomeServiceResponseDTO createHomeServiceRequests(
       CreateHomeServiceRequestDTO createHomeServiceRequestDTO) {
     var service = HomeServiceMapper.createHomeServiceRequests(createHomeServiceRequestDTO);
@@ -57,6 +63,7 @@ public class HomeServiceImp implements HomeService {
   }
 
   @Override
+  @Transactional
   public EditHomeServiceResponseDTO editHomeServiceRequest(EditHomeServiceRequestDTO dto) {
     var service = homeServiceDAO.findHomeService(dto.getServiceId());
     var serviceMapper = HomeServiceMapper.editHomeServiceRequest(service, dto);
@@ -66,6 +73,7 @@ public class HomeServiceImp implements HomeService {
   }
 
   @Override
+  @Transactional
   public DeleteHomeServiceResponseDTO deleteHomeServiceRequest(
       DeleteHomeServiceRequestDTO deleteHomeServiceRequestDTO) {
     var service = homeServiceDAO.findHomeService(deleteHomeServiceRequestDTO.getServiceId());

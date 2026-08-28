@@ -26,14 +26,15 @@ public class AdminDAO {
 
   public AdminUsers findUserByEmail(String username) {
     return adminRepository
-            .findByEmail(username)
-            .orElseThrow(() -> new SYMException(
+        .findByEmail(username)
+        .orElseThrow(
+            () ->
+                new SYMException(
                     HttpStatus.NOT_FOUND,
                     SYMErrorType.GENERIC_EXCEPTION,
                     ErrorCodeConstants.ERROR_CODE_USER_NOT_FOUND_BY_MAIL,
                     "No user found with the provided email address.",
-                    "Login attempted with email " + username
-            ));
+                    "Login attempted with email " + username));
   }
 
   public AdminUsers save(AdminUsers adminUsers) {
@@ -86,17 +87,20 @@ public class AdminDAO {
     }
   }
 
-  public List<AdminUsers> findByRole(Role role) {
+  public List<AdminUsers> findByRoleIn(List<Role> roles) {
     try {
-      logger.debug("Fetching users with role: {}", role);
-      return adminRepository.findByRole(role);
+      logger.debug("Fetching users with roles: {}", roles);
+
+      return adminRepository.findByRoleIn(roles);
+
     } catch (Exception e) {
-      logger.error("Error while fetching users by role", e);
+      logger.error("Error while fetching users by roles: {}", roles, e);
+
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
           SYMErrorType.GENERIC_EXCEPTION,
           ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
-          String.format("Failed to fetch users with role %s", role),
+          String.format("Failed to fetch users with roles %s", roles),
           e.getMessage());
     }
   }
