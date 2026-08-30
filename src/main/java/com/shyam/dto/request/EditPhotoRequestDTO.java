@@ -10,4 +10,5 @@ import lombok.*;
 public class EditPhotoRequestDTO {
   private String imgUrl;
   private Integer position;
+  private Boolean isAvailable;
 }

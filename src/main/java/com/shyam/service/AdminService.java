@@ -5,6 +5,8 @@ import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface AdminService {
   LogInResponseDTO initiateLogin(String email);
 
@@ -18,7 +20,7 @@ public interface AdminService {
 
   EditPhotoResponseDTO offerUpdate(EditPhotoRequestDTO editPhotoRequestDTO);
 
-  GetOfferPhotoResponseDTO getOfferPhoto();
+  List<GetOfferPhotoResponseDTO> getOfferPhoto();
 
   GetAdminListResponseDTO getAllAdmin();
 

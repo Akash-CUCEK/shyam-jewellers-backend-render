@@ -25,6 +25,7 @@ import com.shyam.publisher.NotificationPublisher;
 import com.shyam.service.AdminService;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -188,52 +189,87 @@ public class AdminServiceImp implements AdminService {
 
   @Override
   @Transactional
-  public EditPhotoResponseDTO offerUpdate(EditPhotoRequestDTO editPhotoRequestDTO) {
+  public EditPhotoResponseDTO offerUpdate(
+          EditPhotoRequestDTO request
+  ) {
+
+    logger.info("========================================");
     logger.info("Processing to save offer section");
-    OfferPhoto offer = adminDAO.getLatestOfferPhoto();
-    if (offer == null) {
-      offer = new OfferPhoto();
+    logger.info("Position    : {}", request.getPosition());
+    logger.info("Available   : {}", request.getIsAvailable());
+    logger.info("Image URL   : {}", request.getImgUrl());
+    logger.info("========================================");
+
+    if (request.getPosition() == null) {
+      throw new IllegalArgumentException(
+              "Offer position is required"
+      );
     }
 
-    switch (editPhotoRequestDTO.getPosition()) {
-      case 1 -> offer.setImgUrl1(editPhotoRequestDTO.getImgUrl());
-      case 2 -> offer.setImgUrl2(editPhotoRequestDTO.getImgUrl());
-      case 3 -> offer.setImgUrl3(editPhotoRequestDTO.getImgUrl());
-      case 4 -> offer.setImgUrl4(editPhotoRequestDTO.getImgUrl());
-      case 5 -> offer.setImgUrl5(editPhotoRequestDTO.getImgUrl());
-      default -> throw new IllegalArgumentException(
-          "Invalid image position: " + editPhotoRequestDTO.getPosition());
+    if (request.getPosition() < 1 || request.getPosition() > 5) {
+      throw new IllegalArgumentException(
+              "Offer position must be between 1 and 5"
+      );
     }
-    offer.setCreatedAt(LocalDateTime.now());
-    offer.setUpdatedAt(LocalDateTime.now());
+
+    OfferPhoto offer =
+            adminDAO.getPhotoByPosition(request.getPosition());
+
+    LocalDateTime now = LocalDateTime.now();
+
+    if (offer == null) {
+
+      logger.info(
+              "No offer found at position {}. Creating new offer.",
+              request.getPosition()
+      );
+
+      offer = new OfferPhoto();
+
+      offer.setPosition(request.getPosition());
+      offer.setCreatedAt(now);
+
+    } else {
+
+      logger.info(
+              "Existing offer found. ID: {}. Updating offer.",
+              offer.getId()
+      );
+    }
+
+    offer.setImgUrl(request.getImgUrl());
+    offer.setIsAvailable(request.getIsAvailable());
+    offer.setUpdatedAt(now);
 
     adminDAO.saveOffer(offer);
-    return adminMapper.mapToEditPhotoRequestDTOAdminInMessage(
-        messageSourceUtil.getMessage(MESSAGE_CODE_UPDATE_OFFER_ADMIN));
-  }
 
+    logger.info(
+            "Offer saved successfully. Position: {}",
+            request.getPosition()
+    );
+
+    return adminMapper.mapToEditPhotoRequestDTOAdminInMessage(
+            messageSourceUtil.getMessage(
+                    MESSAGE_CODE_UPDATE_OFFER_ADMIN
+            )
+    );
+  }
   @Override
   @Transactional(readOnly = true)
-  public GetOfferPhotoResponseDTO getOfferPhoto() {
+  public List<GetOfferPhotoResponseDTO> getOfferPhoto() {
     logger.info("Getting offer photos");
-    var offer = adminDAO.getLatestOfferPhoto();
-    if (offer == null) {
-      logger.info("No offer photo found in DB.");
-      return GetOfferPhotoResponseDTO.builder()
-          .imgUrl1(null)
-          .imgUrl2(null)
-          .imgUrl3(null)
-          .imgUrl4(null)
-          .imgUrl5(null)
-          .build();
+    List<OfferPhoto> offerPhotos = adminDAO.getPhotosWithPosition();
+    if (offerPhotos.isEmpty()) {
+      logger.info("No available offer photo found in DB.");
+      return Collections.emptyList();
     }
-    return GetOfferPhotoResponseDTO.builder()
-        .imgUrl1(offer.getImgUrl1())
-        .imgUrl2(offer.getImgUrl2())
-        .imgUrl3(offer.getImgUrl3())
-        .imgUrl4(offer.getImgUrl4())
-        .imgUrl5(offer.getImgUrl5())
-        .build();
+    return offerPhotos.stream()
+        .map(offer -> GetOfferPhotoResponseDTO.builder()
+            .imgUrl(offer.getImgUrl())
+            .isAvailable(offer.getIsAvailable())
+            .position(offer.getPosition())
+            .build())
+        .collect(Collectors.toList());
   }
 
   @Override

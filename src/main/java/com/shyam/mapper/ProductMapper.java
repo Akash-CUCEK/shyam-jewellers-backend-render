@@ -146,6 +146,9 @@ public class ProductMapper {
         .materialType(p.getMaterialType())
         .isAvailable(p.getIsAvailable())
         .imageUrl(p.getImageUrl())
+            .discountPercentage(p.getDiscountPercentage())
+            .gender(p.getGender())
+            .availableStock(p.getAvailableStock())
         .build();
   }
 }

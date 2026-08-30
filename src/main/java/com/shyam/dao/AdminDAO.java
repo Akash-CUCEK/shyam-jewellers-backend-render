@@ -57,33 +57,80 @@ public class AdminDAO {
     return adminRepository.findByEmail(email);
   }
 
-  public void saveOffer(OfferPhoto offer) {
+  public OfferPhoto saveOffer(OfferPhoto offer) {
+
     try {
-      logger.debug("Saving the photo");
-      offerPhotoRepository.save(offer);
+
+      logger.info(
+              "Saving offer photo. Position: {}",
+              offer.getPosition()
+      );
+
+      return offerPhotoRepository.save(offer);
+
     } catch (Exception e) {
-      logger.error("Error while saving offer Photo", e);
+
+      logger.error(
+              "Error while saving offer photo",
+              e
+      );
+
       throw new SYMException(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
-          String.format("Failed to save offer photo"),
-          e.getMessage());
+              HttpStatus.INTERNAL_SERVER_ERROR,
+              SYMErrorType.GENERIC_EXCEPTION,
+              ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
+              "Failed to save offer photo",
+              e.getMessage()
+      );
     }
   }
+  public OfferPhoto getPhotoByPosition(int position) {
 
-  public OfferPhoto getLatestOfferPhoto() {
     try {
-      logger.debug("Fetching latest offer photo");
-      return offerPhotoRepository.findTopByOrderByCreatedAtDesc();
+
+      logger.info(
+              "Fetching offer photo for position: {}",
+              position
+      );
+
+      return offerPhotoRepository
+              .findByPosition(position)
+              .orElse(null);
+
     } catch (Exception e) {
-      logger.error("Error while fetching latest offer photo", e);
+
+      logger.error(
+              "Error while fetching offer photo for position: {}",
+              position,
+              e
+      );
+
       throw new SYMException(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
-          "Failed to fetch latest offer photo",
-          e.getMessage());
+              HttpStatus.INTERNAL_SERVER_ERROR,
+              SYMErrorType.GENERIC_EXCEPTION,
+              ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
+              "Failed to fetch offer photo",
+              e.getMessage()
+      );
+    }
+  }
+  public List<OfferPhoto> getPhotosWithPosition() {
+    try {
+      logger.debug("Fetching offer photos with position");
+
+      return offerPhotoRepository
+              .findByPositionBetweenOrderByPosition(1, 5);
+
+    } catch (Exception e) {
+      logger.error("Error while fetching offer photos", e);
+
+      throw new SYMException(
+              HttpStatus.INTERNAL_SERVER_ERROR,
+              SYMErrorType.GENERIC_EXCEPTION,
+              ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
+              "Failed to fetch available offer photos",
+              e.getMessage()
+      );
     }
   }
 

@@ -18,4 +18,8 @@ public class GetAllProductsResponseDTO {
   private String materialType;
   private Boolean isAvailable;
   private String imageUrl;
+  private Integer discountPercentage;
+  private BigDecimal finalPrice;
+  private String gender;
+  private Integer availableStock;
 }

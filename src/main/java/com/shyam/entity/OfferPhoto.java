@@ -14,24 +14,17 @@ import lombok.*;
 public class OfferPhoto {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "offer_photo_seq")
-  @SequenceGenerator(name = "offer_photo_seq", sequenceName = "offer_photo_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "img_url1")
-  private String imgUrl1;
+  @Column(name = "img_url")
+  private String imgUrl;
 
-  @Column(name = "img_url2")
-  private String imgUrl2;
+  @Column(name = "is_available")
+  private Boolean isAvailable;
 
-  @Column(name = "img_url3")
-  private String imgUrl3;
-
-  @Column(name = "img_url4")
-  private String imgUrl4;
-
-  @Column(name = "img_url5")
-  private String imgUrl5;
+  @Column(name = "position")
+  private Integer position;
 
   @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;

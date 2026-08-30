@@ -1,5 +1,7 @@
 package com.shyam.controller;
 
+import com.cloudinary.Cloudinary;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.request.*;
@@ -7,6 +9,7 @@ import com.shyam.dto.response.*;
 import com.shyam.service.AdminService;
 import com.shyam.service.CategoryService;
 import com.shyam.service.ProductService;
+import com.shyam.service.Imp.CloudinaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -20,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 @RestController
 @RequestMapping("/auth/api/v1/admin")
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class AdminController {
   private final AdminService adminService;
   private final ProductService productService;
   private final CategoryService categoryService;
+  private final CloudinaryService cloudinaryService;
 
   @Operation(
           summary = "Initiate admin login",
@@ -67,13 +70,33 @@ public class AdminController {
         .body(response.getBody());
   }
 
-  @Operation(summary = "Offer Section", description = "Adding offer photo.")
+  @Operation(
+          summary = "Offer Section",
+          description = "Adding offer photo."
+  )
   @PreAuthorize("hasRole('SUPER_ADMIN')")
-  @PostMapping("/addOfferPhoto")
+  @PostMapping(
+          value = "/addOfferPhoto",
+          consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+  )
   public BaseResponseDTO<EditPhotoResponseDTO> offerUpdate(
-      @RequestBody EditPhotoRequestDTO editPhotoRequestDTO) {
+          @RequestParam("position") Integer position,
+          @RequestParam("image") MultipartFile image,
+          @RequestParam("isAvailable") Boolean isAvailable) {
     log.info("Received request for offer update");
-    var response = adminService.offerUpdate(editPhotoRequestDTO);
+    if (image == null || image.isEmpty()) {
+      throw new RuntimeException("Offer image is empty");
+    }
+
+    String imageUrl = cloudinaryService.upload(image);
+
+    EditPhotoRequestDTO request = EditPhotoRequestDTO.builder()
+            .imgUrl(imageUrl)
+            .position(position)
+            .isAvailable(isAvailable)
+            .build();
+
+    var response = adminService.offerUpdate(request);
     return new BaseResponseDTO<>(response, null);
   }
 
@@ -104,10 +127,15 @@ public class AdminController {
 
   @Operation(summary = "Edit admin", description = "Edit admin details.")
   @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @PostMapping("/editAdmin")
+  @PostMapping(value = "/editAdmin", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public BaseResponseDTO<EditAdminResponseDTO> edit(
-      @RequestBody EditAdminRequestDTO editAdminRequestDTO) {
+          @RequestPart("admin") String adminJson,
+          @RequestPart(value = "image", required = false) MultipartFile image ) throws JsonProcessingException {
     log.info("Received request for edit");
+    ObjectMapper mapper = new ObjectMapper();
+    EditAdminRequestDTO editAdminRequestDTO = mapper.readValue(adminJson, EditAdminRequestDTO.class);
+    String imageUrl = cloudinaryService.upload(image);
+    editAdminRequestDTO.setImageUrl(imageUrl);
     var response = adminService.edit(editAdminRequestDTO);
     return new BaseResponseDTO<>(response, null);
   }
@@ -152,21 +180,21 @@ public class AdminController {
   }
 
   @Operation(
-      summary = "Get all products",
-      description = "Retrieve a paginated list of all products.")
+          summary = "Get all products",
+          description = "Retrieve a paginated list of all products.")
   @PostMapping("/getAllProduct")
   public Page<BaseResponseDTO<GetAllProductsResponseDTO>> getAllProducts(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+          @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
     log.info("Received request for getting all products");
     return productService.getAllProducts(page, size);
   }
 
   @Operation(
-      summary = "Get all categories",
-      description = "Retrieve a paginated list of all categories.")
+          summary = "Get all categories",
+          description = "Retrieve a paginated list of all categories.")
   @PostMapping("/getAllCategory")
   public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+          @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
     log.info("Received request for getting all category");
     return categoryService.getAllCategories(page, size);
   }
@@ -206,11 +234,11 @@ public class AdminController {
   }
 
   @Operation(
-      summary = "Get category by ID",
-      description = "Retrieve a specific category by its ID.")
+          summary = "Get category by ID",
+          description = "Retrieve a specific category by its ID.")
   @PostMapping("/getCategory")
   public BaseResponseDTO<GetCategoryByIdResponseDTO> getCategory(
-      @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
+          @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
     log.info("Received request for get category by Id");
     var response = categoryService.getCategory(getCategoryByIdRequestDTO);
     return new BaseResponseDTO<>(response, null);

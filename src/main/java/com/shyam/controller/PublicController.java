@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Slf4j
 @AllArgsConstructor
@@ -20,9 +22,9 @@ public class PublicController {
 
   private final AdminService adminService;
 
-  @Operation(summary = "Get Offer Section", description = "Get offer photo.")
+  @Operation(summary = "Get Offer Section", description = "Get list of available offer photos.")
   @PostMapping("/getOfferPhoto")
-  public BaseResponseDTO<GetOfferPhotoResponseDTO> getoffer() {
+  public BaseResponseDTO<List<GetOfferPhotoResponseDTO>> getoffer() {
     log.info("Received request to get offer photo");
     var response = adminService.getOfferPhoto();
     return new BaseResponseDTO<>(response, null);

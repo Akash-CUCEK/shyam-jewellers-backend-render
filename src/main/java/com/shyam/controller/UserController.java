@@ -26,7 +26,7 @@ public class UserController {
 
   @Operation(summary = "Login a user", description = "Login a User.")
   @PostMapping("/logIn")
-  public BaseResponseDTO<LogInResponseDTO> register(@RequestBody logInRequestDTO logInRequestDTO) {
+  public BaseResponseDTO<LogInResponseDTO> login(@RequestBody logInRequestDTO logInRequestDTO) {
 
     logger.info("Received request for sigIn");
     var response = userService.logIn(logInRequestDTO);
