@@ -26,7 +26,6 @@ public class OrderController {
 
   @Operation(summary = "Create a order", description = "Creating a order.")
   @PostMapping("/createOrder")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
   public BaseResponseDTO<AddOrderResponseDTO> addOrder(
       @RequestBody AddOrderRequestDTO addOrderRequestDTO) {
     log.info("Received request for create order");
@@ -36,7 +35,6 @@ public class OrderController {
 
   @Operation(summary = "Update order", description = "Update order.")
   @PostMapping("/updateOrder")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
   public BaseResponseDTO<AddOrderResponseDTO> updateOrder(@RequestBody UpdateOrderRequestDTO dto) {
 
     log.info("Received request for update order");
@@ -78,13 +76,13 @@ public class OrderController {
   //
   //      }
 
-  //  @Operation(summary = "get total count order", description = "Getting total order of month")
-  //  @PostMapping("/getTotalOrderMonth")
-  //  public BaseResponseDTO<GetTotalOrderMonthResponse> getTotalOrderMonth() {
-  //    logger.info("Received request for getting total order in month");
-  //    var response = orderService.getTotalOrderMonth();
-  //    return new BaseResponseDTO<>(response, null);
-  //  }
+    @Operation(summary = "get total count order", description = "Getting total order of month")
+    @PostMapping("/getTotalOrderMonth")
+    public BaseResponseDTO<GetTotalOrderMonthResponse> getTotalOrderMonth() {
+      logger.info("Received request for getting total order in month");
+      var response = orderService.getTotalOrderMonth();
+      return new BaseResponseDTO<>(response, null);
+    }
 
   @Operation(
       summary = "Generate PDF Invoice",

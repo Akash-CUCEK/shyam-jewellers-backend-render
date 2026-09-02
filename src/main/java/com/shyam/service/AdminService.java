@@ -12,7 +12,7 @@ public interface AdminService {
 
   ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(String email, String otp);
 
-  AdminLogoutResponseDTO logout(String accessToken, String refreshToken, String deviceId);
+  AdminLogoutResponseDTO logout(String accessToken, String refreshToken);
 
   EditAdminResponseDTO edit(EditAdminRequestDTO editAdminRequestDTO);
 

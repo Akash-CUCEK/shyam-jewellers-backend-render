@@ -15,7 +15,6 @@ public class ProductMapper {
   public Products toEntity(ProductAddRequestDTO dto, Category category) {
     Products p = new Products();
     p.setCategory(category);
-    p.setPrice(dto.getPrice());
     p.setDiscountPercentage(dto.getDiscountPercentage());
     p.setWeight(dto.getWeight());
     p.setMaterialType(dto.getMaterialType());

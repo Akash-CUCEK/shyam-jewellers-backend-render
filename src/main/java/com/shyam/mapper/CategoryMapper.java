@@ -107,6 +107,7 @@ public class CategoryMapper {
     return GetCategoriesResponseDTO.builder()
         .categoryId(category.getCategoryId())
         .name(category.getName())
+            .imagUrl(category.getImageUrl())
         .showOnHome(category.getShowOnHome())
         .createdAt(category.getCreatedAt())
         .createdBy(category.getCreatedBy())

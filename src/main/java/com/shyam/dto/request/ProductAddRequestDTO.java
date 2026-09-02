@@ -11,11 +11,11 @@ import lombok.*;
 public class ProductAddRequestDTO {
   private String email;
   private String category;
-  private BigDecimal price;
   private Integer discountPercentage;
   private BigDecimal weight;
   private String materialType;
   private String gender;
+  private String imageUrl;
   private String shortDescription;
   private String fullDescription;
   private Boolean isAvailable;

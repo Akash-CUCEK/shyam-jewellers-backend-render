@@ -11,6 +11,7 @@ import lombok.*;
 public class GetCategoriesResponseDTO {
   private Long categoryId;
   private String name;
+  private String imagUrl;
   private Boolean showOnHome;
   private LocalDateTime createdAt;
   private String createdBy;

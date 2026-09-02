@@ -70,46 +70,17 @@ public class AdminController {
         .body(response.getBody());
   }
 
-  @Operation(
-          summary = "Offer Section",
-          description = "Adding offer photo."
-  )
-  @PreAuthorize("hasRole('SUPER_ADMIN')")
-  @PostMapping(
-          value = "/addOfferPhoto",
-          consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-  )
-  public BaseResponseDTO<EditPhotoResponseDTO> offerUpdate(
-          @RequestParam("position") Integer position,
-          @RequestParam("image") MultipartFile image,
-          @RequestParam("isAvailable") Boolean isAvailable) {
-    log.info("Received request for offer update");
-    if (image == null || image.isEmpty()) {
-      throw new RuntimeException("Offer image is empty");
-    }
 
-    String imageUrl = cloudinaryService.upload(image);
-
-    EditPhotoRequestDTO request = EditPhotoRequestDTO.builder()
-            .imgUrl(imageUrl)
-            .position(position)
-            .isAvailable(isAvailable)
-            .build();
-
-    var response = adminService.offerUpdate(request);
-    return new BaseResponseDTO<>(response, null);
-  }
 
   @Operation(summary = "Logout a admin user", description = "Logout a Admin User.")
   @PostMapping("/logout")
   public ResponseEntity<BaseResponseDTO<AdminLogoutResponseDTO>> logout(
       @RequestHeader("Authorization") String authorization,
-      @CookieValue(value = "refreshToken", required = false) String refreshToken,
-      @RequestHeader(value = "X-Device-Id", required = false) String deviceId) {
+      @CookieValue(value = "refreshToken", required = false) String refreshToken) {
     log.info("Received request for logout");
     var accessToken = authorization.replace("Bearer ", "");
 
-    AdminLogoutResponseDTO response = adminService.logout(accessToken, refreshToken, deviceId);
+    AdminLogoutResponseDTO response = adminService.logout(accessToken, refreshToken);
 
     ResponseCookie deleteCookie =
         ResponseCookie.from("refreshToken", "")
@@ -125,20 +96,49 @@ public class AdminController {
         .body(new BaseResponseDTO<>(response, null));
   }
 
-  @Operation(summary = "Edit admin", description = "Edit admin details.")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @PostMapping(value = "/editAdmin", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public BaseResponseDTO<EditAdminResponseDTO> edit(
-          @RequestPart("admin") String adminJson,
-          @RequestPart(value = "image", required = false) MultipartFile image ) throws JsonProcessingException {
-    log.info("Received request for edit");
-    ObjectMapper mapper = new ObjectMapper();
-    EditAdminRequestDTO editAdminRequestDTO = mapper.readValue(adminJson, EditAdminRequestDTO.class);
-    String imageUrl = cloudinaryService.upload(image);
-    editAdminRequestDTO.setImageUrl(imageUrl);
-    var response = adminService.edit(editAdminRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
+    @Operation(
+            summary = "Edit admin",
+            description = "Edit admin details."
+    )
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    @PostMapping(
+            value = "/editAdmin",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public BaseResponseDTO<EditAdminResponseDTO> edit(
+            @RequestPart("admin") String adminJson,
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) throws JsonProcessingException {
+
+        log.info("Received request for edit");
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        EditAdminRequestDTO editAdminRequestDTO =
+                mapper.readValue(adminJson, EditAdminRequestDTO.class);
+
+        // =====================================================
+        // IMAGE UPLOAD - ONLY IF IMAGE IS PROVIDED
+        // =====================================================
+
+        if (image != null && !image.isEmpty()) {
+
+            log.info("New profile image received. Uploading to Cloudinary...");
+
+            String imageUrl = cloudinaryService.upload(image);
+
+            editAdminRequestDTO.setImageUrl(imageUrl);
+
+            log.info("New profile image uploaded successfully: {}", imageUrl);
+
+        } else {
+
+            log.info("No new profile image provided. Keeping existing image.");
+
+        }
+        var response = adminService.edit(editAdminRequestDTO);
+        return new BaseResponseDTO<>(response, null);
+    }
 
   @Operation(summary = "Register new Admin", description = "new admin register.")
   @PostMapping("/registerAdmin")
@@ -152,6 +152,7 @@ public class AdminController {
 
   @Operation(summary = "Get Admin", description = "Get Admin.")
   @PostMapping("/getAdminByEmail")
+  @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
   public BaseResponseDTO<GetAdminResponseDTO> getAllAdmin(
       @RequestBody GetAdminRequestDTO getAdminRequestDTO) {
     log.info("Received request for getting admin ");
@@ -189,17 +190,8 @@ public class AdminController {
     return productService.getAllProducts(page, size);
   }
 
-  @Operation(
-          summary = "Get all categories",
-          description = "Retrieve a paginated list of all categories.")
-  @PostMapping("/getAllCategory")
-  public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(
-          @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-    log.info("Received request for getting all category");
-    return categoryService.getAllCategories(page, size);
-  }
-
   @Operation(summary = "Add product", description = "Add a new product with image.")
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
   @PostMapping(value = "/addProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public BaseResponseDTO<ProductAddResponseDTO> addProduct(
       @RequestParam("data") String data, @RequestParam("image") MultipartFile image)
@@ -234,31 +226,101 @@ public class AdminController {
   }
 
   @Operation(
-          summary = "Get category by ID",
-          description = "Retrieve a specific category by its ID.")
-  @PostMapping("/getCategory")
-  public BaseResponseDTO<GetCategoryByIdResponseDTO> getCategory(
-          @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
-    log.info("Received request for get category by Id");
-    var response = categoryService.getCategory(getCategoryByIdRequestDTO);
-    return new BaseResponseDTO<>(response, null);
+          summary = "Get all categories",
+          description = "Retrieve a paginated list of all categories.")
+  @PostMapping("/getAllCategory")
+  public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(
+          @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    log.info("Received request for getting all category");
+    return categoryService.getAllCategories(page, size);
   }
 
   @Operation(summary = "Add category", description = "Add a new category.")
-  @PostMapping("/addCategory")
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  @PostMapping(value = "/addCategory", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public BaseResponseDTO<AddCategoryResponseDTO> addCategories(
-      @RequestBody AddCategoryRequestDTO addCategoryRequestDTO) {
+      @RequestParam("image") MultipartFile image,
+      @RequestParam("data") String addCategoryRequestDTOJson) throws JsonProcessingException {
     log.info("Received request for adding category");
+    if (image == null || image.isEmpty()) {
+      throw new RuntimeException("Category image is empty");
+    }
+
+    String imageUrl = cloudinaryService.upload(image);
+
+    ObjectMapper mapper = new ObjectMapper();
+    AddCategoryRequestDTO addCategoryRequestDTO = mapper.readValue(addCategoryRequestDTOJson, AddCategoryRequestDTO.class);
+    addCategoryRequestDTO.setImageUrl(imageUrl);
+
     var response = categoryService.addCategories(addCategoryRequestDTO);
     return new BaseResponseDTO<>(response, null);
   }
 
-  @Operation(summary = "Update category", description = "Update an existing category.")
-  @PutMapping("/updateCategory")
+  @Operation(
+          summary = "Update category",
+          description = "Update an existing category."
+  )
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  @PutMapping(
+          value = "/updateCategory",
+          consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+  )
   public BaseResponseDTO<UpdateCategoryResponseDTO> updateCategories(
-      @RequestBody AddCategoryRequestDTO updateCategoryRequestDTO) {
-    log.info("Received request for updating category");
-    var response = categoryService.updateCategoryRequestDTO(updateCategoryRequestDTO);
+          @RequestParam(value = "image", required = false) MultipartFile image,
+          @RequestParam("data") String updateCategoryRequestDTOJson
+  ) throws JsonProcessingException {
+
+    log.info("========================================");
+    log.info("📥 UPDATE CATEGORY REQUEST");
+    log.info("RAW DATA: {}", updateCategoryRequestDTOJson);
+
+    ObjectMapper mapper = new ObjectMapper();
+
+    UpdateCategoryRequestDTO updateCategoryRequestDTO =
+            mapper.readValue(
+                    updateCategoryRequestDTOJson,
+                    UpdateCategoryRequestDTO.class
+            );
+
+    log.info("CATEGORY ID: {}", updateCategoryRequestDTO.getId());
+    log.info("NAME: {}", updateCategoryRequestDTO.getName());
+    log.info("STATUS: {}", updateCategoryRequestDTO.getStatus());
+    log.info("SHOW ON HOME: {}", updateCategoryRequestDTO.getShowOnHome());
+    log.info("UPDATED BY: {}", updateCategoryRequestDTO.getUpdatedBy());
+    log.info(
+            "NEW IMAGE: {}",
+            image != null && !image.isEmpty()
+                    ? "Yes"
+                    : "No new image"
+    );
+
+    // =====================================================
+    // NEW IMAGE
+    // =====================================================
+
+    if (image != null && !image.isEmpty()) {
+
+      log.info("📸 New image received for category update");
+
+      String imageUrl = cloudinaryService.upload(image);
+
+      log.info("☁️ Cloudinary image URL: {}", imageUrl);
+
+      updateCategoryRequestDTO.setImageUrl(imageUrl);
+    }
+
+    // =====================================================
+    // UPDATE CATEGORY
+    // =====================================================
+
+    var response =
+            categoryService.updateCategoryRequestDTO(
+                    updateCategoryRequestDTO
+            );
+
+    log.info("✅ CATEGORY UPDATED SUCCESSFULLY");
+    log.info("========================================");
+
     return new BaseResponseDTO<>(response, null);
   }
 
@@ -277,5 +339,34 @@ public class AdminController {
       @RequestParam("file") MultipartFile file, @RequestParam("createdBy") String createdBy) {
     log.info("Received excel request for adding category");
     return categoryService.uploadExcel(file, createdBy);
+  }
+  @Operation(
+          summary = "Offer Section",
+          description = "Adding offer photo."
+  )
+  @PreAuthorize("hasRole('SUPER_ADMIN')")
+  @PostMapping(
+          value = "/addOfferPhoto",
+          consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+  )
+  public BaseResponseDTO<EditPhotoResponseDTO> offerUpdate(
+          @RequestParam("position") Integer position,
+          @RequestParam("image") MultipartFile image,
+          @RequestParam("isAvailable") Boolean isAvailable) {
+    log.info("Received request for offer update");
+    if (image == null || image.isEmpty()) {
+      throw new RuntimeException("Offer image is empty");
+    }
+
+    String imageUrl = cloudinaryService.upload(image);
+
+    EditPhotoRequestDTO request = EditPhotoRequestDTO.builder()
+            .imgUrl(imageUrl)
+            .position(position)
+            .isAvailable(isAvailable)
+            .build();
+
+    var response = adminService.offerUpdate(request);
+    return new BaseResponseDTO<>(response, null);
   }
 }

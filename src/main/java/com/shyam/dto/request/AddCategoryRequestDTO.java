@@ -13,5 +13,4 @@ public class AddCategoryRequestDTO {
   private Boolean status;
   private String imageUrl;
   private Boolean showOnHome;
-  private String updatedBy;
 }

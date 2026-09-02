@@ -10,6 +10,7 @@ import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.dao.CategoryDAO;
 import com.shyam.dto.request.AddCategoryRequestDTO;
 import com.shyam.dto.request.GetCategoryByIdRequestDTO;
+import com.shyam.dto.request.UpdateCategoryRequestDTO;
 import com.shyam.dto.response.*;
 import com.shyam.entity.Category;
 import com.shyam.mapper.CategoryMapper;
@@ -97,40 +98,80 @@ public class CategoryServiceImp implements CategoryService {
 
   @Override
   @Transactional
-  public UpdateCategoryResponseDTO updateCategoryRequestDTO(AddCategoryRequestDTO dto) {
-    log.info("Processing the request for updating category");
+  public UpdateCategoryResponseDTO updateCategoryRequestDTO(
+          UpdateCategoryRequestDTO dto) {
 
-    Category category = categoryDAO.findByName(dto.getName());
+    log.info("========================================");
+    log.info("Processing the request for updating category");
+    log.info("CATEGORY ID: {}", dto.getId());
+    log.info("NEW NAME: {}", dto.getName());
+
+    // =====================================================
+    // FIND CATEGORY BY ID
+    // =====================================================
+
+    Category category = categoryDAO.findById(dto.getId());
+
+    if (category == null) {
+
+      log.error(
+              "❌ Category not found with id: {}",
+              dto.getId()
+      );
+
+      throw new RuntimeException(
+              "Category not found with id: " + dto.getId()
+      );
+    }
+
+    // =====================================================
+    // UPDATE BASIC DETAILS
+    // =====================================================
 
     category.setName(dto.getName());
     category.setStatus(dto.getStatus());
     category.setShowOnHome(dto.getShowOnHome());
-    category.setImageUrl(dto.getImageUrl());
+
+    // =====================================================
+    // IMAGE
+    // =====================================================
+    // New image URL only if frontend uploaded a new image.
+    // Otherwise keep existing image.
+
+    if (dto.getImageUrl() != null
+            && !dto.getImageUrl().trim().isEmpty()) {
+
+      category.setImageUrl(dto.getImageUrl());
+
+    }
+
+    // =====================================================
+    // AUDIT DETAILS
+    // =====================================================
+
     category.setUpdatedAt(LocalDateTime.now());
     category.setUpdatedBy(dto.getUpdatedBy());
+
+    // =====================================================
+    // SAVE
+    // =====================================================
 
     categoryDAO.saveCategory(category);
 
     return categoryMapper.mapToUpdateCategoryInMessage(
-        messageSourceUtil.getMessage(MESSAGE_CODE_UPDATE_CATEGORY));
+            messageSourceUtil.getMessage(
+                    MESSAGE_CODE_UPDATE_CATEGORY
+            )
+    );
   }
-
-  @Override
-  @Transactional(readOnly = true)
-  public GetCategoryByIdResponseDTO getCategory(
-      GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
-    log.info("Received request for getting category By Id ");
-    var category = categoryDAO.findById(getCategoryByIdRequestDTO.getId());
-    return CategoryMapper.getCategory(category);
-  }
-
   @Override
   @Transactional
   public UpdateCategoryResponseDTO deleteCategory(
       GetCategoryByIdRequestDTO updateCategoryRequestDTO) {
     log.info("Received request for deleting category By Id ");
-    var category = categoryDAO.findById(updateCategoryRequestDTO.getId());
-    categoryDAO.deleteCategory(updateCategoryRequestDTO.getId());
+    Category category = categoryDAO.findById(updateCategoryRequestDTO.getId());
+    category.setStatus(Boolean.valueOf("False"));
+    categoryDAO.saveCategory(category);
     return CategoryMapper.mapToDeleteCategoryInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_DELETE_CATEGORY));
   }

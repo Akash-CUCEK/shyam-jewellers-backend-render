@@ -26,6 +26,7 @@ public class ProductController {
   @Operation(summary = "Get all products (paginated)")
   @GetMapping("/getAllProducts")
   public BaseResponseDTO<Page<AllProductResponseDTO>> getAllProducts(Pageable pageable) {
+    log.info("Getting All Public Products ");
     return new BaseResponseDTO<>(productService.getAllProduct(pageable), null);
   }
 

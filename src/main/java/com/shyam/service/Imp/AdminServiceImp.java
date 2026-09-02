@@ -128,7 +128,7 @@ public class AdminServiceImp implements AdminService {
   }
 
   @Override
-  public AdminLogoutResponseDTO logout(String accessToken, String refreshToken, String deviceId) {
+  public AdminLogoutResponseDTO logout(String accessToken, String refreshToken) {
     logger.info("Processing to logout the admin");
     long expiryInSeconds =
         (JwtUtil.getExpiry(accessToken).getTime() - System.currentTimeMillis()) / 1000;

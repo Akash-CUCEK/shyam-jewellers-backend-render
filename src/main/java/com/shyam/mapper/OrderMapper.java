@@ -185,16 +185,13 @@ public class OrderMapper {
   public OrderListResponseDTO mapToOrderListDTO(Order order) {
 
     return OrderListResponseDTO.builder()
-        .orderId(order.getId())
+        .id(order.getId())
         .customerName(order.getCustomerName())
         .orderDate(order.getOrderDate())
         .orderTime(order.getOrderTime())
         .orderStatus(order.getOrderStatus().name())
         .paymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : null)
         .totalCost(order.getTotalCost().doubleValue())
-
-        // 🔥 total items count
-        .totalItems(order.getItems() != null ? order.getItems().size() : 0)
-        .build();
+            .build();
   }
 }
