@@ -189,9 +189,7 @@ public class AdminServiceImp implements AdminService {
 
   @Override
   @Transactional
-  public EditPhotoResponseDTO offerUpdate(
-          EditPhotoRequestDTO request
-  ) {
+  public EditPhotoResponseDTO offerUpdate(EditPhotoRequestDTO request) {
 
     logger.info("========================================");
     logger.info("Processing to save offer section");
@@ -201,28 +199,20 @@ public class AdminServiceImp implements AdminService {
     logger.info("========================================");
 
     if (request.getPosition() == null) {
-      throw new IllegalArgumentException(
-              "Offer position is required"
-      );
+      throw new IllegalArgumentException("Offer position is required");
     }
 
     if (request.getPosition() < 1 || request.getPosition() > 5) {
-      throw new IllegalArgumentException(
-              "Offer position must be between 1 and 5"
-      );
+      throw new IllegalArgumentException("Offer position must be between 1 and 5");
     }
 
-    OfferPhoto offer =
-            adminDAO.getPhotoByPosition(request.getPosition());
+    OfferPhoto offer = adminDAO.getPhotoByPosition(request.getPosition());
 
     LocalDateTime now = LocalDateTime.now();
 
     if (offer == null) {
 
-      logger.info(
-              "No offer found at position {}. Creating new offer.",
-              request.getPosition()
-      );
+      logger.info("No offer found at position {}. Creating new offer.", request.getPosition());
 
       offer = new OfferPhoto();
 
@@ -231,10 +221,7 @@ public class AdminServiceImp implements AdminService {
 
     } else {
 
-      logger.info(
-              "Existing offer found. ID: {}. Updating offer.",
-              offer.getId()
-      );
+      logger.info("Existing offer found. ID: {}. Updating offer.", offer.getId());
     }
 
     offer.setImgUrl(request.getImgUrl());
@@ -243,17 +230,12 @@ public class AdminServiceImp implements AdminService {
 
     adminDAO.saveOffer(offer);
 
-    logger.info(
-            "Offer saved successfully. Position: {}",
-            request.getPosition()
-    );
+    logger.info("Offer saved successfully. Position: {}", request.getPosition());
 
     return adminMapper.mapToEditPhotoRequestDTOAdminInMessage(
-            messageSourceUtil.getMessage(
-                    MESSAGE_CODE_UPDATE_OFFER_ADMIN
-            )
-    );
+        messageSourceUtil.getMessage(MESSAGE_CODE_UPDATE_OFFER_ADMIN));
   }
+
   @Override
   @Transactional(readOnly = true)
   public List<GetOfferPhotoResponseDTO> getOfferPhoto() {
@@ -264,11 +246,13 @@ public class AdminServiceImp implements AdminService {
       return Collections.emptyList();
     }
     return offerPhotos.stream()
-        .map(offer -> GetOfferPhotoResponseDTO.builder()
-            .imgUrl(offer.getImgUrl())
-            .isAvailable(offer.getIsAvailable())
-            .position(offer.getPosition())
-            .build())
+        .map(
+            offer ->
+                GetOfferPhotoResponseDTO.builder()
+                    .imgUrl(offer.getImgUrl())
+                    .isAvailable(offer.getIsAvailable())
+                    .position(offer.getPosition())
+                    .build())
         .collect(Collectors.toList());
   }
 

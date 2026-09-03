@@ -23,10 +23,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-          HttpServletRequest request,
-          HttpServletResponse response,
-          FilterChain filterChain)
-          throws ServletException, IOException {
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
     String uri = request.getRequestURI();
 
@@ -35,12 +33,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     // =========================================================
 
     if (uri.contains("/refreshToken")
-            || uri.contains("/api/v1/auth/login")
-            || uri.contains("/api/v1/auth/verify")
-            || uri.contains("/verifyLoginOtp")
-            || uri.contains("/auth/api/v1/admin/initiateLogin")
-            || uri.contains("/auth/api/v1/admin/verifyLoginOtp")
-            || uri.startsWith("/api/v1/public/")) {
+        || uri.contains("/api/v1/auth/login")
+        || uri.contains("/api/v1/auth/verify")
+        || uri.contains("/verifyLoginOtp")
+        || uri.contains("/auth/api/v1/admin/initiateLogin")
+        || uri.contains("/auth/api/v1/admin/verifyLoginOtp")
+        || uri.startsWith("/api/v1/public/")) {
 
       filterChain.doFilter(request, response);
       return;
@@ -114,18 +112,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       // LOAD USER BASED ON ROLE
       // =========================================================
 
-      UserDetails userDetails =
-              userDetailsService.loadUserByUsername(username, role);
+      UserDetails userDetails = userDetailsService.loadUserByUsername(username, role);
 
       // =========================================================
       // CREATE AUTHENTICATION
       // =========================================================
 
       UsernamePasswordAuthenticationToken authentication =
-              new UsernamePasswordAuthenticationToken(
-                      userDetails,
-                      null,
-                      userDetails.getAuthorities());
+          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
       // =========================================================
       // SET SECURITY CONTEXT
@@ -153,9 +147,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.setContentType("application/json");
 
-      response
-              .getWriter()
-              .write("{\"message\":\"Unauthorized\"}");
+      response.getWriter().write("{\"message\":\"Unauthorized\"}");
     }
   }
 }

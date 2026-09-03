@@ -57,8 +57,6 @@ public class ProductDAO {
   public Page<Products> findProductsByFilters(ProductFilterRequestDTO dto, Pageable pageable) {
     return productRepository.findProductsByFilters(
         dto.getCategory(),
-        dto.getMinPrice(),
-        dto.getMaxPrice(),
         dto.getMinWeight(),
         dto.getMaxWeight(),
         dto.getMaterialType(),
@@ -75,13 +73,5 @@ public class ProductDAO {
 
   public Page<Products> getProductsByMaterialType(String materialType, Pageable pageable) {
     return productRepository.getProductsByMaterialType(materialType, pageable);
-  }
-
-  public Page<Products> getProductsUnderPrice(BigDecimal price, Pageable pageable) {
-    return productRepository.findProductsUnderPrice(price, pageable);
-  }
-
-  public Page<Products> getProductsAbovePrice(BigDecimal price, Pageable pageable) {
-    return productRepository.findProductsAbovePrice(price, pageable);
   }
 }

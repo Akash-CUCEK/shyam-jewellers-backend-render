@@ -1,4 +1,4 @@
-server:
+xserver:
   port: 8080
 
 spring:

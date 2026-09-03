@@ -192,6 +192,6 @@ public class OrderMapper {
         .orderStatus(order.getOrderStatus().name())
         .paymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : null)
         .totalCost(order.getTotalCost().doubleValue())
-            .build();
+        .build();
   }
 }

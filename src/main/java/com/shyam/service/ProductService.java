@@ -19,8 +19,6 @@ public interface ProductService {
 
   DeleteResponseDTO deleteProduct(@Valid DeleteProductRequestDTO deleteProductRequestDTO);
 
-  PageResponseDTO<AllProductResponseDTO> getProductsUnderPrice(BigDecimal price, Pageable pageable);
-
   GenderResponseDTO getGenderProduct(@Valid GenderRequestDTO genderRequestDTO);
 
   PageResponseDTO<AllProductResponseDTO> getProductsByCategory(String category, Pageable pageable);
@@ -33,7 +31,4 @@ public interface ProductService {
   AllProductResponseDTO getProductById(Long productId);
 
   PageResponseDTO<AllProductResponseDTO> getByMaterialType(String materialType, Pageable pageable);
-
-  PageResponseDTO<AllProductResponseDTO> getProductsByAbovePrice(
-      BigDecimal price, Pageable pageable);
 }

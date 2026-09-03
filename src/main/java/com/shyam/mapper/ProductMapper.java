@@ -32,7 +32,7 @@ public class ProductMapper {
 
   public void updateEntity(Products p, UpdateRequestDTO dto, Category category) {
     p.setCategory(category); // ✅ correct
-    p.setPrice(dto.getPrice());
+
     p.setDiscountPercentage(dto.getDiscountPercentage());
     p.setWeight(dto.getWeight());
     p.setMaterialType(dto.getMaterialType());
@@ -46,43 +46,13 @@ public class ProductMapper {
     p.setUpdatedBy(dto.getUpdatedBy());
   }
 
-  //  public ProductResponseDTO toProductResponse(Products p) {
-  //    return ProductResponseDTO.builder()
-  //            .id(p.getProductIds())
-  //            .name(p.getName())
-  //            .category(p.getCategory().getName()) // ✅ correct
-  //            .price(p.getPrice())
-  //            .discountPercentage(p.getDiscountPercentage())
-  //            .weight(p.getWeight())
-  //            .materialType(p.getMaterialType())
-  //            .skuCode(p.getSkuCode())
-  //            .shortDescription(p.getShortDescription())
-  //            .fullDescription(p.getFullDescription())
-  //            .gender(p.getGender())
-  //            .averageRating(p.getAverageRating())
-  //            .isAvailable(p.getIsAvailable())
-  //            .availableStock(p.getAvailableStock())
-  //            .imageUrl(p.getImageUrl())
-  //            .build();
-  //  }
 
   public AllProductResponseDTO toAllProductResponse(Products p) {
-
-    BigDecimal finalPrice =
-        p.getDiscountPercentage() != null
-            ? p.getPrice()
-                .subtract(
-                    p.getPrice()
-                        .multiply(BigDecimal.valueOf(p.getDiscountPercentage()))
-                        .divide(BigDecimal.valueOf(100)))
-            : p.getPrice();
 
     return AllProductResponseDTO.builder()
         .id(p.getProductIds())
         .name(p.getName())
-        .price(p.getPrice())
         .discountPercentage(p.getDiscountPercentage())
-        .finalPrice(finalPrice)
         .weight(p.getWeight())
         .imageUrl(p.getImageUrl())
         .gender(p.getGender())
@@ -96,7 +66,6 @@ public class ProductMapper {
         .id(p.getProductIds())
         .name(p.getName())
         .category(p.getCategory().getName())
-        .price(p.getPrice())
         .discountPercentage(p.getDiscountPercentage())
         .weight(p.getWeight())
         .materialType(p.getMaterialType())
@@ -140,14 +109,13 @@ public class ProductMapper {
         .productIds(p.getProductIds())
         .name(p.getName())
         .category(p.getCategory())
-        .price(p.getPrice())
         .weight(p.getWeight())
         .materialType(p.getMaterialType())
         .isAvailable(p.getIsAvailable())
         .imageUrl(p.getImageUrl())
-            .discountPercentage(p.getDiscountPercentage())
-            .gender(p.getGender())
-            .availableStock(p.getAvailableStock())
+        .discountPercentage(p.getDiscountPercentage())
+        .gender(p.getGender())
+        .availableStock(p.getAvailableStock())
         .build();
   }
 }

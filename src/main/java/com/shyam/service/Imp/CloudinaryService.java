@@ -31,19 +31,15 @@ public class CloudinaryService {
     log.info("☁️ INITIALIZING CLOUDINARY");
     log.info("Cloud Name : {}", cloudName);
     log.info("API Key    : {}", apiKey != null ? "PRESENT" : "NULL");
-    log.info(
-            "API Secret : {}",
-            apiSecret != null ? "PRESENT" : "NULL"
-    );
+    log.info("API Secret : {}", apiSecret != null ? "PRESENT" : "NULL");
     log.info("========================================");
 
-    this.cloudinary = new Cloudinary(
+    this.cloudinary =
+        new Cloudinary(
             ObjectUtils.asMap(
-                    "cloud_name", cloudName,
-                    "api_key", apiKey,
-                    "api_secret", apiSecret
-            )
-    );
+                "cloud_name", cloudName,
+                "api_key", apiKey,
+                "api_secret", apiSecret));
 
     log.info("✅ Cloudinary initialized successfully");
   }
@@ -92,14 +88,9 @@ public class CloudinaryService {
 
       if (contentType == null || !contentType.startsWith("image/")) {
 
-        log.error(
-                "❌ Invalid content type: {}",
-                contentType
-        );
+        log.error("❌ Invalid content type: {}", contentType);
 
-        throw new RuntimeException(
-                "Only image files are allowed"
-        );
+        throw new RuntimeException("Only image files are allowed");
       }
 
       // -----------------------------------------
@@ -108,9 +99,7 @@ public class CloudinaryService {
 
       if (cloudinary == null) {
         log.error("❌ Cloudinary instance is NULL");
-        throw new RuntimeException(
-                "Cloudinary is not initialized"
-        );
+        throw new RuntimeException("Cloudinary is not initialized");
       }
 
       // -----------------------------------------
@@ -120,15 +109,13 @@ public class CloudinaryService {
       log.info("☁️ Uploading image to Cloudinary...");
 
       Map<String, Object> uploadResult =
-              cloudinary
-                      .uploader()
-                      .upload(
-                              file.getBytes(),
-                              ObjectUtils.asMap(
-                                      "folder", "shyam-products",
-                                      "resource_type", "image"
-                              )
-                      );
+          cloudinary
+              .uploader()
+              .upload(
+                  file.getBytes(),
+                  ObjectUtils.asMap(
+                      "folder", "shyam-products",
+                      "resource_type", "image"));
 
       log.info("☁️ Cloudinary response received");
 
@@ -140,18 +127,11 @@ public class CloudinaryService {
 
       if (secureUrl == null) {
 
-        log.error(
-                "❌ secure_url missing from Cloudinary response"
-        );
+        log.error("❌ secure_url missing from Cloudinary response");
 
-        log.error(
-                "Cloudinary response: {}",
-                uploadResult
-        );
+        log.error("Cloudinary response: {}", uploadResult);
 
-        throw new RuntimeException(
-                "Cloudinary did not return secure URL"
-        );
+        throw new RuntimeException("Cloudinary did not return secure URL");
       }
 
       String imageUrl = secureUrl.toString();
@@ -175,10 +155,7 @@ public class CloudinaryService {
       // Full stacktrace print karega
       log.error("Cloudinary upload exception", e);
 
-      throw new RuntimeException(
-              "Image upload failed: " + e.getMessage(),
-              e
-      );
+      throw new RuntimeException("Image upload failed: " + e.getMessage(), e);
     }
   }
 }

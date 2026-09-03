@@ -26,8 +26,6 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
       """
     SELECT p FROM Products p
     WHERE (:category IS NOT NULL AND LOWER(p.category.name) = LOWER(:category))
-      AND (:minPrice IS NULL OR p.price >= :minPrice)
-      AND (:maxPrice IS NULL OR p.price <= :maxPrice)
       AND (:minWeight IS NULL OR p.weight >= :minWeight)
       AND (:maxWeight IS NULL OR p.weight <= :maxWeight)
       AND (:materialType IS NULL OR p.materialType = :materialType)
@@ -38,8 +36,6 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
 """)
   Page<Products> findProductsByFilters(
       @Param("category") String category,
-      @Param("minPrice") BigDecimal minPrice,
-      @Param("maxPrice") BigDecimal maxPrice,
       @Param("minWeight") BigDecimal minWeight,
       @Param("maxWeight") BigDecimal maxWeight,
       @Param("materialType") String materialType,
@@ -58,15 +54,4 @@ public interface ProductRepository extends JpaRepository<Products, Long> {
   Page<Products> getProductsByMaterialType(
       @Param("materialType") String materialType, Pageable pageable);
 
-  @Query("""
-   SELECT p FROM Products p
-   WHERE p.price <= :price
-""")
-  Page<Products> findProductsUnderPrice(@Param("price") BigDecimal price, Pageable pageable);
-
-  @Query("""
-   SELECT p FROM Products p
-   WHERE p.price >= :price
-""")
-  Page<Products> findProductsAbovePrice(@Param("price") BigDecimal price, Pageable pageable);
-}
+  }

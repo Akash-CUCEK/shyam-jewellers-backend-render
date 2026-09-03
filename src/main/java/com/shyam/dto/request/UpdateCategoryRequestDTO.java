@@ -11,15 +11,15 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UpdateCategoryRequestDTO {
 
-    private Long id;
+  private Long id;
 
-    private String name;
+  private String name;
 
-    private String updatedBy;
+  private String updatedBy;
 
-    private Boolean status;
+  private Boolean status;
 
-    private String imageUrl;
+  private String imageUrl;
 
-    private Boolean showOnHome;
+  private Boolean showOnHome;
 }

@@ -81,15 +81,6 @@ public class ProductServiceImp implements ProductService {
       throw new RuntimeException("Product not found");
     }
 
-    // 🔍 Category fetch
-    Category category =
-        categoryRepository
-            .findById(dto.getCategoryId())
-            .orElseThrow(() -> new RuntimeException("Category not found"));
-
-    // 🔄 Update mapping
-    productMapper.updateEntity(product, dto, category);
-
     // 💾 Save
     productDAO.save(product);
 
@@ -107,42 +98,7 @@ public class ProductServiceImp implements ProductService {
         messageSourceUtil.getMessage(MESSAGE_CODE_PRODUCT_DELETED));
   }
 
-  @Override
-  @Transactional(readOnly = true)
-  public PageResponseDTO<AllProductResponseDTO> getProductsUnderPrice(
-      BigDecimal price, Pageable pageable) {
-    Page<Products> page = productDAO.getProductsUnderPrice(price, pageable);
-
-    if (page.isEmpty()) {
-      throw new SYMException(
-          HttpStatus.NOT_FOUND,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_PRODUCT_NOT_FOUND,
-          "No products found ",
-          "No products in DB under price: " + price);
-    }
-
-    return buildPageResponse(page);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public PageResponseDTO<AllProductResponseDTO> getProductsByAbovePrice(
-      BigDecimal price, Pageable pageable) {
-    Page<Products> page = productDAO.getProductsAbovePrice(price, pageable);
-
-    if (page.isEmpty()) {
-      throw new SYMException(
-          HttpStatus.NOT_FOUND,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_PRODUCT_NOT_FOUND,
-          "No products found ",
-          "No products in DB above price: " + price);
-    }
-
-    return buildPageResponse(page);
-  }
-
+  
   private PageResponseDTO<AllProductResponseDTO> buildPageResponse(Page<Products> page) {
     return new PageResponseDTO<>(
         page.getContent().stream().map(productMapper::toAllProductResponse).toList(),

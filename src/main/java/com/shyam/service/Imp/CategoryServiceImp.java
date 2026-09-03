@@ -98,8 +98,7 @@ public class CategoryServiceImp implements CategoryService {
 
   @Override
   @Transactional
-  public UpdateCategoryResponseDTO updateCategoryRequestDTO(
-          UpdateCategoryRequestDTO dto) {
+  public UpdateCategoryResponseDTO updateCategoryRequestDTO(UpdateCategoryRequestDTO dto) {
 
     log.info("========================================");
     log.info("Processing the request for updating category");
@@ -114,14 +113,9 @@ public class CategoryServiceImp implements CategoryService {
 
     if (category == null) {
 
-      log.error(
-              "❌ Category not found with id: {}",
-              dto.getId()
-      );
+      log.error("❌ Category not found with id: {}", dto.getId());
 
-      throw new RuntimeException(
-              "Category not found with id: " + dto.getId()
-      );
+      throw new RuntimeException("Category not found with id: " + dto.getId());
     }
 
     // =====================================================
@@ -138,11 +132,9 @@ public class CategoryServiceImp implements CategoryService {
     // New image URL only if frontend uploaded a new image.
     // Otherwise keep existing image.
 
-    if (dto.getImageUrl() != null
-            && !dto.getImageUrl().trim().isEmpty()) {
+    if (dto.getImageUrl() != null && !dto.getImageUrl().trim().isEmpty()) {
 
       category.setImageUrl(dto.getImageUrl());
-
     }
 
     // =====================================================
@@ -159,11 +151,9 @@ public class CategoryServiceImp implements CategoryService {
     categoryDAO.saveCategory(category);
 
     return categoryMapper.mapToUpdateCategoryInMessage(
-            messageSourceUtil.getMessage(
-                    MESSAGE_CODE_UPDATE_CATEGORY
-            )
-    );
+        messageSourceUtil.getMessage(MESSAGE_CODE_UPDATE_CATEGORY));
   }
+
   @Override
   @Transactional
   public UpdateCategoryResponseDTO deleteCategory(

@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UpdateRequestDTO {
   private String name;
-  private Long categoryId;
-  private BigDecimal price;
+  private String categoryName;
   private Integer discountPercentage;
   private BigDecimal weight;
   private String materialType;

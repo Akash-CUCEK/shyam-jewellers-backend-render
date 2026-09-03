@@ -3,15 +3,15 @@ package com.shyam.controller;
 import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.response.GetOfferPhotoResponseDTO;
 import com.shyam.service.AdminService;
+import com.shyam.service.MaterialTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -21,6 +21,7 @@ import java.util.List;
 public class PublicController {
 
   private final AdminService adminService;
+  private final MaterialTypeService materialTypeService;
 
   @Operation(summary = "Get Offer Section", description = "Get list of available offer photos.")
   @PostMapping("/getOfferPhoto")

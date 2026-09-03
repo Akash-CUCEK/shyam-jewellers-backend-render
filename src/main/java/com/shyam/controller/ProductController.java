@@ -55,24 +55,7 @@ public class ProductController {
     return new BaseResponseDTO<>(productService.getByMaterialType(materialType, pageable), null);
   }
 
-  @Operation(summary = "Get products under given price")
-  @GetMapping("/price/under")
-  public BaseResponseDTO<PageResponseDTO<AllProductResponseDTO>> getProductsUnderPrice(
-      @RequestParam BigDecimal price, Pageable pageable) {
-    log.info("Received request for getting products under price {}", price);
-
-    return new BaseResponseDTO<>(productService.getProductsUnderPrice(price, pageable), null);
-  }
-
-  @Operation(summary = "Get products above given price")
-  @GetMapping("/price/above")
-  public BaseResponseDTO<PageResponseDTO<AllProductResponseDTO>> getProductsAbovePrice(
-      @RequestParam BigDecimal price, Pageable pageable) {
-    log.info("Received request for getting products above price {}", price);
-
-    return new BaseResponseDTO<>(productService.getProductsByAbovePrice(price, pageable), null);
-  }
-
+  
   //  @Operation(summary = "Get product by name")
   //  @PostMapping("/getProductsByName")
   //  public BaseResponseDTO<ProductResponseDTO> getProductByName(

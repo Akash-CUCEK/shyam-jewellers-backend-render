@@ -16,7 +16,7 @@ public interface CategoryService {
   AddCategoryResponseDTO addCategories(AddCategoryRequestDTO addCategoryRequestDTO);
 
   UpdateCategoryResponseDTO updateCategoryRequestDTO(
-          UpdateCategoryRequestDTO updateCategoryRequestDTO);
+      UpdateCategoryRequestDTO updateCategoryRequestDTO);
 
   UpdateCategoryResponseDTO deleteCategory(GetCategoryByIdRequestDTO updateCategoryRequestDTO);
 

@@ -76,13 +76,13 @@ public class OrderController {
   //
   //      }
 
-    @Operation(summary = "get total count order", description = "Getting total order of month")
-    @PostMapping("/getTotalOrderMonth")
-    public BaseResponseDTO<GetTotalOrderMonthResponse> getTotalOrderMonth() {
-      logger.info("Received request for getting total order in month");
-      var response = orderService.getTotalOrderMonth();
-      return new BaseResponseDTO<>(response, null);
-    }
+  @Operation(summary = "get total count order", description = "Getting total order of month")
+  @PostMapping("/getTotalOrderMonth")
+  public BaseResponseDTO<GetTotalOrderMonthResponse> getTotalOrderMonth() {
+    logger.info("Received request for getting total order in month");
+    var response = orderService.getTotalOrderMonth();
+    return new BaseResponseDTO<>(response, null);
+  }
 
   @Operation(
       summary = "Generate PDF Invoice",

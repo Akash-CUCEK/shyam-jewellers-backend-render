@@ -13,8 +13,6 @@ public class ProductFilterRequestDTO {
   private String materialType;
   private String gender;
   private Boolean isAvailable;
-  private BigDecimal minPrice;
-  private BigDecimal maxPrice;
   private BigDecimal minWeight;
   private BigDecimal maxWeight;
   private Integer minAvailableStock;

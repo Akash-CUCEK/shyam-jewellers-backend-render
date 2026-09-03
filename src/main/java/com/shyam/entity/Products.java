@@ -27,9 +27,6 @@ public class Products {
   @JoinColumn(name = "category_id", nullable = false)
   private Category category;
 
-  @Column(nullable = false)
-  private BigDecimal price;
-
   private Integer discountPercentage;
 
   @Column(nullable = false)

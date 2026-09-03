@@ -2,7 +2,6 @@ CREATE TABLE products (
                           id BIGSERIAL PRIMARY KEY,
                           name VARCHAR(255) UNIQUE,
                           category VARCHAR(255) NOT NULL,
-                          price NUMERIC(15, 2) NOT NULL,
                           discount_percentage INT,
                           weight NUMERIC(15, 2) NOT NULL,
                           material_type VARCHAR(255) NOT NULL,

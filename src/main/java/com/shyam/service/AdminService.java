@@ -3,9 +3,8 @@ package com.shyam.service;
 import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
-import org.springframework.http.ResponseEntity;
-
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public interface AdminService {
   LogInResponseDTO initiateLogin(String email);
