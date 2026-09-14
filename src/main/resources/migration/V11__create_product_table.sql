@@ -1,0 +1,23 @@
+CREATE TABLE product (
+    product_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL UNIQUE,
+    category_id BIGINT NOT NULL,
+    material_type_id BIGINT NOT NULL,
+    purity_id BIGINT NOT NULL,
+    making_charge_type VARCHAR(20) NOT NULL,
+    making_charge_value DECIMAL(10,2) NOT NULL,
+    description VARCHAR(500),
+    status VARCHAR(20) NOT NULL,
+    hallmark_certified BOOLEAN NOT NULL DEFAULT FALSE,
+    certification_number VARCHAR(100),
+    discount_type VARCHAR(20),
+    discount_value DECIMAL(10,2),
+    discount_valid_till DATETIME,
+    created_at DATETIME NOT NULL,
+    created_by VARCHAR(255) NOT NULL,
+    updated_at DATETIME,
+    updated_by VARCHAR(255),
+    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE RESTRICT,
+    FOREIGN KEY (material_type_id) REFERENCES material_type(material_type_id) ON DELETE RESTRICT,
+    FOREIGN KEY (purity_id) REFERENCES purity(purity_id) ON DELETE RESTRICT
+);

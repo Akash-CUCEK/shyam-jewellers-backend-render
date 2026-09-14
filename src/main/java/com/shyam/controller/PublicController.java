@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class PublicController {
 
   private final OfferService offerService;
-  private final PurityService purityService;   // constructor injection me add karo
+  private final PurityService purityService;
 
   @Operation(summary = "Get Offer Section", description = "Get list of available offer photos.")
   @PostMapping("/getOfferPhoto")
@@ -30,16 +30,16 @@ public class PublicController {
     return new BaseResponseDTO<>(response, null);
   }
 
-    @Operation(summary = "Get all active purities", description = "Get list of active purities, optionally filtered by material type.")
-    @GetMapping("/purities")
-    public BaseResponseDTO<List<GetPurityResponseDTO>> getPublicPurities(
-            @RequestParam(required = false) Long materialTypeId) {
+  @Operation(summary = "Get all active purities", description = "Get list of active purities, optionally filtered by material type.")
+  @GetMapping("/purities")
+  public BaseResponseDTO<List<GetPurityResponseDTO>> getPublicPurities(
+          @RequestParam(required = false) Long materialTypeId) {
 
-      List<GetPurityResponseDTO> response = (materialTypeId != null)
-              ? purityService.getPuritiesByMaterialType(materialTypeId)
-              : purityService.getAllActivePurities();
+    List<GetPurityResponseDTO> response = (materialTypeId != null)
+            ? purityService.getPuritiesByMaterialType(materialTypeId)
+            : purityService.getAllActivePurities();
 
-      return new BaseResponseDTO<>(response, null);
-    }
+    return new BaseResponseDTO<>(response, null);
+  }
 }
 

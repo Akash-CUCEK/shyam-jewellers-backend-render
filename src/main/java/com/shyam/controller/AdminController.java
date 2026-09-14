@@ -16,6 +16,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -38,7 +40,8 @@ public class AdminController {
   private final CloudinaryService cloudinaryService;
   private final MaterialTypeService materialTypeService;
   private final CookieService cookieService;
-  private final PurityService purityService;   // constructor injection me add karo
+  private final PurityService purityService;
+  private final ProductService productService;
 
   @Operation(summary = "Initiate admin login", description = "Step 1: Send OTP to admin email")
   @PostMapping("/initiateLogin")
@@ -345,6 +348,58 @@ public class AdminController {
   @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
   public BaseResponseDTO<List<GetPurityResponseDTO>> getAllPurities() {
     var response = purityService.getAllPurities();
+    return new BaseResponseDTO<>(response, null);
+  }
+
+  @Operation(summary = "Add product", description = "Add a new product.")
+  @PostMapping("/addProduct")
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  public BaseResponseDTO<AddProductResponseDTO> addProduct(@Valid @RequestBody AddProductRequestDTO requestDTO) {
+    log.info("Received request to add product");
+    var response = productService.addProduct(requestDTO);
+    return new BaseResponseDTO<>(response, null);
+  }
+
+  @Operation(summary = "Update product", description = "Update an existing product.")
+  @PutMapping("/updateProduct")
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  public BaseResponseDTO<AddProductResponseDTO> updateProduct(@Valid @RequestBody UpdateProductRequestDTO requestDTO) {
+    log.info("Received request to update product ID: {}", requestDTO.getProductId());
+    var response = productService.updateProduct(requestDTO);
+    return new BaseResponseDTO<>(response, null);
+  }
+
+  @Operation(summary = "Delete product", description = "Delete a product by setting status to INACTIVE.")
+  @DeleteMapping("/deleteProduct")
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  public BaseResponseDTO<AddProductResponseDTO> deleteProduct(@Valid @RequestBody GetProductByIdRequestDTO requestDTO) {
+    log.info("Received request to delete product ID: {}", requestDTO.getProductId());
+    var response = productService.deleteProduct(requestDTO);
+    return new BaseResponseDTO<>(response, null);
+  }
+
+  @Operation(summary = "Get all products (Admin view)", description = "Retrieve a paginated list of all products for admin view (all statuses).")
+  @PostMapping("/getAllProductsAdmin")
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  public BaseResponseDTO<Page<GetProductResponseDTO>> getAllProductsAdmin(
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size,
+          @RequestParam(required = false) String category,
+          @RequestParam(required = false) String materialType,
+          @RequestParam(required = false) String status) {
+    log.info("Received request to get all products for admin");
+    Pageable pageable = PageRequest.of(page, size);
+    Page<GetProductResponseDTO> response = productService.getAllProducts(page, size, category, materialType, status, pageable);
+    return new BaseResponseDTO<>(response, null);
+  }
+
+  @Operation(summary = "Get product by ID (Admin view)", description = "Get product details by ID for admin view (any status).")
+  @GetMapping("/getProductById/{productId}")
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  public BaseResponseDTO<GetProductResponseDTO> getProductByIdAdmin(@PathVariable Long productId) {
+    log.info("Received request to get product by ID: {}", productId);
+    GetProductByIdRequestDTO requestDTO = GetProductByIdRequestDTO.builder().productId(productId).build();
+    var response = productService.getProductById(requestDTO);
     return new BaseResponseDTO<>(response, null);
   }
 }
