@@ -4,10 +4,8 @@ import com.shyam.entity.MaterialType;
 import com.shyam.entity.MetalRate;
 import com.shyam.repository.MaterialTypeRepository;
 import com.shyam.repository.MetalRateRepository;
-import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,17 +27,16 @@ public class MetalRateService {
   @Value("${metals.dev.api.url}")
   private String apiUrl;
 
-  public MetalRateService(MetalRateRepository metalRateRepository,
-                          MaterialTypeRepository materialTypeRepository,
-                          RestTemplate restTemplate) {
+  public MetalRateService(
+      MetalRateRepository metalRateRepository,
+      MaterialTypeRepository materialTypeRepository,
+      RestTemplate restTemplate) {
     this.metalRateRepository = metalRateRepository;
     this.materialTypeRepository = materialTypeRepository;
     this.restTemplate = restTemplate;
   }
 
-  /**
-   * Fetches metal rates from the external API and stores them for Gold and Silver.
-   */
+  /** Fetches metal rates from the external API and stores them for Gold and Silver. */
   public void fetchAndStoreRates() {
     try {
       // Build the API URL
@@ -68,8 +65,10 @@ public class MetalRateService {
           log.warn("Silver rate not found in API response");
         }
       } else {
-        log.error("Failed to fetch metal rates. Status code: {}, Body: {}",
-                  response.getStatusCode(), response.getBody());
+        log.error(
+            "Failed to fetch metal rates. Status code: {}, Body: {}",
+            response.getStatusCode(),
+            response.getBody());
       }
     } catch (Exception e) {
       log.error("Error occurred while fetching metal rates", e);
@@ -79,6 +78,7 @@ public class MetalRateService {
 
   /**
    * Processes the rate for a given metal type.
+   *
    * @param materialTypeName the name of the material type (e.g., "Gold", "Silver")
    * @param rateObj the rate object from the API response
    */
@@ -103,17 +103,19 @@ public class MetalRateService {
       }
 
       if (!materialType.getStatus()) {
-        log.warn("Material type {} is inactive (status=false), skipping rate update", materialTypeName);
+        log.warn(
+            "Material type {} is inactive (status=false), skipping rate update", materialTypeName);
         return;
       }
 
       // Create and save the metal rate
-      MetalRate metalRate = MetalRate.builder()
-          .materialType(materialType)
-          .ratePerGram(rate)
-          .source("ibja")
-          .fetchedAt(LocalDateTime.now())
-          .build();
+      MetalRate metalRate =
+          MetalRate.builder()
+              .materialType(materialType)
+              .ratePerGram(rate)
+              .source("ibja")
+              .fetchedAt(LocalDateTime.now())
+              .build();
 
       metalRateRepository.save(metalRate);
       log.info("Successfully saved metal rate for {}: {} per gram", materialTypeName, rate);

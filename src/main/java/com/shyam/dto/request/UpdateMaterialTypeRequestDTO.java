@@ -12,7 +12,9 @@ import lombok.*;
 public class UpdateMaterialTypeRequestDTO {
   @NotNull(message = "Id is required")
   private Long materialTypeId;
+
   @NotBlank(message = "Name is required")
   private String name;
+
   private String updatedBy;
 }

@@ -34,7 +34,7 @@ public class JwtUtil {
   private long refreshTokenExpirationHours;
 
   private static long ACCESS_TOKEN_EXPIRATION_TIME;
-private static long REFRESH_TOKEN_EXPIRATION_TIME;
+  private static long REFRESH_TOKEN_EXPIRATION_TIME;
 
   @PostConstruct
   void init() {

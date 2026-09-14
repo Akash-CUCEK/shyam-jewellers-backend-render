@@ -1,7 +1,6 @@
 package com.shyam.service.Imp;
 
 import com.shyam.dto.NotificationMessage;
-import com.shyam.dto.NotificationType;
 import com.shyam.service.EmailService;
 import com.shyam.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
         default:
           log.warn("Unknown notification type: {}", message.type());
       }
-      log.info(
-          "Processed notification via email. type={}, to={}", message.type(), message.to());
+      log.info("Processed notification via email. type={}, to={}", message.type(), message.to());
     } catch (Exception e) {
       log.error("Failed to process notification. type={}, to={}", message.type(), message.to(), e);
       throw new RuntimeException("Failed to process notification", e);

@@ -12,38 +12,38 @@ import java.time.Instant;
 @Table(name = "blacklisted_tokens")
 public class BlacklistedToken {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String tokenHash;
+  @Column(nullable = false, unique = true)
+  private String tokenHash;
 
-    @Column(nullable = false)
-    private Instant expiryDate;
+  @Column(nullable = false)
+  private Instant expiryDate;
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
+  // Getters and setters
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getTokenHash() {
-        return tokenHash;
-    }
+  public String getTokenHash() {
+    return tokenHash;
+  }
 
-    public void setTokenHash(String tokenHash) {
-        this.tokenHash = tokenHash;
-    }
+  public void setTokenHash(String tokenHash) {
+    this.tokenHash = tokenHash;
+  }
 
-    public Instant getExpiryDate() {
-        return expiryDate;
-    }
+  public Instant getExpiryDate() {
+    return expiryDate;
+  }
 
-    public void setExpiryDate(Instant expiryDate) {
-        this.expiryDate = expiryDate;
-    }
+  public void setExpiryDate(Instant expiryDate) {
+    this.expiryDate = expiryDate;
+  }
 }

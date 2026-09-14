@@ -1,9 +1,0 @@
-CREATE TABLE tag (
-    tag_id BIGSERIAL PRIMARY KEY,
-    tag_name VARCHAR(255) NOT NULL UNIQUE,
-    status BOOLEAN NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by VARCHAR(255),
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_by VARCHAR(255)
-);

@@ -8,8 +8,6 @@ import com.shyam.dto.response.*;
 import com.shyam.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
-import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -49,7 +47,9 @@ public class UserController {
     // Extract refresh token from response entity
     String refreshToken = responseEntity.getBody().getRefreshToken();
 
-    ResponseCookie cookie = cookieService.createSecureCookie("refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
+    ResponseCookie cookie =
+        cookieService.createSecureCookie(
+            "refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
 
     return ResponseEntity.status(responseEntity.getStatusCode())
         .header(HttpHeaders.SET_COOKIE, cookie.toString())

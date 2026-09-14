@@ -16,8 +16,7 @@ public class MetalRateFetchScheduler {
   }
 
   /**
-   * Fetches metal rates at 6 AM, 2 PM, and 10 PM every day.
-   * Cron expression: "0 0 6,14,22 * * *"
+   * Fetches metal rates at 6 AM, 2 PM, and 10 PM every day. Cron expression: "0 0 6,14,22 * * *"
    */
   @Scheduled(cron = "0 0 6,14,22 * * *")
   public void fetchMetalRates() {

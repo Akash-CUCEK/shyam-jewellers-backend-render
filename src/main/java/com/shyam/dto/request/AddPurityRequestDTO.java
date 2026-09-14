@@ -13,14 +13,12 @@ import lombok.*;
 @Builder
 public class AddPurityRequestDTO {
 
-  @NotNull
-  private MaterialType materialType;
+  @NotNull private MaterialType materialType;
 
   @NotBlank(message = "Purity name is required")
   private String purityName;
 
-  @NotNull
-  private BigDecimal purityFactor;
+  @NotNull private BigDecimal purityFactor;
 
   private String createdBy;
 }

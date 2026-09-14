@@ -24,7 +24,6 @@ import com.shyam.service.NotificationService;
 import com.shyam.service.UserService;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -45,7 +44,7 @@ public class UserServiceImp implements UserService {
   private final TokenBlacklistService tokenBlacklistService;
   private final RefreshTokenService refreshTokenService;
   private final NotificationService notificationService;
-  
+
   @Override
   @Transactional
   public LogInResponseDTO logIn(logInRequestDTO logInRequestDTO) {

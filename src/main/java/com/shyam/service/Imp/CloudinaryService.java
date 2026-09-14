@@ -115,10 +115,7 @@ public class CloudinaryService {
           cloudinary
               .uploader()
               .upload(
-                  file.getBytes(),
-                  ObjectUtils.asMap(
-                      "folder", folder,
-                      "resource_type", "image"));
+                  file.getBytes(), ObjectUtils.asMap("folder", folder, "resource_type", "image"));
 
       log.info("☁️ Cloudinary response received");
 

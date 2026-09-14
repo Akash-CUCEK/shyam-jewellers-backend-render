@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class UserDAO {
-    private final UsersRepo usersRepo;
+  private final UsersRepo usersRepo;
 
   public Users findUser(String email) {
     log.debug("Finding user with email: {}", email);

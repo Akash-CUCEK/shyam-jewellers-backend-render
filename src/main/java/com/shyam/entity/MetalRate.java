@@ -16,10 +16,7 @@ public class MetalRate {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "metal_rate_seq")
-  @SequenceGenerator(
-      name = "metal_rate_seq",
-      sequenceName = "metal_rate_seq",
-      allocationSize = 1)
+  @SequenceGenerator(name = "metal_rate_seq", sequenceName = "metal_rate_seq", allocationSize = 1)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)

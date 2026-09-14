@@ -11,6 +11,7 @@ import com.shyam.service.Imp.CloudinaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,8 +23,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/auth/api/v1/admin")
 @RequiredArgsConstructor
@@ -34,7 +33,6 @@ public class AdminController {
   private final AuthService authService;
   private final AdminManagementService adminManagementService;
   private final OfferService offerService;
-  private final ProductService productService;
   private final CategoryService categoryService;
   private final CloudinaryService cloudinaryService;
   private final MaterialTypeService materialTypeService;
@@ -68,10 +66,12 @@ public class AdminController {
     String refreshToken = null;
     if (response.getBody() instanceof BaseResponseDTO baseResponseDto
         && baseResponseDto.getResponse() instanceof VerifyAdminResponseDTO verifyAdminResponseDto) {
-        refreshToken = verifyAdminResponseDto.getRefreshToken();
+      refreshToken = verifyAdminResponseDto.getRefreshToken();
     }
 
-    ResponseCookie cookie = cookieService.createSecureCookie("refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
+    ResponseCookie cookie =
+        cookieService.createSecureCookie(
+            "refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
 
     return ResponseEntity.status(response.getStatusCode())
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -165,51 +165,6 @@ public class AdminController {
     log.info("Received request for delete admin");
     var response = adminManagementService.deleteAdmin(deleteAdmin);
     return new BaseResponseDTO<>(response, null);
-  }
-
-  @Operation(
-      summary = "Get all products",
-      description = "Retrieve a paginated list of all products.")
-  @PostMapping("/getAllProduct")
-  public Page<BaseResponseDTO<GetAllProductsResponseDTO>> getAllProducts(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-    log.info("Received request for getting all products");
-    return productService.getAllProducts(page, size);
-  }
-
-  @Operation(summary = "Add product", description = "Add a new product with image.")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @PostMapping(value = "/addProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public BaseResponseDTO<ProductAddResponseDTO> addProduct(
-      @RequestParam("data") String data, @RequestParam("image") MultipartFile image)
-      throws Exception {
-
-    ObjectMapper mapper = new ObjectMapper();
-    ProductAddRequestDTO dto = mapper.readValue(data, ProductAddRequestDTO.class);
-
-    return new BaseResponseDTO<>(productService.addProduct(dto, image), null);
-  }
-
-  @Operation(summary = "Update product")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @PutMapping("/updateProduct")
-  public BaseResponseDTO<UpdateResponseDTO> updateProduct(
-      @Valid @RequestBody UpdateRequestDTO dto) {
-    return new BaseResponseDTO<>(productService.updateProduct(dto), null);
-  }
-
-  @Operation(summary = "Get product by product id")
-  @GetMapping("/getProductById/{productId}")
-  public BaseResponseDTO<AllProductResponseDTO> getProductById(@PathVariable Long productId) {
-    return new BaseResponseDTO<>(productService.getProductById(productId), null);
-  }
-
-  @Operation(summary = "Delete product")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @DeleteMapping("/deleteProduct")
-  public BaseResponseDTO<DeleteResponseDTO> deleteProduct(
-      @Valid @RequestBody DeleteProductRequestDTO dto) {
-    return new BaseResponseDTO<>(productService.deleteProduct(dto), null);
   }
 
   @Operation(

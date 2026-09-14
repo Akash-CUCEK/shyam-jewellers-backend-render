@@ -29,5 +29,4 @@ public class MessageConstant {
   public static final String MESSAGE_CODE_ADD_MATERIAL_TYPE = "MSG_ADD_MATERIAL_TYPE_023";
   public static final String MESSAGE_CODE_UPDATE_MATERIAL_TYPE = "MSG_UPDATE_MATERIAL_TYPE_024";
   public static final String MESSAGE_CODE_DELETE_MATERIAL_TYPE = "MSG_DELETE_MATERIAL_TYPE_025";
-
 }

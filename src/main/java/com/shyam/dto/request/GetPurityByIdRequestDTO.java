@@ -10,6 +10,5 @@ import lombok.*;
 @Builder
 public class GetPurityByIdRequestDTO {
 
-  @NotNull
-  private Long purityId;
+  @NotNull private Long purityId;
 }

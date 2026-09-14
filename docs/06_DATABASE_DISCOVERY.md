@@ -136,10 +136,10 @@ Both service request entities use generated sequence IDs, enum status values, cr
 | `V2__create_users_table.sql` | `users` |
 | `V3__create_category_table.sql` | `category` |
 | `V4__create_products_table.sql` | `products` |
-| `V5__create_offer_photo_table.sql` | `offer_photo` |
+| `V4__create_offer_photo_table.sql` | `offer_photo` |
 | `V6__create_order_and_order_product_ids_table.sql` | `orders`, `order_product_ids` |
-| `V7__create_service_home_table.sql` | `service_home` |
-| `V8__create_repair_service_table.sql` | `repair_service` |
+| `V5__create_service_home_table.sql` | `service_home` |
+| `V6__create_repair_service_table.sql` | `repair_service` |
 
 ## Migration and Entity Drift Observed
 

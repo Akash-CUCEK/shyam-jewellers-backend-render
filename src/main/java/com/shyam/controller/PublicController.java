@@ -2,7 +2,6 @@ package com.shyam.controller;
 
 import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.response.GetOfferPhotoResponseDTO;
-import com.shyam.service.MaterialTypeService;
 import com.shyam.service.OfferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

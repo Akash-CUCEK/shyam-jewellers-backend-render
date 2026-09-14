@@ -145,18 +145,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       SecurityContextHolder.clearContext();
 
       ErrorMessagesDTO errorMessagesDTO = new ErrorMessagesDTO("Unauthorized");
-      ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(
-          Collections.singletonList(errorMessagesDTO),
-          LocalDateTime.now(),
-          SYMErrorType.GENERIC_EXCEPTION,
-          "UNAUTHORIZED",
-          "Unauthorized");
+      ErrorResponseDTO errorResponseDTO =
+          new ErrorResponseDTO(
+              Collections.singletonList(errorMessagesDTO),
+              LocalDateTime.now(),
+              SYMErrorType.GENERIC_EXCEPTION,
+              "UNAUTHORIZED",
+              "Unauthorized");
 
       BaseResponseDTO<Void> baseResponse = new BaseResponseDTO<>(null, errorResponseDTO);
 
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
       response.setContentType("application/json");
-      response.getWriter().write(new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(baseResponse));
+      response
+          .getWriter()
+          .write(
+              new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(baseResponse));
     }
   }
 }

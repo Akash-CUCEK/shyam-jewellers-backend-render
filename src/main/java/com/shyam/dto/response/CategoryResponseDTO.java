@@ -1,14 +1,10 @@
 package com.shyam.dto.response;
 
 import java.io.Serializable;
-import java.util.List;
 import lombok.*;
 
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class CategoryResponseDTO implements Serializable {
-  private List<AllProductResponseDTO> products;
-}
+public class CategoryResponseDTO implements Serializable {}

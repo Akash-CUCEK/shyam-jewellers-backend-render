@@ -120,10 +120,10 @@ src/main/resources
     V2__create_users_table.sql
     V3__create_category_table.sql
     V4__create_products_table.sql
-    V5__create_offer_photo_table.sql
+    V4__create_offer_photo_table.sql
     V6__create_order_and_order_product_ids_table.sql
-    V7__create_service_home_table.sql
-    V8__create_repair_service_table.sql
+    V5__create_service_home_table.sql
+    V6__create_repair_service_table.sql
 ```
 
 ## Test Structure
