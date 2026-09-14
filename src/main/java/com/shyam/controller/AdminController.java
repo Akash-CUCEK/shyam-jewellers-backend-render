@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.common.service.CookieService;
+import com.shyam.common.util.AuthResponseHelper;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
 import com.shyam.service.*;
@@ -55,36 +56,30 @@ public class AdminController {
       description = "Step 2: Verify OTP and complete login")
   @PostMapping("/verifyLoginOtp")
   public ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(
-      @RequestBody VerifyAdminRequestDTO verifyAdminRequestDTO) {
+      @RequestBody VerifyAdminRequestDTO verifyAdminRequestDTO,
+      @RequestHeader(value = "X-Client-Type", defaultValue = "WEB", required = false)
+          String clientType) {
     log.info(
         "Received request to verify admin login OTP for: {}", verifyAdminRequestDTO.getEmail());
     ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> response =
         authService.verifyLoginOtp(
             verifyAdminRequestDTO.getEmail(), verifyAdminRequestDTO.getOtp());
 
-    // Extract refresh token from response entity
-    String refreshToken = null;
-    if (response.getBody() instanceof BaseResponseDTO baseResponseDto
-        && baseResponseDto.getResponse() instanceof VerifyAdminResponseDTO verifyAdminResponseDto) {
-      refreshToken = verifyAdminResponseDto.getRefreshToken();
-    }
-
-    ResponseCookie cookie =
-        cookieService.createSecureCookie(
-            "refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
-
-    return ResponseEntity.status(response.getStatusCode())
-        .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(response.getBody());
+    return AuthResponseHelper.handleResponse(clientType, response, cookieService);
   }
 
-  @Operation(summary = "Logout a admin user", description = "Logout a Admin User.")
   @PostMapping("/logout")
   public ResponseEntity<BaseResponseDTO<AdminLogoutResponseDTO>> logout(
       @RequestHeader("Authorization") String authorization,
-      @CookieValue(value = "refreshToken", required = false) String refreshToken) {
-    log.info("Received request for logout");
+      @CookieValue(value = "refreshToken", required = false) String refreshTokenFromCookie,
+      @RequestBody(required = false) LogoutRequestDTO logoutRequestDTO) {
+
     var accessToken = authorization.replace("Bearer ", "");
+
+    String refreshToken =
+        refreshTokenFromCookie != null
+            ? refreshTokenFromCookie
+            : (logoutRequestDTO != null ? logoutRequestDTO.getRefreshToken() : null);
 
     AdminLogoutResponseDTO response = authService.logout(accessToken, refreshToken);
 

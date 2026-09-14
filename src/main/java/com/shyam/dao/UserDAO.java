@@ -7,6 +7,7 @@ import com.shyam.entity.Users;
 import com.shyam.repository.UsersRepo;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -37,11 +38,11 @@ public class UserDAO {
 
   public Users save(Users user) {
     try {
-      logger.debug("Saving the user: {}", user.getEmail());
+      log.debug("Saving the user: {}", user.getEmail());
       usersRepo.save(user);
       return user;
     } catch (Exception e) {
-      logger.error("Error while saving user: {}", user.getEmail(), e);
+      log.error("Error while saving user: {}", user.getEmail(), e);
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
           SYMErrorType.GENERIC_EXCEPTION,

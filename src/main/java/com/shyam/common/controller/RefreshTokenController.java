@@ -32,12 +32,28 @@ public class RefreshTokenController {
   @PostMapping("/refreshToken")
   public ResponseEntity<BaseResponseDTO<RefreshTokenResponseDTO>> refresh(
       @CookieValue(value = "refreshToken", required = false) String cookieToken,
-      @RequestBody(required = false) RefreshRequest request) {
+      @RequestBody(required = false) RefreshRequest request,
+      @RequestHeader(value = "X-Client-Type", defaultValue = "WEB", required = false)
+          String clientType) {
 
     log.info("Received refresh token request");
 
-    // *** Extract data (web + mobile)
-    String refreshToken = request != null ? request.getRefreshToken() : cookieToken;
+    // Default to WEB if clientType is null or empty
+    if (clientType == null || clientType.isBlank()) {
+      clientType = "WEB";
+    }
+
+    // Determine the source of refresh token based on client type
+    String refreshToken;
+    if ("WEB".equalsIgnoreCase(clientType)) {
+      // For WEB, read refresh token from cookie
+      refreshToken = cookieToken;
+    } else {
+      // For MOBILE (or any other), read refresh token from request body
+      refreshToken = request != null ? request.getRefreshToken() : null;
+    }
+
+    // Extract email, role, deviceId from request body (if present)
     String email = request != null ? request.getEmail() : null;
     String role = request != null ? request.getRole() : null;
     String deviceId = request != null ? request.getDeviceId() : null;
@@ -62,21 +78,30 @@ public class RefreshTokenController {
 
     refreshTokenService.store(email, role, newRefreshToken);
 
-    // *** Cookie for web
-    ResponseCookie cookie =
-        ResponseCookie.from("refreshToken", newRefreshToken)
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(Duration.ofDays(1))
-            .build();
+    // For WEB, set the cookie; for MOBILE, do not set cookie
+    if ("WEB".equalsIgnoreCase(clientType)) {
+      // *** Cookie for web
+      ResponseCookie cookie =
+          ResponseCookie.from("refreshToken", newRefreshToken)
+              .httpOnly(true)
+              .secure(true)
+              .sameSite("None")
+              .path("/")
+              .maxAge(Duration.ofDays(1))
+              .build();
 
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(
-            new BaseResponseDTO<>(
-                new RefreshTokenResponseDTO(newAccessToken, newRefreshToken), null));
+      return ResponseEntity.ok()
+          .header(HttpHeaders.SET_COOKIE, cookie.toString())
+          .body(
+              new BaseResponseDTO<>(
+                  new RefreshTokenResponseDTO(newAccessToken, newRefreshToken), null));
+    } else {
+      // For MOBILE, return the tokens in the body only (no cookie)
+      return ResponseEntity.ok()
+          .body(
+              new BaseResponseDTO<>(
+                  new RefreshTokenResponseDTO(newAccessToken, newRefreshToken), null));
+    }
   }
 
   // *** Helper method (OUTSIDE main method)

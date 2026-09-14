@@ -1,5 +1,6 @@
 package com.shyam.repository;
 
+import com.shyam.entity.MaterialType;
 import com.shyam.entity.Purity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

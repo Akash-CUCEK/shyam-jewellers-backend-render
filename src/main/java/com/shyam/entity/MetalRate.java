@@ -26,9 +26,11 @@ public class MetalRate {
   @Column(name = "rate_per_gram", nullable = false, precision = 10, scale = 4)
   private BigDecimal ratePerGram;
 
+  @Builder.Default
   @Column(name = "currency", nullable = false, length = 3)
   private String currency = "INR";
 
+  @Builder.Default
   @Column(name = "unit", nullable = false, length = 10)
   private String unit = "g";
 

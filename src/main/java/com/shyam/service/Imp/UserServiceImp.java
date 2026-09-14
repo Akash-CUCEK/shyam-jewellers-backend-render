@@ -22,13 +22,10 @@ import com.shyam.entity.Users;
 import com.shyam.mapper.UserMapper;
 import com.shyam.service.NotificationService;
 import com.shyam.service.UserService;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,23 +92,13 @@ public class UserServiceImp implements UserService {
     var refreshToken = JwtUtil.generateRefreshToken();
     refreshTokenService.store(user.getEmail(), "USER", refreshToken);
 
-    ResponseCookie cookie =
-        ResponseCookie.from("refreshToken", refreshToken)
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .path("/")
-            .maxAge(Duration.ofDays(1))
-            .build();
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(
-            OtpResponseDTO.builder()
-                .message("Welcome to Shyam Jewellers!")
-                .token(accessToken)
-                .refreshToken(refreshToken)
-                .build());
+    // ⚠️ Cookie logic yahan se hata di — Controller/AuthResponseHelper handle karega
+    return ResponseEntity.ok(
+        OtpResponseDTO.builder()
+            .message("Welcome to Shyam Jewellers!")
+            .token(accessToken)
+            .refreshToken(refreshToken)
+            .build());
   }
 
   @Override

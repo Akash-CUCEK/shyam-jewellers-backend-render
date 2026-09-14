@@ -1,6 +1,7 @@
 package com.shyam.dto.response;
 
 import com.shyam.entity.Purity;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.*;
 

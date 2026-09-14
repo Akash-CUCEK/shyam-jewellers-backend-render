@@ -1,10 +1,16 @@
 package com.shyam.common.jwt;
 
+import com.shyam.common.exception.domain.SYMErrorType;
+import com.shyam.common.exception.dto.BaseResponseDTO;
+import com.shyam.common.exception.dto.ErrorMessagesDTO;
+import com.shyam.common.exception.dto.ErrorResponseDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

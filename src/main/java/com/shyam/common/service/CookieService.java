@@ -17,7 +17,7 @@ public interface CookieService {
    * @param httpOnly whether the cookie should be HTTP only
    * @param secure whether the cookie should be secure
    * @param sameSite the SameSite attribute value
-   * @path the cookie path
+   * @param path the cookie path
    * @param maxAge the maximum age in seconds (0 or negative to delete)
    * @return ResponseCookie configured with the provided parameters
    */
@@ -54,7 +54,7 @@ public interface CookieService {
    *
    * @param name the cookie name
    * @param value the cookie value
-   * @param maxAge the maximum age in seconds
+   * @param maxAge the maximum age in seconds (0 or negative to delete)
    * @return Cookie configured with the provided parameters
    */
   Cookie createCookie(String name, String value, int maxAge);

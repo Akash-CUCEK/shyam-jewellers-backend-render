@@ -2,6 +2,8 @@ package com.shyam.controller;
 
 import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.common.service.CookieService;
+import com.shyam.common.util.AuthResponseHelper;
+import com.shyam.dto.request.LogoutRequestDTO;
 import com.shyam.dto.request.OtpRequestDTO;
 import com.shyam.dto.request.logInRequestDTO;
 import com.shyam.dto.response.*;
@@ -34,35 +36,35 @@ public class UserController {
     return new BaseResponseDTO<>(response, null);
   }
 
-  @Operation(
-      summary = "Verify OTP",
-      description = "Verify the OTP sent to the user's email or phone.")
   @PostMapping("/verify")
   public ResponseEntity<BaseResponseDTO<OtpResponseDTO>> verify(
-      @RequestBody OtpRequestDTO otpRequestDTO) {
+      @RequestBody OtpRequestDTO otpRequestDTO,
+      @RequestHeader(value = "X-Client-Type", defaultValue = "WEB", required = false)
+          String clientType) {
     log.info("Received request for verify");
 
     ResponseEntity<OtpResponseDTO> responseEntity = userService.verify(otpRequestDTO);
 
-    // Extract refresh token from response entity
-    String refreshToken = responseEntity.getBody().getRefreshToken();
+    ResponseEntity<BaseResponseDTO<OtpResponseDTO>> wrapped =
+        ResponseEntity.status(responseEntity.getStatusCode())
+            .body(new BaseResponseDTO<>(responseEntity.getBody(), null));
 
-    ResponseCookie cookie =
-        cookieService.createSecureCookie(
-            "refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
-
-    return ResponseEntity.status(responseEntity.getStatusCode())
-        .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(new BaseResponseDTO<>(responseEntity.getBody(), null));
+    return AuthResponseHelper.handleResponse(clientType, wrapped, cookieService);
   }
 
-  @Operation(summary = "Logout a user", description = "Logout a User.")
   @PostMapping("/logout")
   public ResponseEntity<BaseResponseDTO<LogoutResponseDTO>> logout(
       @RequestHeader("Authorization") String authorization,
-      @CookieValue(value = "refreshToken", required = false) String refreshToken) {
-    log.info("Received request for log out");
+      @CookieValue(value = "refreshToken", required = false) String refreshTokenFromCookie,
+      @RequestBody(required = false) LogoutRequestDTO logoutRequestDTO) {
+
     String accessToken = authorization.replace("Bearer ", "");
+
+    // WEB se cookie milega, MOBILE se body me aayega
+    String refreshToken =
+        refreshTokenFromCookie != null
+            ? refreshTokenFromCookie
+            : (logoutRequestDTO != null ? logoutRequestDTO.getRefreshToken() : null);
 
     LogoutResponseDTO response = userService.logout(accessToken, refreshToken);
 
