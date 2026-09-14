@@ -22,6 +22,9 @@ public class CloudinaryService {
   @Value("${cloudinary.api_secret}")
   private String apiSecret;
 
+  @Value("${cloudinary.folder}")
+  private String folder;
+
   private Cloudinary cloudinary;
 
   @PostConstruct
@@ -114,7 +117,7 @@ public class CloudinaryService {
               .upload(
                   file.getBytes(),
                   ObjectUtils.asMap(
-                      "folder", "shyam-products",
+                      "folder", folder,
                       "resource_type", "image"));
 
       log.info("☁️ Cloudinary response received");

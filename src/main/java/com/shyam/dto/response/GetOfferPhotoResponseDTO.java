@@ -10,6 +10,5 @@ import lombok.*;
 @AllArgsConstructor
 public class GetOfferPhotoResponseDTO implements Serializable {
   private String imgUrl;
-  private Boolean isAvailable;
   private Integer position;
 }

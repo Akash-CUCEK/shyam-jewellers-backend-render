@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local
+    active: prod
 
 springdoc:
   api-docs:
@@ -19,3 +19,16 @@ management:
   endpoint:
     health:
       show-details: always
+
+jwt:
+  secret: 12345678901234567890123456789012
+  access-token-expiration-minutes: 5
+  refresh-token-expiration-hours: 5
+
+cloudinary:
+  folder: shyam-products
+
+metals:
+  dev:
+    api-url: https://api.metals.dev/v1/metal/authority
+    api-key: ${METALS_DEV_API_KEY:default_key_for_dev}

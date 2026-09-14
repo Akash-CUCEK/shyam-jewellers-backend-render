@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: ${JPA_SHOW_SQL:true}
 
   mail:
@@ -28,42 +28,13 @@ spring:
           starttls:
             enable: true
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password:
-      ssl:
-        enabled: false
-
-  kafka:
-    bootstrap-servers: localhost:9092
-
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-    consumer:
-      group-id: notification-group
-      auto-offset-reset: earliest
-
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-
-      properties:
-        spring.json.trusted.packages: com.shyam.dto
-        spring.json.value.default.type: com.shyam.dto.NotificationMessage
-
-
+  
 cloudinary:
   cloud_name: djaiqzoes
   api_key: 397331224838283
   api_secret: mnjrSFnVGJcZfp1PKDbr7W3bDJs
 
 
-jwt:
-  secret: 12345678901234567890123456789012
 
 
 payment:
@@ -86,12 +57,4 @@ payment:
     failure-url: ${PAYMENT_FAILURE_URL:http://localhost:3000/payment/failure}
 
 
-app:
-  kafka:
-
-    topic:
-      notifications: notification-topic
-
-    group:
-      id:
-        notifications: notification-group
+ 

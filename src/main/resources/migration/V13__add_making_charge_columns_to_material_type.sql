@@ -1,0 +1,3 @@
+ALTER TABLE material_type
+ADD COLUMN making_charge_type VARCHAR(20) NOT NULL DEFAULT 'FIXED',
+ADD COLUMN making_charge_value DECIMAL(10,2) NOT NULL DEFAULT 0.00;

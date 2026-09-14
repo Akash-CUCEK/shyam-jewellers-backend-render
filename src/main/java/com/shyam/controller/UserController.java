@@ -1,15 +1,17 @@
 package com.shyam.controller;
 
 import com.shyam.common.exception.dto.BaseResponseDTO;
+import com.shyam.common.service.CookieService;
 import com.shyam.dto.request.OtpRequestDTO;
 import com.shyam.dto.request.logInRequestDTO;
 import com.shyam.dto.response.*;
 import com.shyam.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +21,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 @Tag(name = "User", description = "User authentication and management endpoints")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
-  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
   private final UserService userService;
+  private final CookieService cookieService;
 
   @Operation(summary = "Login a user", description = "Login a User.")
   @PostMapping("/logIn")
   public BaseResponseDTO<LogInResponseDTO> login(@RequestBody logInRequestDTO logInRequestDTO) {
 
-    logger.info("Received request for sigIn");
+    log.info("Received request for sigIn");
     var response = userService.logIn(logInRequestDTO);
     return new BaseResponseDTO<>(response, null);
   }
@@ -39,12 +42,17 @@ public class UserController {
   @PostMapping("/verify")
   public ResponseEntity<BaseResponseDTO<OtpResponseDTO>> verify(
       @RequestBody OtpRequestDTO otpRequestDTO) {
-    logger.info("Received request for verify");
+    log.info("Received request for verify");
 
     ResponseEntity<OtpResponseDTO> responseEntity = userService.verify(otpRequestDTO);
 
+    // Extract refresh token from response entity
+    String refreshToken = responseEntity.getBody().getRefreshToken();
+
+    ResponseCookie cookie = cookieService.createSecureCookie("refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
+
     return ResponseEntity.status(responseEntity.getStatusCode())
-        .headers(responseEntity.getHeaders())
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(new BaseResponseDTO<>(responseEntity.getBody(), null));
   }
 
@@ -52,21 +60,13 @@ public class UserController {
   @PostMapping("/logout")
   public ResponseEntity<BaseResponseDTO<LogoutResponseDTO>> logout(
       @RequestHeader("Authorization") String authorization,
-      @CookieValue(value = "refreshToken", required = false) String refreshToken,
-      @RequestHeader(value = "X-Device-Id", required = false) String deviceId) {
-    logger.info("Received request for log out");
+      @CookieValue(value = "refreshToken", required = false) String refreshToken) {
+    log.info("Received request for log out");
     String accessToken = authorization.replace("Bearer ", "");
 
-    LogoutResponseDTO response = userService.logout(accessToken, refreshToken, deviceId);
+    LogoutResponseDTO response = userService.logout(accessToken, refreshToken);
 
-    ResponseCookie deleteCookie =
-        ResponseCookie.from("refreshToken", "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
-            .path("/")
-            .maxAge(0)
-            .build();
+    ResponseCookie deleteCookie = cookieService.deleteCookie("refreshToken", "/");
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())

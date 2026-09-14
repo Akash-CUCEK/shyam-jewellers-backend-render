@@ -5,8 +5,9 @@ import static com.shyam.constants.MessageConstant.*;
 import com.shyam.common.exception.domain.SYMErrorType;
 import com.shyam.common.exception.domain.SYMException;
 import com.shyam.common.jwt.JwtUtil;
-import com.shyam.common.redis.service.TokenBlacklistService;
+import com.shyam.common.service.OtpService;
 import com.shyam.common.service.RefreshTokenService;
+import com.shyam.common.service.TokenBlacklistService;
 import com.shyam.common.util.MessageSourceUtil;
 import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.dao.UserDAO;
@@ -19,13 +20,11 @@ import com.shyam.dto.response.LogoutResponseDTO;
 import com.shyam.dto.response.OtpResponseDTO;
 import com.shyam.entity.Users;
 import com.shyam.mapper.UserMapper;
-import com.shyam.publisher.NotificationPublisher;
 import com.shyam.service.NotificationService;
 import com.shyam.service.UserService;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -42,17 +41,17 @@ public class UserServiceImp implements UserService {
   private final UserMapper userMapper;
   private final MessageSourceUtil messageSourceUtil;
   private final UserDAO userDAO;
+  private final OtpService otpService;
   private final TokenBlacklistService tokenBlacklistService;
   private final RefreshTokenService refreshTokenService;
   private final NotificationService notificationService;
-  private final NotificationPublisher notificationPublisher;
-
+  
   @Override
   @Transactional
   public LogInResponseDTO logIn(logInRequestDTO logInRequestDTO) {
     log.info("Processing login for email: {}", logInRequestDTO.getEmail());
     var email = logInRequestDTO.getEmail();
-    var otp = generateOTP();
+    var otp = otpService.generateOTP();
     var otpGeneratedTime = LocalDateTime.now();
     var existingUserOpt = userDAO.findOnlyUser(email);
     Users user;
@@ -66,7 +65,7 @@ public class UserServiceImp implements UserService {
     var savedUser = userDAO.save(user);
     var notificationMessage =
         new NotificationMessage(savedUser.getEmail(), null, otp, NotificationType.LOGIN);
-    notificationPublisher.publish(notificationMessage);
+    notificationService.process(notificationMessage);
     return userMapper.mapToUserLogInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_LOGIN_SEND_OTP));
   }
@@ -85,7 +84,7 @@ public class UserServiceImp implements UserService {
           "OTP expired",
           String.format("OTP expired for email: %s", otpRequestDTO.getEmail()));
     }
-    if (!Objects.equals(otpRequestDTO.getOtp(), user.getOtp())) {
+    if (!otpService.validateOTP(user.getOtp(), otpRequestDTO.getOtp())) {
       throw new SYMException(
           HttpStatus.UNAUTHORIZED,
           SYMErrorType.GENERIC_EXCEPTION,
@@ -118,7 +117,7 @@ public class UserServiceImp implements UserService {
 
   @Override
   @Transactional
-  public LogoutResponseDTO logout(String accessToken, String refreshToken, String deviceId) {
+  public LogoutResponseDTO logout(String accessToken, String refreshToken) {
     log.info("Processing to logout the user");
     long expiryInSeconds =
         (JwtUtil.getExpiry(accessToken).getTime() - System.currentTimeMillis()) / 1000;
@@ -131,11 +130,5 @@ public class UserServiceImp implements UserService {
       refreshTokenService.delete(JwtUtil.getUsername(accessToken), "USER");
     }
     return userMapper.mapToUserLogoutInMessage(messageSourceUtil.getMessage(MESSAGE_CODE_LOG_OUT));
-  }
-
-  private String generateOTP() {
-    Random random = new Random();
-    int otpValue = 100000 + random.nextInt(900000);
-    return String.valueOf(otpValue);
   }
 }

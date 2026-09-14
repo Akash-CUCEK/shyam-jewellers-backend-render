@@ -1,0 +1,68 @@
+xserver:
+  port: 8080
+
+spring:
+  application:
+    name: shyam
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/shyam_jewellers_prod}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # Disable actuator exposure in prod for security
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: health,info
+        exclude: '*'
+    endpoint:
+      health:
+        show-details: never
+
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret}
+
+payment:
+  currency: ${PAYMENT_CURRENCY:INR}
+  request-ttl-minutes: ${PAYMENT_REQUEST_TTL_MINUTES:20}
+  gateway:
+    provider: ${PAYMENT_GATEWAY_PROVIDER:RAZORPAY}
+    signature-secret: ${PAYMENT_GATEWAY_SIGNATURE_SECRET}
+    checkout-base-url: ${PAYMENT_GATEWAY_CHECKOUT_BASE_URL:https://api.razorpay.com/v1/checkout}
+  urls:
+    callback-url: ${PAYMENT_CALLBACK_URL:https://yourdomain.com/api/v1/payments/verify}
+    success-url: ${PAYMENT_SUCCESS_URL:https://yourdomain.com/payment/success}
+    failure-url: ${PAYMENT_FAILURE_URL:https://yourdomain.com/payment/failure}
+
+logging:
+  level:
+    root: INFO
+    com.shyam: WARN
+    org.hibernate.SQL: ERROR
+    org.hibernate.type.descriptor.sql.BasicBinder: ERROR

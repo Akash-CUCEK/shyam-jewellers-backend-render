@@ -1,6 +1,6 @@
 package com.shyam.common.jwt;
 
-import com.shyam.common.redis.service.TokenBlacklistService;
+import com.shyam.common.service.TokenBlacklistService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -27,7 +27,14 @@ public class JwtUtil {
   @Value("${jwt.secret}")
   private String jwtSecret;
 
-  private static final long ACCESS_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+  @Value("${jwt.access-token-expiration-minutes}")
+  private long accessTokenExpirationMinutes;
+
+  @Value("${jwt.refresh-token-expiration-hours}")
+  private long refreshTokenExpirationHours;
+
+  private static long ACCESS_TOKEN_EXPIRATION_TIME;
+private static long REFRESH_TOKEN_EXPIRATION_TIME;
 
   @PostConstruct
   void init() {
@@ -35,6 +42,8 @@ public class JwtUtil {
       throw new IllegalStateException("jwt.secret must be configured and at least 32 bytes long");
     }
     secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    ACCESS_TOKEN_EXPIRATION_TIME = accessTokenExpirationMinutes * 60 * 1000;
+    REFRESH_TOKEN_EXPIRATION_TIME = refreshTokenExpirationHours * 60 * 60 * 1000;
   }
 
   public static String generateAccessToken(String username, String role) {

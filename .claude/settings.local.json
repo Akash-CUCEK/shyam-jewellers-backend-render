@@ -20,7 +20,10 @@
       "Bash(rtk wc *)",
       "Bash(dir C:\\\\2026\\\\shyam-jewellers-backend\\\\src\\\\main\\\\java\\\\com\\\\shyam\\\\nnotification *)",
       "Bash(dir C:\\\\2026\\\\shyam-jewellers-backend\\\\src\\\\main\\\\java\\\\com\\\\shyam *)",
-      "Bash(pkill *)"
+      "Bash(pkill *)",
+      "Bash(git log *)",
+      "Bash(/usr/bin/find C:2026Shyam-JewellersBackendshyam-jewellers-backend *)",
+      "Bash(/usr/bin/find *)"
     ]
   }
 }

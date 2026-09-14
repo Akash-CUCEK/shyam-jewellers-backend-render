@@ -85,7 +85,9 @@ public class RefreshTokenController {
         new ErrorResponseDTO(
             List.of(new ErrorMessagesDTO(message)),
             LocalDateTime.now(),
-            SYMErrorType.GENERIC_EXCEPTION);
+            SYMErrorType.GENERIC_EXCEPTION,
+            "GENERIC_ERROR",
+            message);
     return new BaseResponseDTO<>(null, error);
   }
 }

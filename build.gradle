@@ -36,9 +36,7 @@ dependencies {
     // ✉️ Mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    // ⚡ Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
+    
     // 🧾 JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -86,9 +84,7 @@ dependencies {
     // Actuator for exposing metrics and health
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    // Apache Kafka
-    implementation 'org.springframework.kafka:spring-kafka:3.1.4'
-}
+    }
 
 
 tasks.named('test') {

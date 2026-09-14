@@ -14,6 +14,8 @@ public class ErrorResponseDTO implements Serializable {
   private LocalDateTime timestamp;
 
   private SYMErrorType errorType;
+  private String errorCode;
+  private String detailedMessage;
 
   @Generated
   public void setMessages(final List<ErrorMessagesDTO> messages) {
@@ -47,12 +49,36 @@ public class ErrorResponseDTO implements Serializable {
   }
 
   @Generated
+  public String getErrorCode() {
+    return this.errorCode;
+  }
+
+  @Generated
+  public void setErrorCode(final String errorCode) {
+    this.errorCode = errorCode;
+  }
+
+  @Generated
+  public String getDetailedMessage() {
+    return this.detailedMessage;
+  }
+
+  @Generated
+  public void setDetailedMessage(final String detailedMessage) {
+    this.detailedMessage = detailedMessage;
+  }
+
+  @Generated
   public ErrorResponseDTO(
       final List<ErrorMessagesDTO> messages,
       final LocalDateTime timestamp,
-      final SYMErrorType errorType) {
+      final SYMErrorType errorType,
+      final String errorCode,
+      final String detailedMessage) {
     this.messages = messages;
     this.timestamp = timestamp;
     this.errorType = errorType;
+    this.errorCode = errorCode;
+    this.detailedMessage = detailedMessage;
   }
 }

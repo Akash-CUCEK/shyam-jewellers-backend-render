@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Tag(name = "Order", description = "Order management endpoints")
 public class OrderController {
-  private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
   private final OrderService orderService;
 
   @Operation(summary = "Create a order", description = "Creating a order.")
@@ -44,12 +41,12 @@ public class OrderController {
     return new BaseResponseDTO<>(response, null);
   }
 
-  @Operation(summary = "get order by Id", description = "Getting order details by Id.")
-  @PostMapping("/getOrderById")
+  @Operation(summary = "get order by email", description = "Getting order details by Id.")
+  @PostMapping("/getOrderByEmail")
   public BaseResponseDTO<GetOrderByIdResponseDTO> getOrderById(
       @RequestBody GetOrderByIdRequestDTO getOrderByIdRequestDTO) {
 
-    logger.info("Received request for get order by Id");
+    log.info("Received request for get order by Id");
     var response = orderService.getOrderById(getOrderByIdRequestDTO);
     return new BaseResponseDTO<>(response, null);
   }
@@ -79,7 +76,7 @@ public class OrderController {
   @Operation(summary = "get total count order", description = "Getting total order of month")
   @PostMapping("/getTotalOrderMonth")
   public BaseResponseDTO<GetTotalOrderMonthResponse> getTotalOrderMonth() {
-    logger.info("Received request for getting total order in month");
+    log.info("Received request for getting total order in month");
     var response = orderService.getTotalOrderMonth();
     return new BaseResponseDTO<>(response, null);
   }
@@ -90,7 +87,7 @@ public class OrderController {
   @PostMapping("/getOrderInvoiceById")
   public BaseResponseDTO<GetOrderInvoiceResponse> getOrderInvoice(
       @RequestBody GetOrderInvoiceRequest getOrderInvoiceRequest) {
-    logger.info("Received request for generate PDF Invoice");
+    log.info("Received request for generate PDF Invoice");
     var response = orderService.getOrderInvoice(getOrderInvoiceRequest);
     return new BaseResponseDTO<>(response, null);
   }

@@ -3,17 +3,14 @@ package com.shyam.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shyam.common.exception.dto.BaseResponseDTO;
+import com.shyam.common.service.CookieService;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
-import com.shyam.service.AdminService;
-import com.shyam.service.CategoryService;
+import com.shyam.service.*;
 import com.shyam.service.Imp.CloudinaryService;
-import com.shyam.service.MaterialTypeService;
-import com.shyam.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +22,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/auth/api/v1/admin")
 @RequiredArgsConstructor
@@ -32,11 +31,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "Admin", description = "Admin management endpoints")
 public class AdminController {
 
-  private final AdminService adminService;
+  private final AuthService authService;
+  private final AdminManagementService adminManagementService;
+  private final OfferService offerService;
   private final ProductService productService;
   private final CategoryService categoryService;
   private final CloudinaryService cloudinaryService;
   private final MaterialTypeService materialTypeService;
+  private final CookieService cookieService;
 
   @Operation(summary = "Initiate admin login", description = "Step 1: Send OTP to admin email")
   @PostMapping("/initiateLogin")
@@ -45,7 +47,7 @@ public class AdminController {
 
     log.info("Received request to initiate admin login for: {}", adminLogInRequestDTO.getEmail());
 
-    var response = adminService.initiateLogin(adminLogInRequestDTO.getEmail());
+    var response = authService.initiateLogin(adminLogInRequestDTO.getEmail());
 
     return new BaseResponseDTO<>(response, null);
   }
@@ -59,10 +61,20 @@ public class AdminController {
     log.info(
         "Received request to verify admin login OTP for: {}", verifyAdminRequestDTO.getEmail());
     ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> response =
-        adminService.verifyLoginOtp(
+        authService.verifyLoginOtp(
             verifyAdminRequestDTO.getEmail(), verifyAdminRequestDTO.getOtp());
+
+    // Extract refresh token from response entity
+    String refreshToken = null;
+    if (response.getBody() instanceof BaseResponseDTO baseResponseDto
+        && baseResponseDto.getResponse() instanceof VerifyAdminResponseDTO verifyAdminResponseDto) {
+        refreshToken = verifyAdminResponseDto.getRefreshToken();
+    }
+
+    ResponseCookie cookie = cookieService.createSecureCookie("refreshToken", refreshToken, (int) java.time.Duration.ofDays(1).getSeconds());
+
     return ResponseEntity.status(response.getStatusCode())
-        .headers(response.getHeaders())
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(response.getBody());
   }
 
@@ -74,16 +86,9 @@ public class AdminController {
     log.info("Received request for logout");
     var accessToken = authorization.replace("Bearer ", "");
 
-    AdminLogoutResponseDTO response = adminService.logout(accessToken, refreshToken);
+    AdminLogoutResponseDTO response = authService.logout(accessToken, refreshToken);
 
-    ResponseCookie deleteCookie =
-        ResponseCookie.from("refreshToken", "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
-            .path("/")
-            .maxAge(0)
-            .build();
+    ResponseCookie deleteCookie = cookieService.deleteCookie("refreshToken", "/");
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
@@ -118,7 +123,7 @@ public class AdminController {
 
       log.info("No new profile image provided. Keeping existing image.");
     }
-    var response = adminService.edit(editAdminRequestDTO);
+    var response = adminManagementService.edit(editAdminRequestDTO);
     return new BaseResponseDTO<>(response, null);
   }
 
@@ -128,7 +133,7 @@ public class AdminController {
   public BaseResponseDTO<RegisterResponseDTO> registerAdmin(
       @RequestBody RegisterRequestDTO registerRequestDTO) {
     log.info("Received request for register admin for");
-    var response = adminService.registerAdmin(registerRequestDTO);
+    var response = adminManagementService.registerAdmin(registerRequestDTO);
     return new BaseResponseDTO<>(response, null);
   }
 
@@ -138,7 +143,7 @@ public class AdminController {
   public BaseResponseDTO<GetAdminResponseDTO> getAllAdmin(
       @RequestBody GetAdminRequestDTO getAdminRequestDTO) {
     log.info("Received request for getting admin ");
-    var response = adminService.getAdmin(getAdminRequestDTO);
+    var response = adminManagementService.getAdmin(getAdminRequestDTO);
     return new BaseResponseDTO<>(response, null);
   }
 
@@ -148,7 +153,7 @@ public class AdminController {
   public BaseResponseDTO<GetAdminListResponseDTO> getAllAdmin() {
 
     log.info("Received request for getting all admin");
-    var response = adminService.getAllAdmin();
+    var response = adminManagementService.getAllAdmin();
     return new BaseResponseDTO<>(response, null);
   }
 
@@ -158,7 +163,7 @@ public class AdminController {
   public BaseResponseDTO<DeleteAdminResponseDTO> deleteAdmin(
       @RequestBody DeleteAdminRequestDTO deleteAdmin) {
     log.info("Received request for delete admin");
-    var response = adminService.deleteAdmin(deleteAdmin);
+    var response = adminManagementService.deleteAdmin(deleteAdmin);
     return new BaseResponseDTO<>(response, null);
   }
 
@@ -314,7 +319,7 @@ public class AdminController {
             .isAvailable(isAvailable)
             .build();
 
-    var response = adminService.offerUpdate(request);
+    var response = offerService.offerUpdate(request);
     return new BaseResponseDTO<>(response, null);
   }
 

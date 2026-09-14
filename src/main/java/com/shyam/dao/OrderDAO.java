@@ -77,4 +77,7 @@ public class OrderDAO {
           e.getMessage());
     }
   }
+
+    public List<Order> findOrderByEmail(String email) {
+    }
 }

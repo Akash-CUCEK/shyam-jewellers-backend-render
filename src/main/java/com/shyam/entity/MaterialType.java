@@ -1,6 +1,8 @@
 package com.shyam.entity;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.*;
 
@@ -38,4 +40,11 @@ public class MaterialType {
 
   @Column(nullable = false)
   private Boolean status;
+
+  // New fields for making charge
+  @Column(name = "making_charge_type", nullable = false)
+  private String makingChargeType; // "FIXED" or "PERCENTAGE"
+
+  @Column(name = "making_charge_value", precision = 10, scale = 2)
+  private BigDecimal makingChargeValue;
 }

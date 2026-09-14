@@ -12,5 +12,5 @@ public interface UserService {
 
   ResponseEntity<OtpResponseDTO> verify(OtpRequestDTO otpRequestDTO);
 
-  LogoutResponseDTO logout(String accessToken, String refreshToken, String deviceId);
+  LogoutResponseDTO logout(String accessToken, String refreshToken);
 }

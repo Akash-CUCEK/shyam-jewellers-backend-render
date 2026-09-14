@@ -1,34 +1,21 @@
 package com.shyam.service;
 
-import com.shyam.common.exception.dto.BaseResponseDTO;
-import com.shyam.dto.request.*;
-import com.shyam.dto.response.*;
-import jakarta.validation.Valid;
-import java.math.BigDecimal;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
+import com.shyam.dto.request.AddProductRequestDTO;
+import com.shyam.dto.request.GetProductByIdRequestDTO;
+import com.shyam.dto.request.UpdateProductRequestDTO;
+import com.shyam.dto.response.AddProductResponseDTO;
+import com.shyam.dto.response.GetProductResponseDTO;
+import java.util.List;
 
 public interface ProductService {
 
-  ProductAddResponseDTO addProduct(ProductAddRequestDTO productAddRequestDTO, MultipartFile image);
+  AddProductResponseDTO addProduct(AddProductRequestDTO requestDTO);
 
-  Page<BaseResponseDTO<GetAllProductsResponseDTO>> getAllProducts(int page, int size);
+  AddProductResponseDTO updateProduct(UpdateProductRequestDTO requestDTO);
 
-  UpdateResponseDTO updateProduct(@Valid UpdateRequestDTO updateRequestDTO);
+  AddProductResponseDTO deleteProduct(GetProductByIdRequestDTO requestDTO);
 
-  DeleteResponseDTO deleteProduct(@Valid DeleteProductRequestDTO deleteProductRequestDTO);
+  GetProductResponseDTO getProductById(GetProductByIdRequestDTO requestDTO);
 
-  GenderResponseDTO getGenderProduct(@Valid GenderRequestDTO genderRequestDTO);
-
-  PageResponseDTO<AllProductResponseDTO> getProductsByCategory(String category, Pageable pageable);
-
-  Page<AllProductResponseDTO> getAllProduct(Pageable pageable);
-
-  Page<AllProductResponseDTO> getFilteredProducts(
-      @Valid ProductFilterRequestDTO filterDTO, Pageable pageable);
-
-  AllProductResponseDTO getProductById(Long productId);
-
-  PageResponseDTO<AllProductResponseDTO> getByMaterialType(String materialType, Pageable pageable);
+  List<GetProductResponseDTO> getAllProducts();
 }

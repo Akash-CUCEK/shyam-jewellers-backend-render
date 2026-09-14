@@ -7,19 +7,17 @@ import com.shyam.entity.Users;
 import com.shyam.repository.UsersRepo;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserDAO {
-  private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
-  private final UsersRepo usersRepo;
+    private final UsersRepo usersRepo;
 
   public Users findUser(String email) {
-    logger.debug("Finding user with email: {}", email);
+    log.debug("Finding user with email: {}", email);
 
     return usersRepo
         .findByEmail(email)

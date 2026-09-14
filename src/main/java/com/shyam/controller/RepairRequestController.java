@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ public class RepairRequestController {
       summary = "Get all repair requests",
       description = "Retrieve a list of all repair requests.")
   @PostMapping("/getAllRepairRequests")
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public BaseResponseDTO<GetAllRepairResponseDTO> getAllRepairRequests() {
     log.info("Received request for getting all repair requests");
     var response = repairRequestService.getAllRepairRequests();
@@ -32,6 +34,7 @@ public class RepairRequestController {
       summary = "Search repair requests",
       description = "Search repair requests based on criteria.")
   @PostMapping("/searchRepairRequest")
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public BaseResponseDTO<GetAllRepairResponseDTO> searchRepairRequest(
       @RequestBody SearchRepairRequestDTO createRepairRequestDTO) {
     log.info("Received request for search repair request ");

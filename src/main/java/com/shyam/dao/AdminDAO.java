@@ -11,16 +11,15 @@ import com.shyam.repository.OfferPhotoRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AdminDAO {
 
-  private static final Logger logger = LoggerFactory.getLogger(AdminDAO.class);
   private final AdminRepository adminRepository;
   private final OfferPhotoRepository offerPhotoRepository;
 
@@ -39,11 +38,11 @@ public class AdminDAO {
 
   public AdminUsers save(AdminUsers adminUsers) {
     try {
-      logger.debug("Saving the user: {}", adminUsers.getEmail());
+      log.debug("Saving the user: {}", adminUsers.getEmail());
       adminRepository.save(adminUsers);
       return adminUsers;
     } catch (Exception e) {
-      logger.error("Error while saving user: {}", adminUsers.getEmail(), e);
+      log.error("Error while saving user: {}", adminUsers.getEmail(), e);
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
           SYMErrorType.GENERIC_EXCEPTION,
@@ -61,13 +60,13 @@ public class AdminDAO {
 
     try {
 
-      logger.info("Saving offer photo. Position: {}", offer.getPosition());
+      log.info("Saving offer photo. Position: {}", offer.getPosition());
 
       return offerPhotoRepository.save(offer);
 
     } catch (Exception e) {
 
-      logger.error("Error while saving offer photo", e);
+      log.error("Error while saving offer photo", e);
 
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -82,13 +81,13 @@ public class AdminDAO {
 
     try {
 
-      logger.info("Fetching offer photo for position: {}", position);
+      log.info("Fetching offer photo for position: {}", position);
 
       return offerPhotoRepository.findByPosition(position).orElse(null);
 
     } catch (Exception e) {
 
-      logger.error("Error while fetching offer photo for position: {}", position, e);
+      log.error("Error while fetching offer photo for position: {}", position, e);
 
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -101,12 +100,12 @@ public class AdminDAO {
 
   public List<OfferPhoto> getPhotosWithPosition() {
     try {
-      logger.debug("Fetching offer photos with position");
+      log.debug("Fetching offer photos with position");
 
       return offerPhotoRepository.findByPositionBetweenOrderByPosition(1, 5);
 
     } catch (Exception e) {
-      logger.error("Error while fetching offer photos", e);
+      log.error("Error while fetching offer photos", e);
 
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -119,12 +118,12 @@ public class AdminDAO {
 
   public List<AdminUsers> findByRoleIn(List<Role> roles) {
     try {
-      logger.debug("Fetching users with roles: {}", roles);
+      log.debug("Fetching users with roles: {}", roles);
 
       return adminRepository.findByRoleIn(roles);
 
     } catch (Exception e) {
-      logger.error("Error while fetching users by roles: {}", roles, e);
+      log.error("Error while fetching users by roles: {}", roles, e);
 
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
@@ -137,10 +136,10 @@ public class AdminDAO {
 
   public void delete(AdminUsers admin) {
     try {
-      logger.debug("Deleting the admin");
+      log.debug("Deleting the admin");
       adminRepository.delete(admin);
     } catch (Exception e) {
-      logger.error("Error while deleting admin", e);
+      log.error("Error while deleting admin", e);
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
           SYMErrorType.GENERIC_EXCEPTION,

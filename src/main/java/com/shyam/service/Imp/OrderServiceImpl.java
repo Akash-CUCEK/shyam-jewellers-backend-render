@@ -64,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public GetOrderByIdResponseDTO getOrderById(GetOrderByIdRequestDTO requestDTO) {
     log.info("Fetching order by ID");
-    Order order = orderDAO.findOrderByOrderId(requestDTO.getOrderId());
+    Order order = orderDAO.findOrderByEmail(requestDTO.getEmail());
     return orderMapper.mapToOrderResponseDTO(order);
   }
 

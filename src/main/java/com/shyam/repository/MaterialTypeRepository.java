@@ -9,4 +9,6 @@ public interface MaterialTypeRepository extends JpaRepository<MaterialType, Long
   MaterialType findByName(String name);
 
   boolean existsByName(String name);
+
+  MaterialType findByNameIgnoreCase(String name);
 }

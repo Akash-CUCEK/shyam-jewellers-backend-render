@@ -2,8 +2,8 @@ package com.shyam.controller;
 
 import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.response.GetOfferPhotoResponseDTO;
-import com.shyam.service.AdminService;
 import com.shyam.service.MaterialTypeService;
+import com.shyam.service.OfferService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -20,14 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Public", description = "Publicly accessible endpoints")
 public class PublicController {
 
-  private final AdminService adminService;
-  private final MaterialTypeService materialTypeService;
+  private final OfferService offerService;
 
   @Operation(summary = "Get Offer Section", description = "Get list of available offer photos.")
   @PostMapping("/getOfferPhoto")
   public BaseResponseDTO<List<GetOfferPhotoResponseDTO>> getoffer() {
     log.info("Received request to get offer photo");
-    var response = adminService.getOfferPhoto();
+    var response = offerService.getOfferPhoto();
     return new BaseResponseDTO<>(response, null);
   }
 }

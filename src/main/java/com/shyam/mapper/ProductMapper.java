@@ -50,34 +50,34 @@ public class ProductMapper {
   public AllProductResponseDTO toAllProductResponse(Products p) {
 
     return AllProductResponseDTO.builder()
-        .id(p.getProductIds())
-        .name(p.getName())
-        .discountPercentage(p.getDiscountPercentage())
-        .weight(p.getWeight())
-        .imageUrl(p.getImageUrl())
-        .gender(p.getGender())
-        .isAvailable(p.getIsAvailable())
-        .availableStock(p.getAvailableStock())
-        .build();
+            .id(p.getProductIds())
+            .name(p.getName())
+            .discountPercentage(p.getDiscountPercentage())
+            .weight(p.getWeight())
+            .imageUrl(p.getImageUrl())
+            .gender(p.getGender())
+            .isAvailable(p.getIsAvailable())
+            .availableStock(p.getAvailableStock())
+            .build();
   }
 
   public ProductResponseDTO toProductResponse(Products p) {
     return ProductResponseDTO.builder()
-        .id(p.getProductIds())
-        .name(p.getName())
-        .category(p.getCategory().getName())
-        .discountPercentage(p.getDiscountPercentage())
-        .weight(p.getWeight())
-        .materialType(p.getMaterialType())
-        .skuCode(p.getSkuCode())
-        .shortDescription(p.getShortDescription())
-        .fullDescription(p.getFullDescription())
-        .gender(p.getGender())
-        .averageRating(p.getAverageRating())
-        .isAvailable(p.getIsAvailable())
-        .availableStock(p.getAvailableStock())
-        .imageUrl(p.getImageUrl())
-        .build();
+            .id(p.getProductIds())
+            .name(p.getName())
+            .category(p.getCategory().getName())
+            .discountPercentage(p.getDiscountPercentage())
+            .weight(p.getWeight())
+            .materialType(p.getMaterialType())
+            .skuCode(p.getSkuCode())
+            .shortDescription(p.getShortDescription())
+            .fullDescription(p.getFullDescription())
+            .gender(p.getGender())
+            .averageRating(p.getAverageRating())
+            .isAvailable(p.getIsAvailable())
+            .availableStock(p.getAvailableStock())
+            .imageUrl(p.getImageUrl())
+            .build();
   }
 
   public ProductAddResponseDTO toAddProductResponse(Products p, String msg) {
@@ -92,30 +92,26 @@ public class ProductMapper {
     return DeleteResponseDTO.builder().message(msg).build();
   }
 
-  public GetProductResponseDTO toProductListResponse(List<Products> products) {
-    return GetProductResponseDTO.builder()
-        .products(products.stream().map(this::toAllProductResponse).toList())
-        .build();
-  }
 
-  public GenderResponseDTO toGenderResponse(List<Products> products) {
-    return GenderResponseDTO.builder()
-        .products(products.stream().map(this::toAllProductResponse).toList())
-        .build();
-  }
 
   public GetAllProductsResponseDTO toGetAllProductsResponse(Products p) {
     return GetAllProductsResponseDTO.builder()
-        .productIds(p.getProductIds())
-        .name(p.getName())
-        .category(p.getCategory())
-        .weight(p.getWeight())
-        .materialType(p.getMaterialType())
-        .isAvailable(p.getIsAvailable())
-        .imageUrl(p.getImageUrl())
-        .discountPercentage(p.getDiscountPercentage())
-        .gender(p.getGender())
-        .availableStock(p.getAvailableStock())
-        .build();
+            .productIds(p.getProductIds())
+            .name(p.getName())
+            .category(p.getCategory())
+            .weight(p.getWeight())
+            .materialType(p.getMaterialType())
+            .isAvailable(p.getIsAvailable())
+            .imageUrl(p.getImageUrl())
+            .discountPercentage(p.getDiscountPercentage())
+            .gender(p.getGender())
+            .availableStock(p.getAvailableStock())
+            .build();
+  }
+
+  public AddProductResponseDTO mapToProduct(String message) {
+    return AddProductResponseDTO.builder()
+            .response(message)
+            .build();
   }
 }
