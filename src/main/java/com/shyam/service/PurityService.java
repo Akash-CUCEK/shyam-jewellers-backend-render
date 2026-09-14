@@ -8,14 +8,11 @@ import com.shyam.dto.response.GetPurityResponseDTO;
 import java.util.List;
 
 public interface PurityService {
-
   AddPurityResponseDTO addPurity(AddPurityRequestDTO requestDTO);
-
   AddPurityResponseDTO updatePurity(UpdatePurityRequestDTO requestDTO);
-
   AddPurityResponseDTO deletePurity(GetPurityByIdRequestDTO requestDTO);
-
   GetPurityResponseDTO getPurityById(GetPurityByIdRequestDTO requestDTO);
-
   List<GetPurityResponseDTO> getAllPurities();
+  List<GetPurityResponseDTO> getPuritiesByMaterialType(Long materialTypeId);
+  List<GetPurityResponseDTO> getAllActivePurities();
 }

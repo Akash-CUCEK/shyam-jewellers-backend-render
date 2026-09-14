@@ -1,9 +1,18 @@
 package com.shyam.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "material_type")
@@ -15,14 +24,11 @@ import lombok.*;
 public class MaterialType {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "material_type_seq")
-  @SequenceGenerator(
-      name = "material_type_seq",
-      sequenceName = "material_type_seq",
-      allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "material_type_id")
   private Long materialTypeId;
 
-  @Column(nullable = false, unique = true)
+  @Column(name = "name", nullable = false, unique = true)
   private String name;
 
   @Column(name = "created_at", updatable = false)
@@ -37,12 +43,11 @@ public class MaterialType {
   @Column(name = "updated_by")
   private String updatedBy;
 
-  @Column(nullable = false)
+  @Column(name = "status", nullable = false)
   private Boolean status;
 
-  // New fields for making charge
   @Column(name = "making_charge_type", nullable = false)
-  private String makingChargeType; // "FIXED" or "PERCENTAGE"
+  private String makingChargeType;
 
   @Column(name = "making_charge_value", precision = 10, scale = 2)
   private BigDecimal makingChargeValue;

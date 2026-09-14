@@ -16,81 +16,150 @@ java {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // 🌐 Web
+
+    // ========================================
+    // 🌐 WEB
+    // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // 🗄️ JPA / Hibernate
+
+    // ========================================
+    // 🗄️ JPA / HIBERNATE
+    // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // 🔐 Security
+
+    // ========================================
+    // 🛫 DATABASE MIGRATION - FLYWAY
+    // ========================================
+    implementation 'org.flywaydb:flyway-core'
+
+
+    // ========================================
+    // 🔐 SECURITY
+    // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    // 🔑 OAuth2
+
+    // ========================================
+    // 🔑 OAUTH2
+    // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-    // ✉️ Mail
+
+    // ========================================
+    // ✉️ MAIL
+    // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    
+
+    // ========================================
     // 🧾 JWT
+    // ========================================
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+
+    // ========================================
     // 📄 PDF
+    // ========================================
     implementation 'com.itextpdf:itextpdf:5.5.13.3'
 
-    // 📊 Excel
+
+    // ========================================
+    // 📊 EXCEL
+    // ========================================
     implementation 'org.apache.poi:poi-ooxml:5.2.5'
 
-    // 📘 Swagger / OpenAPI
+
+    // ========================================
+    // 📘 SWAGGER / OPENAPI
+    // ========================================
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
-    // 📧 Thymeleaf for email templates
+
+    // ========================================
+    // 📧 THYMELEAF
+    // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-    // 🐘 PostgreSQL
+
+    // ========================================
+    // 🐘 POSTGRESQL
+    // ========================================
     implementation 'org.postgresql:postgresql'
 
-    // ☁️ Cloudinary
+
+    // ========================================
+    // ☁️ CLOUDINARY
+    // ========================================
     implementation 'com.cloudinary:cloudinary-http44:1.32.0'
 
-    // ✅ Validation
+
+    // ========================================
+    // ✅ VALIDATION
+    // ========================================
     implementation 'org.hibernate.validator:hibernate-validator'
 
-    // 🧰 Lombok
+
+    // ========================================
+    // 🧰 LOMBOK
+    // ========================================
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // 🧪 Testing
+
+    // ========================================
+    // 🧪 TESTING
+    // ========================================
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    // H2 for development
+
+    // ========================================
+    // 🧪 H2
+    // ========================================
     runtimeOnly 'com.h2database:h2'
 
-    // Micrometer for metrics
+
+    // ========================================
+    // 📈 MICROMETER / PROMETHEUS
+    // ========================================
     implementation 'io.micrometer:micrometer-core'
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    // For JSON logging
+
+    // ========================================
+    // 📝 JSON LOGGING
+    // ========================================
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
-    // Actuator for exposing metrics and health
+
+    // ========================================
+    // ❤️ ACTUATOR
+    // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+}
 
-    }
 
-
+// ========================================
+// 🧪 TEST CONFIGURATION
+// ========================================
 tasks.named('test') {
     useJUnitPlatform()
 }
 
+
+// ========================================
+// ✨ SPOTLESS
+// ========================================
 spotless {
     java {
         googleJavaFormat('1.18.0')
@@ -98,12 +167,3 @@ spotless {
     }
 }
 
-// Configure Spring Boot plugin
-// springBoot {
-//     excludeDevlets = true
-// }
-
-// Configure the bootJar task to exclude Lombok (though it's compileOnly, just to be safe)
-// bootJar {
-//     exclude('**/lombok/**')
-// }

@@ -1,24 +1,21 @@
 package com.shyam.dto.request;
 
-import com.shyam.entity.MaterialType;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class AddPurityRequestDTO {
-
-  @NotNull private MaterialType materialType;
+  @NotNull(message = "Material type is required")
+  private Long materialTypeId;
 
   @NotBlank(message = "Purity name is required")
   private String purityName;
 
-  @NotNull private BigDecimal purityFactor;
+  @NotNull(message = "Purity factor is required")
+  @DecimalMin(value = "0.0", inclusive = false, message = "Purity factor must be positive")
+  private BigDecimal purityFactor;
 
+  @NotBlank
   private String createdBy;
 }

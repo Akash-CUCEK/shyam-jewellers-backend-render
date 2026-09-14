@@ -1,21 +1,37 @@
-xserver:
+server:
   port: 8080
 
 spring:
   application:
     name: shyam
 
+  # ==============================
+  # PostgreSQL Database
+  # ==============================
   datasource:
     url: jdbc:postgresql://localhost:5473/shyam_jewellers
     username: postgres
     password: Akash@5473
     driver-class-name: org.postgresql.Driver
 
+  # ==============================
+  # Flyway Database Migration
+  # ==============================
+  flyway:
+    enabled: true
+    locations: classpath:migration
+
+  # ==============================
+  # JPA / Hibernate
+  # ==============================
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: ${JPA_SHOW_SQL:true}
 
+  # ==============================
+  # Gmail SMTP
+  # ==============================
   mail:
     host: smtp.gmail.com
     port: 587
@@ -28,33 +44,28 @@ spring:
           starttls:
             enable: true
 
-  
+# ==============================
+# Metal Rate API
+# ==============================
+metals:
+  dev:
+    api:
+      url: https://api.metals.dev/v1/metal/authority
+      key: OQCLYQFASGX6FXT6QIQD199T6QIQD
+
+# ==============================
+# Cloudinary
+# ==============================
 cloudinary:
+  folder: shyam-products
   cloud_name: djaiqzoes
   api_key: 397331224838283
   api_secret: mnjrSFnVGJcZfp1PKDbr7W3bDJs
 
-
-
-
-payment:
-  currency: ${PAYMENT_CURRENCY:INR}
-
-  request-ttl-minutes: ${PAYMENT_REQUEST_TTL_MINUTES:20}
-
-  gateway:
-    provider: ${PAYMENT_GATEWAY_PROVIDER:MOCK}
-
-    signature-secret: ${PAYMENT_GATEWAY_SIGNATURE_SECRET:}
-
-    checkout-base-url: ${PAYMENT_GATEWAY_CHECKOUT_BASE_URL:https://payments.example.local/checkout}
-
-  urls:
-    callback-url: ${PAYMENT_CALLBACK_URL:http://localhost:8080/api/v1/payments/verify}
-
-    success-url: ${PAYMENT_SUCCESS_URL:http://localhost:3000/payment/success}
-
-    failure-url: ${PAYMENT_FAILURE_URL:http://localhost:3000/payment/failure}
-
-
- 
+# ==============================
+# JWT
+# ==============================
+jwt:
+  secret: 12345678901234567890123456789012
+  access-token-expiration-minutes: 5
+  refresh-token-expiration-hours: 5

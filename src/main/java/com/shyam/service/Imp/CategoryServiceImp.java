@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -158,9 +159,9 @@ public class CategoryServiceImp implements CategoryService {
   @Transactional
   public UpdateCategoryResponseDTO deleteCategory(
       GetCategoryByIdRequestDTO updateCategoryRequestDTO) {
-    log.info("Received request for deleting category By Id ");
+    log.info("Received request for deleting category By Id: {}", updateCategoryRequestDTO.getId());
     Category category = categoryDAO.findById(updateCategoryRequestDTO.getId());
-    category.setStatus(Boolean.valueOf("False"));
+    category.setStatus(false);
     categoryDAO.saveCategory(category);
     return CategoryMapper.mapToDeleteCategoryInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_DELETE_CATEGORY));
@@ -234,7 +235,16 @@ public class CategoryServiceImp implements CategoryService {
   @Override
   @Transactional(readOnly = true)
   public GetAllCategoryUserResponseDTO getAllCategoriesUser() {
-    return null;
+    log.info("Processing to get all category for the user");
+    List<Category> categories = categoryDAO.findAllCategory()
+        .stream()
+        .filter(Category::getStatus)
+        .collect(Collectors.toList());
+    List<GetCategoryUserResponseDTO> categoryDTOs =
+        categories.stream().map(categoryMapper::toUserDto).toList();
+    return GetAllCategoryUserResponseDTO.builder()
+        .getCategoryUserResponseDTOS(categoryDTOs)
+        .build();
   }
 
   //  @Override
