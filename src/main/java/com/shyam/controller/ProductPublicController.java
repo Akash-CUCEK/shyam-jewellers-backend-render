@@ -45,7 +45,7 @@ public class ProductPublicController {
         String materialTypeName = null;
         if (categoryId != null) {
             GetCategoryByIdRequestDTO categoryRequest = GetCategoryByIdRequestDTO.builder()
-                    .categoryId(categoryId)
+                    .id(categoryId)
                     .build();
             GetCategoryUserResponseDTO categoryResponse = categoryService.getCategoryUser(categoryRequest);
             if (categoryResponse != null) {

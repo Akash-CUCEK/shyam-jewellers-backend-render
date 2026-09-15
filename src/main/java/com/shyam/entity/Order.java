@@ -1,6 +1,5 @@
 package com.shyam.entity;
 
-import com.shyam.common.constants.OrderStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
