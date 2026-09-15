@@ -1,6 +1,5 @@
 package com.shyam.entity;
 
-import com.shyam.entity.Product;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,25 +23,24 @@ public class ProductVariant {
     private String skuCode;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", referencedColumnName = "productId")
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
     private Product product;
 
     @Column(name = "weight", precision = 10, scale = 3)
     private BigDecimal weight;
 
-    @Column(name = "metal_value", precision = 10, scale = 2)
-    private BigDecimal metalValue;
+    // ⚠️ metalValue aur makingCharge HATA DIYE — ye ab kabhi store nahi honge,
+    // PricingService runtime pe calculate karega
 
-    @Column(name = "making_charge", precision = 10, scale = 2)
-    private BigDecimal makingCharge;
-
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "reserved_quantity")
+    @Column(name = "reserved_quantity", nullable = false)
     private Integer reservedQuantity;
 
-    // Audit fields
+    @Column(name = "status", nullable = false)
+    private String status; // ACTIVE / INACTIVE / OUT_OF_STOCK
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

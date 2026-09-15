@@ -15,16 +15,13 @@ import lombok.*;
 public class OrderItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_item_seq")
-    @SequenceGenerator(name = "order_item_seq", sequenceName = "order_item_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderItemId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", referencedColumnName = "orderId")
+    @JoinColumn(name = "order_id", referencedColumnName = "order_id")   // "orderId" → "order_id"
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_variant_id", referencedColumnName = "variantId")
+    @JoinColumn(name = "product_variant_id", referencedColumnName = "variant_id")  // "variantId" → "variant_id"
     private ProductVariant productVariant;
 
     @Column(name = "quantity")
@@ -36,8 +33,8 @@ public class OrderItem {
     @Column(name = "product_name_snapshot")
     private String productNameSnapshot;
 
-    @Column(name = "weight_snapshot")
-    private String weightSnapshot;
+    @Column(name = "weight_snapshot", precision = 10, scale = 3)
+    private BigDecimal weightSnapshot;
 
     @Column(name = "metal_value_snapshot", precision = 10, scale = 2)
     private BigDecimal metalValueSnapshot;

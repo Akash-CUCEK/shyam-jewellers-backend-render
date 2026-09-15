@@ -15,8 +15,7 @@ import lombok.*;
 public class MetalRate {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "metal_rate_seq")
-  @SequenceGenerator(name = "metal_rate_seq", sequenceName = "metal_rate_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)

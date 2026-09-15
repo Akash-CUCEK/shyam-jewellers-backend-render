@@ -1,0 +1,20 @@
+CREATE TABLE "order" (
+                         order_id BIGSERIAL PRIMARY KEY,
+                         order_number VARCHAR(100) NOT NULL UNIQUE,
+                         user_id BIGINT NOT NULL,
+                         address_id BIGINT,
+                         shipping_address_line1_snapshot VARCHAR(500),
+                         shipping_address_line2_snapshot VARCHAR(500),
+                         city_snapshot VARCHAR(255),
+                         state_snapshot VARCHAR(255),
+                         pincode_snapshot VARCHAR(20),
+                         phone_number_snapshot VARCHAR(20),
+                         total_amount NUMERIC(10,2),
+                         status VARCHAR(30) NOT NULL,
+                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                         created_by VARCHAR(255),
+                         updated_at TIMESTAMP,
+                         updated_by VARCHAR(255),
+                         CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT,
+                         CONSTRAINT fk_order_address FOREIGN KEY (address_id) REFERENCES address(address_id) ON DELETE SET NULL
+);
