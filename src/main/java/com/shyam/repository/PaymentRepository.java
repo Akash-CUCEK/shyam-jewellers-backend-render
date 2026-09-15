@@ -11,4 +11,5 @@ public interface PaymentRepository
                 JpaSpecificationExecutor<Payment> {
 
     Payment findByRazorpayOrderId(String razorpayOrderId);
+    Payment findByOrder_OrderId(Long orderId);
 }

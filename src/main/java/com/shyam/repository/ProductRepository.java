@@ -12,11 +12,4 @@ public interface ProductRepository
         extends JpaRepository<Product, Long>,
         JpaSpecificationExecutor<Product> {
 
-    boolean existsByProductName(String productName);
-
-    Page<Product> findByStatusAndCategory_CategoryId(
-            String status,
-            Long categoryId,
-            Pageable pageable
-    );
 }

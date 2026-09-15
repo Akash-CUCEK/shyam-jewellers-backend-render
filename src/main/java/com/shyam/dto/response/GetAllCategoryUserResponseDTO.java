@@ -9,5 +9,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetAllCategoryUserResponseDTO {
-  private List<GetCategoryUserResponseDTO> getCategoryUserResponseDTOS;
+  private List<GetCategoryUserResponseDTO> categories;
 }

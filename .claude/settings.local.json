@@ -23,7 +23,8 @@
       "Bash(pkill *)",
       "Bash(git log *)",
       "Bash(/usr/bin/find C:2026Shyam-JewellersBackendshyam-jewellers-backend *)",
-      "Bash(/usr/bin/find *)"
+      "Bash(/usr/bin/find *)",
+      "Bash(rtk mvn *)"
     ]
   }
 }

@@ -23,14 +23,11 @@ public class ProductVariant {
     private String skuCode;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(name = "weight", precision = 10, scale = 3)
     private BigDecimal weight;
-
-    // ⚠️ metalValue aur makingCharge HATA DIYE — ye ab kabhi store nahi honge,
-    // PricingService runtime pe calculate karega
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

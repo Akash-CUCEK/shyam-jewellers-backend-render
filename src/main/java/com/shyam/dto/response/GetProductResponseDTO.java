@@ -55,7 +55,7 @@ public class GetProductResponseDTO {
                 .makingChargeType(product.getMakingChargeType())
                 .makingChargeValue(product.getMakingChargeValue())
                 .description(product.getDescription())
-                .status(product.getStatus())
+                .status(product.getStatus().name())
                 .hallmarkCertified(product.getHallmarkCertified())
                 .certificationNumber(product.getCertificationNumber())
                 .discountType(product.getDiscountType())

@@ -1,5 +1,6 @@
 package com.shyam.entity;
 
+import com.shyam.common.constants.ProductStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,8 +17,8 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id")
     private Long productId;
-
     @Column(name = "product_name", nullable = false, unique = true)
     private String productName;
 
@@ -42,8 +43,9 @@ public class Product {
     @Column(name = "description", length = 500)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private ProductStatus status;
 
     @Column(name = "hallmark_certified", nullable = false)
     private Boolean hallmarkCertified;

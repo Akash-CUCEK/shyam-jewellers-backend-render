@@ -11,6 +11,8 @@ CREATE TABLE "order" (
                          phone_number_snapshot VARCHAR(20),
                          total_amount NUMERIC(10,2),
                          status VARCHAR(30) NOT NULL,
+                         order_source VARCHAR(20) NOT NULL DEFAULT 'ONLINE',
+                         payment_status VARCHAR(20) NOT NULL DEFAULT 'UNPAID',
                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                          created_by VARCHAR(255),
                          updated_at TIMESTAMP,

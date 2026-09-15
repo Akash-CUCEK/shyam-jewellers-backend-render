@@ -4,7 +4,7 @@ import com.shyam.common.exception.domain.SYMErrorType;
 import com.shyam.common.exception.domain.SYMException;
 import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.entity.Users;
-import com.shyam.repository.UsersRepo;
+import com.shyam.repository.UsersRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class UserDAO {
-  private final UsersRepo usersRepo;
+  private final UsersRepository usersRepository;
 
   public Users findUser(String email) {
     log.debug("Finding user with email: {}", email);
 
-    return usersRepo
+    return usersRepository
         .findByEmail(email)
         .orElseThrow(
             () ->
@@ -33,13 +33,13 @@ public class UserDAO {
   }
 
   public Optional<Users> findOnlyUser(String email) {
-    return usersRepo.findByEmail(email);
+    return usersRepository.findByEmail(email);
   }
 
   public Users save(Users user) {
     try {
       log.debug("Saving the user: {}", user.getEmail());
-      usersRepo.save(user);
+      usersRepository.save(user);
       return user;
     } catch (Exception e) {
       log.error("Error while saving user: {}", user.getEmail(), e);

@@ -3,7 +3,7 @@ package com.shyam.common.jwt;
 import com.shyam.entity.AdminUsers;
 import com.shyam.entity.Users;
 import com.shyam.repository.AdminRepository;
-import com.shyam.repository.UsersRepo;
+import com.shyam.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl {
 
   private final AdminRepository adminRepository;
-  private final UsersRepo usersRepo;
+  private final UsersRepository usersRepository;
 
   public UserDetails loadUserByUsername(String username, String role)
       throws UsernameNotFoundException {
@@ -49,7 +49,7 @@ public class UserDetailsServiceImpl {
 
       case "USER" -> {
         Users user =
-            usersRepo
+            usersRepository
                 .findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 

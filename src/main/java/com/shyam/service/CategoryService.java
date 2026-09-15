@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface CategoryService {
 
-  Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(int page, int size);
+  Page<GetCategoriesResponseDTO> getAllCategories(int page, int size);
 
   AddCategoryResponseDTO addCategories(AddCategoryRequestDTO addCategoryRequestDTO);
 

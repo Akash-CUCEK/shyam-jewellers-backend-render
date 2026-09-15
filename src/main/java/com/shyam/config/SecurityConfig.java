@@ -44,6 +44,8 @@ public class SecurityConfig {
                         "/auth/api/v1/admin/verifyPasswordOtp",
                         "/api/v1/public/**")
                     .permitAll()
+                    .requestMatchers("/categories/**")
+                    .permitAll()
                     .requestMatchers("/api/v1/auth/**")
                     .permitAll()
                     .requestMatchers(

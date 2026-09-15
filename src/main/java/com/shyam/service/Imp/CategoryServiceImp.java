@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -51,19 +51,20 @@ public class CategoryServiceImp implements CategoryService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(int page, int size) {
+  public Page<GetCategoriesResponseDTO> getAllCategories(int page, int size) {
 
-    log.info("Processing the request for get category");
+    log.info("Processing the request for get category, page: {}, size: {}", page, size);
 
     Pageable pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Order.desc("updatedAt").nullsLast()));
+            PageRequest.of(page, size, Sort.by(Sort.Order.desc("updatedAt").nullsLast()));
 
     Page<Category> categoryPage = categoryDAO.findAllCategoryPage(pageable);
 
-    return categoryPage.map(
-        category -> new BaseResponseDTO<>(categoryMapper.toGetCategoryResponseDTO(category), null));
-  }
+    Page<GetCategoriesResponseDTO> result = categoryPage.map(categoryMapper::toGetCategoryResponseDTO);
 
+    log.info("Successfully fetched {} categories for page: {}", result.getNumberOfElements(), page);
+    return result;
+  }
   @Override
   @Transactional
   public AddCategoryResponseDTO addCategories(AddCategoryRequestDTO addCategoryRequestDTO) {
@@ -100,16 +101,7 @@ public class CategoryServiceImp implements CategoryService {
   @Override
   @Transactional
   public UpdateCategoryResponseDTO updateCategoryRequestDTO(UpdateCategoryRequestDTO dto) {
-
-    log.info("========================================");
-    log.info("Processing the request for updating category");
-    log.info("CATEGORY ID: {}", dto.getId());
-    log.info("NEW NAME: {}", dto.getName());
-
-    // =====================================================
-    // FIND CATEGORY BY ID
-    // =====================================================
-
+ log.info("Processing the request for updating category");
     Category category = categoryDAO.findById(dto.getId());
 
     if (category == null) {
@@ -118,39 +110,16 @@ public class CategoryServiceImp implements CategoryService {
 
       throw new RuntimeException("Category not found with id: " + dto.getId());
     }
-
-    // =====================================================
-    // UPDATE BASIC DETAILS
-    // =====================================================
-
     category.setName(dto.getName());
     category.setStatus(dto.getStatus());
     category.setShowOnHome(dto.getShowOnHome());
-
-    // =====================================================
-    // IMAGE
-    // =====================================================
-    // New image URL only if frontend uploaded a new image.
-    // Otherwise keep existing image.
-
     if (dto.getImageUrl() != null && !dto.getImageUrl().trim().isEmpty()) {
 
       category.setImageUrl(dto.getImageUrl());
     }
-
-    // =====================================================
-    // AUDIT DETAILS
-    // =====================================================
-
     category.setUpdatedAt(LocalDateTime.now());
     category.setUpdatedBy(dto.getUpdatedBy());
-
-    // =====================================================
-    // SAVE
-    // =====================================================
-
     categoryDAO.saveCategory(category);
-
     return categoryMapper.mapToUpdateCategoryInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_UPDATE_CATEGORY));
   }
@@ -239,25 +208,15 @@ public class CategoryServiceImp implements CategoryService {
     List<Category> categories = categoryDAO.findAllCategory()
         .stream()
         .filter(Category::getStatus)
-        .collect(Collectors.toList());
+        .toList();
     List<GetCategoryUserResponseDTO> categoryDTOs =
         categories.stream().map(categoryMapper::toUserDto).toList();
     return GetAllCategoryUserResponseDTO.builder()
-        .getCategoryUserResponseDTOS(categoryDTOs)
+        .categories(categoryDTOs)
         .build();
   }
 
-  //  @Override
-  //  public GetAllCategoryUserResponseDTO getAllCategoriesUser() {
-  //    log.info("Processing to get all category for the user");
-  //    List<Category> categories = categoryDAO.findAllCategory();
-  //    List<GetCategoryUserResponseDTO> categoryDTOs =
-  //        categories.stream().map(categoryMapper::toUserDto).toList();
-  //    return GetAllCategoryUserResponseDTO.builder()
-  //        .getCategoryUserResponseDTOS(categoryDTOs)
-  //        .build();
-  //  }
-
+  
   @Override
   @Transactional(readOnly = true)
   public GetCategoryUserResponseDTO getCategoryUser(

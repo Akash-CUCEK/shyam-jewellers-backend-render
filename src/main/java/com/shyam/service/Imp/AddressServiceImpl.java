@@ -4,6 +4,7 @@ import com.shyam.entity.Address;
 import com.shyam.entity.Users;
 import com.shyam.repository.AddressRepository;
 import com.shyam.service.AddressService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

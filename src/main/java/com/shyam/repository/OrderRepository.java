@@ -1,5 +1,6 @@
 package com.shyam.repository;
 
+import com.shyam.common.constants.OrderStatus;
 import com.shyam.entity.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

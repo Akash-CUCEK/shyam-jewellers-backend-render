@@ -15,9 +15,11 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "address_id")
     private Long addressId;
 
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")   // "userId" → "user_id"
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private Users user;
 
     @Column(name = "address_label")
