@@ -4,51 +4,52 @@ import java.math.BigDecimal;
 
 // DTO for order checkout response
 public class OrderCheckoutResponse {
-    private Long orderId;
-    private String orderNumber;
-    private BigDecimal totalAmount;
-    private String razorpayOrderId;
-    private BigDecimal razorpayAmount;
-    // Add other fields as needed
+  private Long orderId;
+  private String orderNumber;
+  private BigDecimal totalAmount;
+  private String razorpayOrderId;
+  private BigDecimal razorpayAmount;
 
-    // Getters and setters
-    public Long getOrderId() {
-        return orderId;
-    }
+  // Add other fields as needed
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
+  // Getters and setters
+  public Long getOrderId() {
+    return orderId;
+  }
 
-    public String getOrderNumber() {
-        return orderNumber;
-    }
+  public void setOrderId(Long orderId) {
+    this.orderId = orderId;
+  }
 
-    public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
-    }
+  public String getOrderNumber() {
+    return orderNumber;
+  }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
+  public void setOrderNumber(String orderNumber) {
+    this.orderNumber = orderNumber;
+  }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
+  public BigDecimal getTotalAmount() {
+    return totalAmount;
+  }
 
-    public String getRazorpayOrderId() {
-        return razorpayOrderId;
-    }
+  public void setTotalAmount(BigDecimal totalAmount) {
+    this.totalAmount = totalAmount;
+  }
 
-    public void setRazorpayOrderId(String razorpayOrderId) {
-        this.razorpayOrderId = razorpayOrderId;
-    }
+  public String getRazorpayOrderId() {
+    return razorpayOrderId;
+  }
 
-    public BigDecimal getRazorpayAmount() {
-        return razorpayAmount;
-    }
+  public void setRazorpayOrderId(String razorpayOrderId) {
+    this.razorpayOrderId = razorpayOrderId;
+  }
 
-    public void setRazorpayAmount(BigDecimal razorpayAmount) {
-        this.razorpayAmount = razorpayAmount;
-    }
+  public BigDecimal getRazorpayAmount() {
+    return razorpayAmount;
+  }
+
+  public void setRazorpayAmount(BigDecimal razorpayAmount) {
+    this.razorpayAmount = razorpayAmount;
+  }
 }

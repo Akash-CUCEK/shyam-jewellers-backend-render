@@ -4,7 +4,11 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import lombok.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AddPurityRequestDTO {
   @NotNull(message = "Material type is required")
   private Long materialTypeId;
@@ -16,6 +20,5 @@ public class AddPurityRequestDTO {
   @DecimalMin(value = "0.0", inclusive = false, message = "Purity factor must be positive")
   private BigDecimal purityFactor;
 
-  @NotBlank
-  private String createdBy;
+  @NotBlank private String createdBy;
 }

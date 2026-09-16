@@ -10,21 +10,21 @@ import lombok.*;
 @Builder
 public class PricingResultDto {
 
-    private Long productId;
+  private Long productId;
 
-    private BigDecimal grossWeight;
+  private BigDecimal grossWeight;
 
-    private BigDecimal netWeight;
+  private BigDecimal netWeight;
 
-    private BigDecimal metalRate;
+  private BigDecimal metalRate;
 
-    private BigDecimal purity;
+  private BigDecimal purity;
 
-    private BigDecimal purityFactor;
+  private BigDecimal purityFactor;
 
-    private BigDecimal metalValue;
+  private BigDecimal metalValue;
 
-    private BigDecimal makingCharge;
+  private BigDecimal makingCharge;
 
-    private BigDecimal finalPrice;
+  private BigDecimal finalPrice;
 }

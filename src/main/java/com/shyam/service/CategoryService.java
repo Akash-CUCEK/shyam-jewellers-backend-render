@@ -1,6 +1,5 @@
 package com.shyam.service;
 
-import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.dto.request.AddCategoryRequestDTO;
 import com.shyam.dto.request.GetCategoryByIdRequestDTO;
 import com.shyam.dto.request.UpdateCategoryRequestDTO;

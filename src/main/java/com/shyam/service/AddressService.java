@@ -6,15 +6,15 @@ import org.springframework.data.domain.Pageable;
 
 public interface AddressService {
 
-    Address save(Address address);
+  Address save(Address address);
 
-    Address findById(Long id);
+  Address findById(Long id);
 
-    Page<Address> findAll(Pageable pageable);
+  Page<Address> findAll(Pageable pageable);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 
-    Address update(Address address);
+  Address update(Address address);
 
-    Address setDefaultAddress(Long addressId, Long userId);
+  Address setDefaultAddress(Long addressId, Long userId);
 }

@@ -27,7 +27,12 @@
       "Bash(rtk mvn *)",
       "Bash(xargs grep -l \"@Test\")",
       "Bash(./gradlew :compileTestJava --info)",
-      "Bash(dir *)"
+      "Bash(dir *)",
+      "Bash(curl -s https://repo1.maven.org/maven2/com/razorpay/razorpay-java/maven-metadata.xml)",
+      "PowerShell(.\\\\gradlew.bat test --tests PricingServiceImplTest)",
+      "PowerShell(.\\\\gradlew.bat -q dependencies --configuration testImplementation | findstr junit)",
+      "PowerShell(.\\\\gradlew.bat dependencies --configuration testImplementation)",
+      "PowerShell(.\\\\gradlew.bat test --tests ShyamApplicationTests)"
     ]
   }
 }

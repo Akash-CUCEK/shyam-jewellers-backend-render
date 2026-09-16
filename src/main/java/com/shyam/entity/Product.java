@@ -15,62 +15,63 @@ import lombok.*;
 @Builder
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
-    private Long productId;
-    @Column(name = "product_name", nullable = false, unique = true)
-    private String productName;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "product_id")
+  private Long productId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+  @Column(name = "product_name", nullable = false, unique = true)
+  private String productName;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "material_type_id", nullable = false)
-    private MaterialType materialType;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "category_id", nullable = false)
+  private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "purity_id", nullable = false)
-    private Purity purity;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "material_type_id", nullable = false)
+  private MaterialType materialType;
 
-    @Column(name = "making_charge_type", nullable = false)
-    private String makingChargeType;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "purity_id", nullable = false)
+  private Purity purity;
 
-    @Column(name = "making_charge_value", nullable = false, precision = 10, scale = 2)
-    private BigDecimal makingChargeValue;
+  @Column(name = "making_charge_type", nullable = false)
+  private String makingChargeType;
 
-    @Column(name = "description", length = 500)
-    private String description;
+  @Column(name = "making_charge_value", nullable = false, precision = 10, scale = 2)
+  private BigDecimal makingChargeValue;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private ProductStatus status;
+  @Column(name = "description", length = 500)
+  private String description;
 
-    @Column(name = "hallmark_certified", nullable = false)
-    private Boolean hallmarkCertified;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private ProductStatus status;
 
-    @Column(name = "certification_number", length = 100)
-    private String certificationNumber;
+  @Column(name = "hallmark_certified", nullable = false)
+  private Boolean hallmarkCertified;
 
-    @Column(name = "discount_type", length = 20)
-    private String discountType;
+  @Column(name = "certification_number", length = 100)
+  private String certificationNumber;
 
-    @Column(name = "discount_value", precision = 10, scale = 2)
-    private BigDecimal discountValue;
+  @Column(name = "discount_type", length = 20)
+  private String discountType;
 
-    @Column(name = "discount_valid_till")
-    private LocalDateTime discountValidTill;
+  @Column(name = "discount_value", precision = 10, scale = 2)
+  private BigDecimal discountValue;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+  @Column(name = "discount_valid_till")
+  private LocalDateTime discountValidTill;
 
-    @Column(name = "created_by", updatable = false)
-    private String createdBy;
+  @Column(name = "created_at", updatable = false)
+  private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+  @Column(name = "created_by", updatable = false)
+  private String createdBy;
 
-    @Column(name = "updated_by")
-    private String updatedBy;
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
+
+  @Column(name = "updated_by")
+  private String updatedBy;
 }

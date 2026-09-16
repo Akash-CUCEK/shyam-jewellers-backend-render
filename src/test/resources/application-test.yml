@@ -1,4 +1,7 @@
 spring:
+  application:
+    name: shyam-test
+
   datasource:
     url: jdbc:h2:mem:shyam_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
     username: sa
@@ -26,12 +29,25 @@ spring:
     ssl: false
 
 cloudinary:
+  folder: test
   cloud_name: test
   api_key: test
   api_secret: test
 
 jwt:
   secret: test-jwt-secret-for-context-loads-32bytes
+  access-token-expiration-minutes: 5
+  refresh-token-expiration-hours: 5
+
+metals:
+  dev:
+    api:
+      url: https://test.example.com
+      key: test-metal-api-key
+
+razorpay:
+  key-id: test-key-id
+  key-secret: test-key-secret
 
 payment:
   currency: INR

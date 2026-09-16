@@ -20,10 +20,8 @@ import lombok.Setter;
 
 @Entity
 @Table(
-        name = "purity",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"material_type_id", "purity_name"})
-        })
+    name = "purity",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"material_type_id", "purity_name"})})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,9 +36,9 @@ public class Purity {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(
-          name = "material_type_id",
-          referencedColumnName = "material_type_id",
-          nullable = false)
+      name = "material_type_id",
+      referencedColumnName = "material_type_id",
+      nullable = false)
   private MaterialType materialType;
 
   @Column(name = "purity_name", nullable = false)

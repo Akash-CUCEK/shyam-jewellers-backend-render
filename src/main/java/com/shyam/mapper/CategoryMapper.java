@@ -4,7 +4,6 @@ import com.shyam.dto.request.AddCategoryRequestDTO;
 import com.shyam.dto.response.*;
 import com.shyam.entity.Category;
 import java.time.LocalDateTime;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,7 +34,6 @@ public class CategoryMapper {
         .showOnHome(category.getShowOnHome())
         .build();
   }
-
 
   public static Category addCategories(AddCategoryRequestDTO addCategoryRequestDTO) {
     log.debug("Started to save new category");

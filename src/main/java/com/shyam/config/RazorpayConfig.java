@@ -7,22 +7,22 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "razorpay")
 public class RazorpayConfig {
 
-    private String keyId;
-    private String keySecret;
+  private String keyId;
+  private String keySecret;
 
-    public String getKeyId() {
-        return keyId;
-    }
+  public String getKeyId() {
+    return keyId;
+  }
 
-    public void setKeyId(String keyId) {
-        this.keyId = keyId;
-    }
+  public void setKeyId(String keyId) {
+    this.keyId = keyId;
+  }
 
-    public String getKeySecret() {
-        return keySecret;
-    }
+  public String getKeySecret() {
+    return keySecret;
+  }
 
-    public void setKeySecret(String keySecret) {
-        this.keySecret = keySecret;
-    }
+  public void setKeySecret(String keySecret) {
+    this.keySecret = keySecret;
+  }
 }

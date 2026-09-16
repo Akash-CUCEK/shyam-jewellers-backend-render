@@ -4,7 +4,6 @@ import static com.shyam.constants.MessageConstant.*;
 
 import com.shyam.common.exception.domain.SYMErrorType;
 import com.shyam.common.exception.domain.SYMException;
-import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.common.util.MessageSourceUtil;
 import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.dao.CategoryDAO;
@@ -21,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -56,15 +54,17 @@ public class CategoryServiceImp implements CategoryService {
     log.info("Processing the request for get category, page: {}, size: {}", page, size);
 
     Pageable pageable =
-            PageRequest.of(page, size, Sort.by(Sort.Order.desc("updatedAt").nullsLast()));
+        PageRequest.of(page, size, Sort.by(Sort.Order.desc("updatedAt").nullsLast()));
 
     Page<Category> categoryPage = categoryDAO.findAllCategoryPage(pageable);
 
-    Page<GetCategoriesResponseDTO> result = categoryPage.map(categoryMapper::toGetCategoryResponseDTO);
+    Page<GetCategoriesResponseDTO> result =
+        categoryPage.map(categoryMapper::toGetCategoryResponseDTO);
 
     log.info("Successfully fetched {} categories for page: {}", result.getNumberOfElements(), page);
     return result;
   }
+
   @Override
   @Transactional
   public AddCategoryResponseDTO addCategories(AddCategoryRequestDTO addCategoryRequestDTO) {
@@ -101,7 +101,7 @@ public class CategoryServiceImp implements CategoryService {
   @Override
   @Transactional
   public UpdateCategoryResponseDTO updateCategoryRequestDTO(UpdateCategoryRequestDTO dto) {
- log.info("Processing the request for updating category");
+    log.info("Processing the request for updating category");
     Category category = categoryDAO.findById(dto.getId());
 
     if (category == null) {
@@ -205,18 +205,13 @@ public class CategoryServiceImp implements CategoryService {
   @Transactional(readOnly = true)
   public GetAllCategoryUserResponseDTO getAllCategoriesUser() {
     log.info("Processing to get all category for the user");
-    List<Category> categories = categoryDAO.findAllCategory()
-        .stream()
-        .filter(Category::getStatus)
-        .toList();
+    List<Category> categories =
+        categoryDAO.findAllCategory().stream().filter(Category::getStatus).toList();
     List<GetCategoryUserResponseDTO> categoryDTOs =
         categories.stream().map(categoryMapper::toUserDto).toList();
-    return GetAllCategoryUserResponseDTO.builder()
-        .categories(categoryDTOs)
-        .build();
+    return GetAllCategoryUserResponseDTO.builder().categories(categoryDTOs).build();
   }
 
-  
   @Override
   @Transactional(readOnly = true)
   public GetCategoryUserResponseDTO getCategoryUser(

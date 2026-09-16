@@ -118,6 +118,8 @@ dependencies {
     // ========================================
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
 
 
     // ========================================
@@ -136,13 +138,17 @@ dependencies {
     // ========================================
     // 💳 RAZORPAY PAYMENT GATEWAY
     // ========================================
-    implementation 'com.razorpay:razorpay-java:1.4.8'
-
+    implementation 'com.razorpay:razorpay-java:1.4.10'
 
     // ========================================
     // 📝 JSON LOGGING
     // ========================================
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+
+    // ========================================
+    // org.json for JSONObject
+    // ========================================
+    implementation 'org.json:json:20230227'
 
 
     // ========================================

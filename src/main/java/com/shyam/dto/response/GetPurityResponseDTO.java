@@ -6,7 +6,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class GetPurityResponseDTO {
   private Long purityId;
   private Long materialTypeId;
@@ -21,16 +25,16 @@ public class GetPurityResponseDTO {
 
   public static GetPurityResponseDTO fromEntity(Purity purity) {
     return GetPurityResponseDTO.builder()
-            .purityId(purity.getPurityId())
-            .materialTypeId(purity.getMaterialType().getMaterialTypeId())
-            .materialTypeName(purity.getMaterialType().getName())
-            .purityName(purity.getPurityName())
-            .purityFactor(purity.getPurityFactor())
-            .status(purity.getStatus())
-            .createdBy(purity.getCreatedBy())
-            .createdAt(purity.getCreatedAt())
-            .updatedBy(purity.getUpdatedBy())
-            .updatedAt(purity.getUpdatedAt())
-            .build();
+        .purityId(purity.getPurityId())
+        .materialTypeId(purity.getMaterialType().getMaterialTypeId())
+        .materialTypeName(purity.getMaterialType().getName())
+        .purityName(purity.getPurityName())
+        .purityFactor(purity.getPurityFactor())
+        .status(purity.getStatus())
+        .createdBy(purity.getCreatedBy())
+        .createdAt(purity.getCreatedAt())
+        .updatedBy(purity.getUpdatedBy())
+        .updatedAt(purity.getUpdatedAt())
+        .build();
   }
 }

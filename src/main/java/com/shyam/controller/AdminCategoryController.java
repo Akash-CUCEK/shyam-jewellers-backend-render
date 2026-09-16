@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,154 +40,171 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "Admin Category", description = "Admin category management endpoints")
 public class AdminCategoryController {
 
-    private final CategoryService categoryService;
-    private final CloudinaryService cloudinaryService;
-    private final Validator validator;
+  private final CategoryService categoryService;
+  private final CloudinaryService cloudinaryService;
+  private final Validator validator;
 
-    @Operation(summary = "Get all categories", description = "Retrieve a paginated list of all categories.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful retrieval",
-                    content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden - insufficient role", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    public BaseResponseDTO<Page<GetCategoriesResponseDTO>> getAllCategories(
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        log.info("Received request for getting all categories, page: {}, size: {}", page, size);
-        Page<GetCategoriesResponseDTO> categories = categoryService.getAllCategories(page, size);
-        log.info("Successfully retrieved all categories, page: {}, size: {}", page, size);
-        return new BaseResponseDTO<>(categories, null);
+  @Operation(
+      summary = "Get all categories",
+      description = "Retrieve a paginated list of all categories.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successful retrieval",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
+  @GetMapping
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  public BaseResponseDTO<Page<GetCategoriesResponseDTO>> getAllCategories(
+      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    log.debug("Entering getAllCategories method with page: {}, size: {}", page, size);
+    Page<GetCategoriesResponseDTO> categories = categoryService.getAllCategories(page, size);
+    log.info("Successfully retrieved all categories, page: {}, size: {}", page, size);
+    log.debug("Exiting getAllCategories method");
+    return new BaseResponseDTO<>(categories, null);
+  }
+
+  @Operation(summary = "Add category", description = "Add a new category.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Category added successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(
+        responseCode = "400",
+        description = "Validation failed or duplicate name",
+        content = @Content),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  @PostMapping(value = "/addCategory", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public BaseResponseDTO<AddCategoryResponseDTO> addCategories(
+      @RequestParam("image") MultipartFile image,
+      @RequestParam("data") String addCategoryRequestDTOJson)
+      throws JsonProcessingException {
+    log.debug("Entering addCategories method");
+    log.info("Received request for adding category");
+
+    if (image == null || image.isEmpty()) {
+      log.error("Category image is empty");
+      throw new SYMException(
+          HttpStatus.BAD_REQUEST,
+          SYMErrorType.VALIDATION_FAILED,
+          ErrorCodeConstants.ERROR_CODE_VALIDATION,
+          "Category image is required.",
+          "Category image is empty");
     }
 
-    @Operation(summary = "Add category", description = "Add a new category.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Category added successfully",
-                    content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Validation failed or duplicate name", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden - insufficient role", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @PostMapping(value = "/addCategory", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponseDTO<AddCategoryResponseDTO> addCategories(
-            @RequestParam("image") MultipartFile image,
-            @RequestParam("data") String addCategoryRequestDTOJson)
-            throws JsonProcessingException {
-        log.info("Received request for adding category");
+    String imageUrl = cloudinaryService.upload(image);
+    log.debug("Image uploaded to Cloudinary, url: {}", imageUrl);
 
-        if (image == null || image.isEmpty()) {
-            throw new SYMException(
-                    HttpStatus.BAD_REQUEST,
-                    SYMErrorType.VALIDATION_FAILED,
-                    ErrorCodeConstants.ERROR_CODE_VALIDATION,
-                    "Category image is required.",
-                    "Category image is empty");
-        }
+    ObjectMapper mapper = new ObjectMapper();
+    AddCategoryRequestDTO addCategoryRequestDTO =
+        mapper.readValue(addCategoryRequestDTOJson, AddCategoryRequestDTO.class);
+    addCategoryRequestDTO.setImageUrl(imageUrl);
 
-        String imageUrl = cloudinaryService.upload(image);
+    validateOrThrow(addCategoryRequestDTO);
 
-        ObjectMapper mapper = new ObjectMapper();
-        AddCategoryRequestDTO addCategoryRequestDTO =
-                mapper.readValue(addCategoryRequestDTOJson, AddCategoryRequestDTO.class);
-        addCategoryRequestDTO.setImageUrl(imageUrl);
+    var response = categoryService.addCategories(addCategoryRequestDTO);
+    log.info("Category added successfully with imageUrl: {}", imageUrl);
+    log.debug("Exiting addCategories method");
+    return new BaseResponseDTO<>(response, null);
+  }
 
-        validateOrThrow(addCategoryRequestDTO);
+  @Operation(summary = "Update category", description = "Update an existing category.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Category updated successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  @PutMapping(value = "/updateCategory", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public BaseResponseDTO<UpdateCategoryResponseDTO> updateCategories(
+      @RequestParam(value = "image", required = false) MultipartFile image,
+      @RequestParam("data") String updateCategoryRequestDTOJson)
+      throws JsonProcessingException {
+    log.debug("Entering updateCategories method");
+    log.info("Received request for updating category");
 
-        var response = categoryService.addCategories(addCategoryRequestDTO);
-        log.info("Category added successfully with imageUrl: {}", imageUrl);
-        return new BaseResponseDTO<>(response, null);
+    ObjectMapper mapper = new ObjectMapper();
+    UpdateCategoryRequestDTO updateCategoryRequestDTO =
+        mapper.readValue(updateCategoryRequestDTOJson, UpdateCategoryRequestDTO.class);
+
+    if (image != null && !image.isEmpty()) {
+      String imageUrl = cloudinaryService.upload(image);
+      updateCategoryRequestDTO.setImageUrl(imageUrl);
+      log.debug("Image uploaded to Cloudinary, url: {}", imageUrl);
     }
 
-    @Operation(summary = "Update category", description = "Update an existing category.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Category updated successfully",
-                    content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden - insufficient role", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @PutMapping(value = "/updateCategory", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponseDTO<UpdateCategoryResponseDTO> updateCategories(
-            @RequestParam(value = "image", required = false) MultipartFile image,
-            @RequestParam("data") String updateCategoryRequestDTOJson)
-            throws JsonProcessingException {
-        log.info("Received request for updating category");
+    validateOrThrow(updateCategoryRequestDTO);
 
-        ObjectMapper mapper = new ObjectMapper();
-        UpdateCategoryRequestDTO updateCategoryRequestDTO =
-                mapper.readValue(updateCategoryRequestDTOJson, UpdateCategoryRequestDTO.class);
+    var response = categoryService.updateCategoryRequestDTO(updateCategoryRequestDTO);
+    log.info("Category updated successfully with id: {}", updateCategoryRequestDTO.getId());
+    log.debug("Exiting updateCategories method");
+    return new BaseResponseDTO<>(response, null);
+  }
 
-        if (image != null && !image.isEmpty()) {
-            String imageUrl = cloudinaryService.upload(image);
-            updateCategoryRequestDTO.setImageUrl(imageUrl);
-        }
+  @Operation(summary = "Delete category", description = "Delete a category by its ID.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Category deleted successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "404", description = "Category not found", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
+  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  @DeleteMapping("/{categoryId}")
+  public BaseResponseDTO<UpdateCategoryResponseDTO> deleteCategory(@PathVariable Long categoryId) {
+    log.debug("Entering deleteCategory method with categoryId: {}", categoryId);
+    log.info("Received request for deleting category with id: {}", categoryId);
+    GetCategoryByIdRequestDTO requestDTO = new GetCategoryByIdRequestDTO();
+    requestDTO.setId(categoryId);
+    var response = categoryService.deleteCategory(requestDTO);
+    log.info("Category deleted successfully with id: {}", categoryId);
+    log.debug("Exiting deleteCategory method");
+    return new BaseResponseDTO<>(response, null);
+  }
 
-        validateOrThrow(updateCategoryRequestDTO);
-
-        var response = categoryService.updateCategoryRequestDTO(updateCategoryRequestDTO);
-        log.info("Category updated successfully with id: {}", updateCategoryRequestDTO.getId());
-        return new BaseResponseDTO<>(response, null);
+  // ===== Common validation helper (SYMException consistent throughout) =====
+  private <T> void validateOrThrow(T dto) {
+    Set<ConstraintViolation<T>> violations = validator.validate(dto);
+    if (!violations.isEmpty()) {
+      String errorMessage =
+          violations.stream()
+              .map(v -> v.getPropertyPath() + " " + v.getMessage())
+              .collect(Collectors.joining(", "));
+      throw new SYMException(
+          HttpStatus.BAD_REQUEST,
+          SYMErrorType.VALIDATION_FAILED,
+          ErrorCodeConstants.ERROR_CODE_VALIDATION,
+          "Validation failed: " + errorMessage,
+          errorMessage);
     }
-
-    @Operation(summary = "Delete category", description = "Delete a category by its ID.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Category deleted successfully",
-                    content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden - insufficient role", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @DeleteMapping("/{categoryId}")
-    public BaseResponseDTO<UpdateCategoryResponseDTO> deleteCategory(@PathVariable Long categoryId) {
-        log.info("Received request for deleting category with id: {}", categoryId);
-        GetCategoryByIdRequestDTO requestDTO = new GetCategoryByIdRequestDTO();
-        requestDTO.setId(categoryId);
-        var response = categoryService.deleteCategory(requestDTO);
-        log.info("Category deleted successfully with id: {}", categoryId);
-        return new BaseResponseDTO<>(response, null);
-    }
-
-    @Operation(summary = "Upload Excel", description = "Upload an Excel file to bulk-add categories.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Excel processed successfully",
-                    content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Validation errors in Excel rows (error report returned)", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Forbidden - insufficient role", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-    @PostMapping("/uploadExcel")
-    public ResponseEntity<?> uploadExcel(
-            @RequestParam("file") MultipartFile file, @RequestParam("createdBy") String createdBy) {
-        log.info("Received excel request for adding categories, createdBy: {}", createdBy);
-        var response = categoryService.uploadExcel(file, createdBy);
-        log.info("Excel upload processed successfully");
-        return response;
-    }
-
-    // ===== Common validation helper (SYMException consistent throughout) =====
-    private <T> void validateOrThrow(T dto) {
-        Set<ConstraintViolation<T>> violations = validator.validate(dto);
-        if (!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(v -> v.getPropertyPath() + " " + v.getMessage())
-                    .collect(Collectors.joining(", "));
-            throw new SYMException(
-                    HttpStatus.BAD_REQUEST,
-                    SYMErrorType.VALIDATION_FAILED,
-                    ErrorCodeConstants.ERROR_CODE_VALIDATION,
-                    "Validation failed: " + errorMessage,
-                    errorMessage);
-        }
-    }
+  }
 }

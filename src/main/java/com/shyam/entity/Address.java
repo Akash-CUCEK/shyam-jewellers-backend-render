@@ -13,42 +13,42 @@ import lombok.*;
 @Builder
 public class Address {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id")
-    private Long addressId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "address_id")
+  private Long addressId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
-    private Users user;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+  private Users user;
 
-    @Column(name = "address_label")
-    private String addressLabel;
+  @Column(name = "address_label")
+  private String addressLabel;
 
-    @Column(name = "address_line1")
-    private String addressLine1;
+  @Column(name = "address_line1")
+  private String addressLine1;
 
-    @Column(name = "address_line2")
-    private String addressLine2;
+  @Column(name = "address_line2")
+  private String addressLine2;
 
-    private String city;
-    private String state;
-    private String pincode;
-    private String phoneNumber;
+  private String city;
+  private String state;
+  private String pincode;
+  private String phoneNumber;
 
-    @Column(name = "is_default")
-    private Boolean isDefault;
+  @Column(name = "is_default")
+  private Boolean isDefault;
 
-    // Audit fields
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+  // Audit fields
+  @Column(name = "created_at", updatable = false)
+  private LocalDateTime createdAt;
 
-    @Column(name = "created_by", updatable = false)
-    private String createdBy;
+  @Column(name = "created_by", updatable = false)
+  private String createdBy;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
-    @Column(name = "updated_by")
-    private String updatedBy;
+  @Column(name = "updated_by")
+  private String updatedBy;
 }
