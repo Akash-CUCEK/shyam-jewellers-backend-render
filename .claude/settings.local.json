@@ -24,7 +24,10 @@
       "Bash(git log *)",
       "Bash(/usr/bin/find C:2026Shyam-JewellersBackendshyam-jewellers-backend *)",
       "Bash(/usr/bin/find *)",
-      "Bash(rtk mvn *)"
+      "Bash(rtk mvn *)",
+      "Bash(xargs grep -l \"@Test\")",
+      "Bash(./gradlew :compileTestJava --info)",
+      "Bash(dir *)"
     ]
   }
 }

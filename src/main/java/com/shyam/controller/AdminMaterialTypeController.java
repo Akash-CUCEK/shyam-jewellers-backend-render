@@ -20,6 +20,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth/api/v1/admin")
 public class AdminMaterialTypeController {
 
     private final MaterialTypeService materialTypeService;

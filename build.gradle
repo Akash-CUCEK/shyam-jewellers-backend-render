@@ -28,18 +28,15 @@ dependencies {
     // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-
     // ========================================
     // 🗄️ JPA / HIBERNATE
     // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-
     // ========================================
     // 🛫 DATABASE MIGRATION - FLYWAY
     // ========================================
     implementation 'org.flywaydb:flyway-core'
-
 
     // ========================================
     // 🔐 SECURITY
@@ -137,6 +134,12 @@ dependencies {
 
 
     // ========================================
+    // 💳 RAZORPAY PAYMENT GATEWAY
+    // ========================================
+    implementation 'com.razorpay:razorpay-java:1.4.8'
+
+
+    // ========================================
     // 📝 JSON LOGGING
     // ========================================
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
@@ -147,7 +150,6 @@ dependencies {
     // ========================================
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 }
-
 
 // ========================================
 // 🧪 TEST CONFIGURATION
@@ -166,4 +168,3 @@ spotless {
         removeUnusedImports()
     }
 }
-

@@ -54,6 +54,13 @@ metals:
       key: OQCLYQFASGX6FXT6QIQD199T6QIQD
 
 # ==============================
+# Razorpay Payment Gateway
+# ==============================
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID:test_key_id}
+  key-secret: ${RAZORPAY_KEY_SECRET:test_key_secret}
+
+# ==============================
 # Cloudinary
 # ==============================
 cloudinary:

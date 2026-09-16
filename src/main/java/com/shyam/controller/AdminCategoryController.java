@@ -35,9 +35,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/admin/categories")
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/auth/api/v1/admin/category")
 @Tag(name = "Admin Category", description = "Admin category management endpoints")
 public class AdminCategoryController {
 
