@@ -4,24 +4,23 @@ import com.shyam.common.exception.domain.SYMErrorType;
 import com.shyam.common.exception.domain.SYMException;
 import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.entity.Users;
-import com.shyam.repository.UsersRepo;
+import com.shyam.repository.UsersRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserDAO {
-  private static final Logger logger = LoggerFactory.getLogger(UserDAO.class);
-  private final UsersRepo usersRepo;
+  private final UsersRepository usersRepository;
 
   public Users findUser(String email) {
-    logger.debug("Finding user with email: {}", email);
+    log.debug("Finding user with email: {}", email);
 
-    return usersRepo
+    return usersRepository
         .findByEmail(email)
         .orElseThrow(
             () ->
@@ -34,16 +33,16 @@ public class UserDAO {
   }
 
   public Optional<Users> findOnlyUser(String email) {
-    return usersRepo.findByEmail(email);
+    return usersRepository.findByEmail(email);
   }
 
   public Users save(Users user) {
     try {
-      logger.debug("Saving the user: {}", user.getEmail());
-      usersRepo.save(user);
+      log.debug("Saving the user: {}", user.getEmail());
+      usersRepository.save(user);
       return user;
     } catch (Exception e) {
-      logger.error("Error while saving user: {}", user.getEmail(), e);
+      log.error("Error while saving user: {}", user.getEmail(), e);
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
           SYMErrorType.GENERIC_EXCEPTION,

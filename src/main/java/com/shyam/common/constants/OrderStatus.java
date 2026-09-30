@@ -1,9 +1,11 @@
 package com.shyam.common.constants;
 
 public enum OrderStatus {
-  CREATED,
+  PENDING,
   CONFIRMED,
+  PROCESSING,
+  SHIPPED,
+  DELIVERED,
   CANCELLED,
-  COMPLETED,
-  PENDING
+  FAILED
 }

@@ -1,14 +1,20 @@
 package com.shyam.common.jwt;
 
-import com.shyam.common.redis.service.TokenBlacklistService;
-import io.jsonwebtoken.*;
+import com.shyam.common.service.TokenBlacklistService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,10 +23,29 @@ import org.springframework.stereotype.Component;
 public class JwtUtil {
 
   private final TokenBlacklistService tokenBlacklistService;
-  private static final SecretKey SECRET_KEY =
-      Keys.hmacShaKeyFor(JwtConstants.SECRET.getBytes(StandardCharsets.UTF_8));
+  private static SecretKey secretKey;
 
-  private static final long ACCESS_TOKEN_EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+  @Value("${jwt.secret}")
+  private String jwtSecret;
+
+  @Value("${jwt.access-token-expiration-minutes}")
+  private long accessTokenExpirationMinutes;
+
+  @Value("${jwt.refresh-token-expiration-hours}")
+  private long refreshTokenExpirationHours;
+
+  private static long ACCESS_TOKEN_EXPIRATION_TIME;
+  private static long REFRESH_TOKEN_EXPIRATION_TIME;
+
+  @PostConstruct
+  void init() {
+    if (jwtSecret == null || jwtSecret.getBytes(StandardCharsets.UTF_8).length < 32) {
+      throw new IllegalStateException("jwt.secret must be configured and at least 32 bytes long");
+    }
+    secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    ACCESS_TOKEN_EXPIRATION_TIME = accessTokenExpirationMinutes * 60 * 1000;
+    REFRESH_TOKEN_EXPIRATION_TIME = refreshTokenExpirationHours * 60 * 60 * 1000;
+  }
 
   public static String generateAccessToken(String username, String role) {
     return Jwts.builder()
@@ -28,7 +53,7 @@ public class JwtUtil {
         .claim("role", role)
         .setIssuedAt(new Date())
         .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
-        .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+        .signWith(getSecretKey(), SignatureAlgorithm.HS256)
         .compact();
   }
 
@@ -42,9 +67,13 @@ public class JwtUtil {
         log.warn("Token is blacklisted: {}", token);
         return false;
       }
-      Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
+      Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(token);
       return true;
+    } catch (ExpiredJwtException e) {
+      log.info("Token has expired: {}", token);
+      return false;
     } catch (JwtException e) {
+      log.warn("Invalid JWT token: {}", e.getMessage());
       return false;
     }
   }
@@ -62,6 +91,17 @@ public class JwtUtil {
   }
 
   private static Claims getClaims(String token) {
-    return Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
+    return Jwts.parserBuilder()
+        .setSigningKey(getSecretKey())
+        .build()
+        .parseClaimsJws(token)
+        .getBody();
+  }
+
+  private static SecretKey getSecretKey() {
+    if (secretKey == null) {
+      throw new IllegalStateException("JWT secret key has not been initialized");
+    }
+    return secretKey;
   }
 }

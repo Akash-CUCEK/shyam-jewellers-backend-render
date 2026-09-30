@@ -1,10 +1,13 @@
 package com.shyam.repository;
 
 import com.shyam.entity.OfferPhoto;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface OfferPhotoRepository extends JpaRepository<OfferPhoto, Integer> {
-  OfferPhoto findTopByOrderByCreatedAtDesc();
+
+  Optional<OfferPhoto> findByPosition(Integer position);
+
+  List<OfferPhoto> findByPositionBetweenOrderByPosition(Integer startPosition, Integer endPosition);
 }

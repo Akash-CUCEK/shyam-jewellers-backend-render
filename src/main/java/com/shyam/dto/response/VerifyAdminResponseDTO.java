@@ -1,6 +1,6 @@
 package com.shyam.dto.response;
 
-import java.io.Serializable;
+import com.shyam.common.dto.RefreshTokenBearer;
 import lombok.*;
 
 @Getter
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerifyAdminResponseDTO implements Serializable {
+public class VerifyAdminResponseDTO implements RefreshTokenBearer {
   private String token;
   private String refreshToken;
   private String message;

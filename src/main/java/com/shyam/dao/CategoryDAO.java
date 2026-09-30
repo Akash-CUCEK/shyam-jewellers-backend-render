@@ -40,12 +40,12 @@ public class CategoryDAO {
       log.debug("Saving the category");
       categoryRepository.save(category);
     } catch (Exception e) {
-      log.error("Error while saving offer Photo", e);
+      log.error("Error while saving category", e);
       throw new SYMException(
           HttpStatus.INTERNAL_SERVER_ERROR,
           SYMErrorType.GENERIC_EXCEPTION,
           ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
-          String.format("Failed to save category photo"),
+          String.format("Failed to save category"),
           e.getMessage());
     }
   }
@@ -89,20 +89,6 @@ public class CategoryDAO {
                     ErrorCodeConstants.ERROR_CODE_USER_NOT_FOUND_BY_MAIL,
                     String.format("No category found with the provided category Id."),
                     String.format("No category found with id", id)));
-  }
-
-  public void deleteCategory(Long id) {
-    try {
-      categoryRepository.deleteById(id);
-    } catch (Exception e) {
-      log.error("Error while checking category name availability", e);
-      throw new SYMException(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          SYMErrorType.GENERIC_EXCEPTION,
-          ErrorCodeConstants.ERROR_CODE_AUTHZ_UNKNOWN,
-          String.format("Failed to delete category"),
-          e.getMessage());
-    }
   }
 
   public boolean canEnableShowOnHome() {

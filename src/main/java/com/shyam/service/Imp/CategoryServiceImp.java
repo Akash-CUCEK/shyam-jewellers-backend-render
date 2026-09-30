@@ -4,12 +4,12 @@ import static com.shyam.constants.MessageConstant.*;
 
 import com.shyam.common.exception.domain.SYMErrorType;
 import com.shyam.common.exception.domain.SYMException;
-import com.shyam.common.exception.dto.BaseResponseDTO;
 import com.shyam.common.util.MessageSourceUtil;
 import com.shyam.constants.ErrorCodeConstants;
 import com.shyam.dao.CategoryDAO;
 import com.shyam.dto.request.AddCategoryRequestDTO;
 import com.shyam.dto.request.GetCategoryByIdRequestDTO;
+import com.shyam.dto.request.UpdateCategoryRequestDTO;
 import com.shyam.dto.response.*;
 import com.shyam.entity.Category;
 import com.shyam.mapper.CategoryMapper;
@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -47,20 +48,25 @@ public class CategoryServiceImp implements CategoryService {
   private final CategoryExcelValidation categoryExcelValidation;
 
   @Override
-  public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(int page, int size) {
+  @Transactional(readOnly = true)
+  public Page<GetCategoriesResponseDTO> getAllCategories(int page, int size) {
 
-    log.info("Processing the request for get category");
+    log.info("Processing the request for get category, page: {}, size: {}", page, size);
 
     Pageable pageable =
         PageRequest.of(page, size, Sort.by(Sort.Order.desc("updatedAt").nullsLast()));
 
     Page<Category> categoryPage = categoryDAO.findAllCategoryPage(pageable);
 
-    return categoryPage.map(
-        category -> new BaseResponseDTO<>(categoryMapper.toGetCategoryResponseDTO(category), null));
+    Page<GetCategoriesResponseDTO> result =
+        categoryPage.map(categoryMapper::toGetCategoryResponseDTO);
+
+    log.info("Successfully fetched {} categories for page: {}", result.getNumberOfElements(), page);
+    return result;
   }
 
   @Override
+  @Transactional
   public AddCategoryResponseDTO addCategories(AddCategoryRequestDTO addCategoryRequestDTO) {
 
     log.info("Processing the request for adding category");
@@ -93,43 +99,45 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
-  public UpdateCategoryResponseDTO updateCategoryRequestDTO(AddCategoryRequestDTO dto) {
+  @Transactional
+  public UpdateCategoryResponseDTO updateCategoryRequestDTO(UpdateCategoryRequestDTO dto) {
     log.info("Processing the request for updating category");
+    Category category = categoryDAO.findById(dto.getId());
 
-    Category category = categoryDAO.findByName(dto.getName());
+    if (category == null) {
 
+      log.error("❌ Category not found with id: {}", dto.getId());
+
+      throw new RuntimeException("Category not found with id: " + dto.getId());
+    }
     category.setName(dto.getName());
     category.setStatus(dto.getStatus());
     category.setShowOnHome(dto.getShowOnHome());
-    category.setImageUrl(dto.getImageUrl());
+    if (dto.getImageUrl() != null && !dto.getImageUrl().trim().isEmpty()) {
+
+      category.setImageUrl(dto.getImageUrl());
+    }
     category.setUpdatedAt(LocalDateTime.now());
     category.setUpdatedBy(dto.getUpdatedBy());
-
     categoryDAO.saveCategory(category);
-
     return categoryMapper.mapToUpdateCategoryInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_UPDATE_CATEGORY));
   }
 
   @Override
-  public GetCategoryByIdResponseDTO getCategory(
-      GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
-    log.info("Received request for getting category By Id ");
-    var category = categoryDAO.findById(getCategoryByIdRequestDTO.getId());
-    return CategoryMapper.getCategory(category);
-  }
-
-  @Override
+  @Transactional
   public UpdateCategoryResponseDTO deleteCategory(
       GetCategoryByIdRequestDTO updateCategoryRequestDTO) {
-    log.info("Received request for deleting category By Id ");
-    var category = categoryDAO.findById(updateCategoryRequestDTO.getId());
-    categoryDAO.deleteCategory(updateCategoryRequestDTO.getId());
+    log.info("Received request for deleting category By Id: {}", updateCategoryRequestDTO.getId());
+    Category category = categoryDAO.findById(updateCategoryRequestDTO.getId());
+    category.setStatus(false);
+    categoryDAO.saveCategory(category);
     return CategoryMapper.mapToDeleteCategoryInMessage(
         messageSourceUtil.getMessage(MESSAGE_CODE_DELETE_CATEGORY));
   }
 
   @Override
+  @Transactional
   public ResponseEntity<?> uploadExcel(MultipartFile file, String createdBy) {
     log.info("Processing the request for upload excel sheet");
     try {
@@ -194,22 +202,18 @@ public class CategoryServiceImp implements CategoryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public GetAllCategoryUserResponseDTO getAllCategoriesUser() {
-    return null;
+    log.info("Processing to get all category for the user");
+    List<Category> categories =
+        categoryDAO.findAllCategory().stream().filter(Category::getStatus).toList();
+    List<GetCategoryUserResponseDTO> categoryDTOs =
+        categories.stream().map(categoryMapper::toUserDto).toList();
+    return GetAllCategoryUserResponseDTO.builder().categories(categoryDTOs).build();
   }
 
-  //  @Override
-  //  public GetAllCategoryUserResponseDTO getAllCategoriesUser() {
-  //    log.info("Processing to get all category for the user");
-  //    List<Category> categories = categoryDAO.findAllCategory();
-  //    List<GetCategoryUserResponseDTO> categoryDTOs =
-  //        categories.stream().map(categoryMapper::toUserDto).toList();
-  //    return GetAllCategoryUserResponseDTO.builder()
-  //        .getCategoryUserResponseDTOS(categoryDTOs)
-  //        .build();
-  //  }
-
   @Override
+  @Transactional(readOnly = true)
   public GetCategoryUserResponseDTO getCategoryUser(
       GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
     log.info("Processing to get category for the user");

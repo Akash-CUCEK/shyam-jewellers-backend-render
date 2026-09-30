@@ -1,66 +1,85 @@
 package com.shyam.entity;
 
 import com.shyam.common.constants.OrderPaymentStatus;
+import com.shyam.common.constants.OrderSource;
 import com.shyam.common.constants.OrderStatus;
-import com.shyam.common.constants.PaymentMethod;
-import com.shyam.common.constants.Role;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.*;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "`order`", uniqueConstraints = @UniqueConstraint(columnNames = "order_number"))
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Order {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_seq")
-  @SequenceGenerator(name = "orders_seq", sequenceName = "orders_seq", allocationSize = 1)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "order_id")
+  private Long orderId;
 
-  private String customerName;
-  private String customerEmail;
-  private String customerPhone;
-  private String address;
+  @Column(name = "order_number", nullable = false, unique = true)
+  private String orderNumber;
 
-  private LocalDate orderDate;
-  private LocalTime orderTime;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+  private Users user;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "address_id", referencedColumnName = "address_id", nullable = false)
+  private Address address;
+
+  @Column(name = "shipping_address_line1_snapshot")
+  private String shippingAddressLine1Snapshot;
+
+  @Column(name = "shipping_address_line2_snapshot")
+  private String shippingAddressLine2Snapshot;
+
+  @Column(name = "city_snapshot")
+  private String citySnapshot;
+
+  @Column(name = "state_snapshot")
+  private String stateSnapshot;
+
+  @Column(name = "pincode_snapshot")
+  private String pincodeSnapshot;
+
+  @Column(name = "phone_number_snapshot")
+  private String phoneNumberSnapshot;
+
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<OrderItem> orderItems;
+
+  @Column(name = "total_amount", precision = 10, scale = 2)
+  private BigDecimal totalAmount;
 
   @Enumerated(EnumType.STRING)
-  private OrderStatus orderStatus;
-
-  private String deliveryType;
-
-  private BigDecimal totalCost;
-  private BigDecimal dueAmount;
+  @Column(name = "status", nullable = false)
+  private OrderStatus status;
 
   @Enumerated(EnumType.STRING)
+  @Column(name = "order_source", nullable = false)
+  private OrderSource orderSource;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "payment_status", nullable = false)
   private OrderPaymentStatus paymentStatus;
 
-  @Enumerated(EnumType.STRING)
-  private PaymentMethod paymentMethod;
-
-  private String notes;
-
-  private String createdBy;
-
-  @Enumerated(EnumType.STRING)
-  private Role createdByRole;
-
-  @Column(name = "created_at")
+  // Audit fields
+  @Column(name = "created_at", updatable = false)
   private LocalDateTime createdAt;
+
+  @Column(name = "created_by", updatable = false)
+  private String createdBy;
 
   @Column(name = "updated_at")
   private LocalDateTime updatedAt;
 
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-  private List<OrderItem> items;
+  @Column(name = "updated_by")
+  private String updatedBy;
 }

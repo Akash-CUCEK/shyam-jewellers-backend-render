@@ -24,7 +24,6 @@ public class AdminUsers {
   @Column(nullable = false, unique = true)
   private String email;
 
-  private String password;
   private String otp;
 
   @Column(name = "otp_generated_time")

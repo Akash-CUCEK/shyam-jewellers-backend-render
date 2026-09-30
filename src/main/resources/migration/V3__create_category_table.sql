@@ -7,5 +7,7 @@ CREATE TABLE category (
                           created_by VARCHAR(255),
                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                           updated_by VARCHAR(255),
-                          status BOOLEAN NOT NULL
+                          status BOOLEAN NOT NULL,
+
+                          CONSTRAINT uk_category_name UNIQUE (name)
 );

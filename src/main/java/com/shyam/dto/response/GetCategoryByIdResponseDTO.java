@@ -18,5 +18,5 @@ public class GetCategoryByIdResponseDTO implements Serializable {
   private String updatedBy;
   private Boolean status;
   private String imageUrl;
-  private String showOnHome;
+  private Boolean showOnHome;
 }

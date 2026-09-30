@@ -5,12 +5,14 @@ import com.shyam.common.exception.dto.ErrorMessagesDTO;
 import com.shyam.common.exception.dto.ErrorResponseDTO;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalException {
 
   @ExceptionHandler(SYMException.class)
@@ -20,7 +22,11 @@ public class GlobalException {
 
     var errorResponseDTO =
         new ErrorResponseDTO(
-            Collections.singletonList(errorMessagesDTO), LocalDateTime.now(), sym.getErrorType());
+            Collections.singletonList(errorMessagesDTO),
+            LocalDateTime.now(),
+            sym.getErrorType(),
+            sym.getErrorCode(),
+            sym.getDetailedMessage());
 
     BaseResponseDTO<Void> baseResponse = new BaseResponseDTO<>(null, errorResponseDTO);
 
@@ -29,6 +35,7 @@ public class GlobalException {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<BaseResponseDTO<Void>> handleGenericException(Exception ex) {
+    log.error("Unexpected exception occurred", ex);
 
     ErrorMessagesDTO errorMessagesDTO =
         new ErrorMessagesDTO("Something went wrong. Please try again later.");
@@ -37,7 +44,9 @@ public class GlobalException {
         new ErrorResponseDTO(
             Collections.singletonList(errorMessagesDTO),
             LocalDateTime.now(),
-            SYMErrorType.GENERIC_EXCEPTION);
+            SYMErrorType.GENERIC_EXCEPTION,
+            "INTERNAL_SERVER_ERROR",
+            ex.getMessage());
 
     BaseResponseDTO<Void> baseResponse = new BaseResponseDTO<>(null, errorResponseDTO);
 

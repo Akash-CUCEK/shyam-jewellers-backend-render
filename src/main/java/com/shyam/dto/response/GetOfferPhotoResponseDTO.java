@@ -9,9 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetOfferPhotoResponseDTO implements Serializable {
-  private String imgUrl1;
-  private String imgUrl2;
-  private String imgUrl3;
-  private String imgUrl4;
-  private String imgUrl5;
+  private String imgUrl;
+  private Integer position;
 }

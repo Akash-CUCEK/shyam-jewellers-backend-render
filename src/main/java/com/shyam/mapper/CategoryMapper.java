@@ -1,12 +1,9 @@
 package com.shyam.mapper;
 
-import com.shyam.dao.CategoryDAO;
 import com.shyam.dto.request.AddCategoryRequestDTO;
 import com.shyam.dto.response.*;
 import com.shyam.entity.Category;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,22 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryMapper {
-
-  private final CategoryDAO categoryDAO;
-
-  public static GetCategoryByIdResponseDTO getCategory(Category category) {
-    return GetCategoryByIdResponseDTO.builder()
-        .categoryId(category.getCategoryId())
-        .name(category.getName())
-        .imageUrl(category.getImageUrl())
-        .showOnHome(String.valueOf(category.getShowOnHome()))
-        .createdAt(category.getCreatedAt())
-        .createdBy(category.getCreatedBy())
-        .updatedAt(category.getUpdatedAt())
-        .updatedBy(category.getUpdatedBy())
-        .status(category.getStatus())
-        .build();
-  }
 
   public static UpdateCategoryResponseDTO mapToDeleteCategoryInMessage(String message) {
     return UpdateCategoryResponseDTO.builder().response(message).build();
@@ -52,32 +33,6 @@ public class CategoryMapper {
         .imageUrl(category.getImageUrl())
         .showOnHome(category.getShowOnHome())
         .build();
-  }
-
-  public GetCategoryResponseDTO getAllCategories() {
-    log.debug("Started to get all category");
-    List<Category> categories = categoryDAO.findAllCategory();
-
-    List<GetCategoriesResponseDTO> categoryDTOs =
-        categories.stream()
-            .map(
-                category -> {
-                  return GetCategoriesResponseDTO.builder()
-                      .categoryId(category.getCategoryId())
-                      .name(category.getName())
-                      .showOnHome(category.getShowOnHome())
-                      .createdAt(category.getCreatedAt())
-                      .createdBy(category.getCreatedBy())
-                      .updatedAt(category.getUpdatedAt())
-                      .updatedBy(category.getUpdatedBy())
-                      .status(category.getStatus())
-                      .build();
-                })
-            .collect(Collectors.toList());
-
-    GetCategoryResponseDTO responseDTO = new GetCategoryResponseDTO();
-    responseDTO.setGetCategoriesResponseDTO(categoryDTOs);
-    return responseDTO;
   }
 
   public static Category addCategories(AddCategoryRequestDTO addCategoryRequestDTO) {
@@ -107,6 +62,7 @@ public class CategoryMapper {
     return GetCategoriesResponseDTO.builder()
         .categoryId(category.getCategoryId())
         .name(category.getName())
+        .imageUrl(category.getImageUrl())
         .showOnHome(category.getShowOnHome())
         .createdAt(category.getCreatedAt())
         .createdBy(category.getCreatedBy())

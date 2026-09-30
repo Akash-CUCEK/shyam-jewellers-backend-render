@@ -23,43 +23,44 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   private final JwtAuthFilter jwtAuthFilter;
+  private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
     http.csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(
-            auth ->
-                auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.OPTIONS, "/**")
-                    .permitAll()
-                    .requestMatchers(
-                        "/auth/api/v1/admin/logIn",
-                        "/auth/api/v1/admin/verifyOtp",
-                        "/auth/api/v1/admin/forgetPassword",
-                        "/auth/api/v1/admin/verifyPasswordOtp",
-                        "/api/v1/public/**")
-                    .permitAll()
-                    .requestMatchers("/api/v1/auth/**")
-                    .permitAll()
-                    .requestMatchers(
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/swagger-resources/**",
-                        "/webjars/**",
-                        "/refreshToken")
-                    .permitAll()
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .sessionManagement(
+                    session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(
+                    auth ->
+                            auth.requestMatchers(HttpMethod.OPTIONS, "/**")
+                                    .permitAll()
+                                    .requestMatchers(
+                                            "/auth/api/v1/admin/initiateLogin",
+                                            "/auth/api/v1/admin/verifyLoginOtp",
+                                            "/auth/api/v1/admin/forgetPassword",
+                                            "/auth/api/v1/admin/verifyPasswordOtp",
+                                            "/api/v1/public/**")
+                                    .permitAll()
+                                    .requestMatchers("/categories/**")
+                                    .permitAll()
+                                    .requestMatchers("/api/v1/auth/**")
+                                    .permitAll()
+                                    .requestMatchers(
+                                            "/v3/api-docs/**",
+                                            "/swagger-ui/**",
+                                            "/swagger-ui.html",
+                                            "/swagger-resources/**",
+                                            "/webjars/**",
+                                            "/refreshToken")
+                                    .permitAll()
 
-                    // 🔒 EVERYTHING ELSE NEEDS TOKEN
-                    .anyRequest()
-                    .authenticated())
-        .exceptionHandling(ex -> ex.authenticationEntryPoint(new JwtAuthEntryPoint()))
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                    // 🔒 EVERYTHING ELSE NEEDS TOKEN
+                                    .anyRequest()
+                                    .authenticated())
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint))
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
@@ -75,7 +76,7 @@ public class SecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
 
     configuration.setAllowedOriginPatterns(
-        List.of("http://localhost:*", "https://*.azurestaticapps.net"));
+            List.of("http://localhost:*", "https://*.azurestaticapps.net"));
 
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
@@ -88,3 +89,4 @@ public class SecurityConfig {
     return source;
   }
 }
+

@@ -1,17 +1,23 @@
 package com.shyam.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shyam.common.exception.dto.BaseResponseDTO;
+import com.shyam.common.service.CookieService;
+import com.shyam.common.util.AuthResponseHelper;
 import com.shyam.dto.request.*;
 import com.shyam.dto.response.*;
-import com.shyam.service.AdminService;
-import com.shyam.service.CategoryService;
-import com.shyam.service.ProductService;
+import com.shyam.service.*;
+import com.shyam.service.Imp.CloudinaryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -24,221 +30,240 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/auth/api/v1/admin")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Admin", description = "Admin management endpoints")
 public class AdminController {
 
-  private final AdminService adminService;
-  private final ProductService productService;
-  private final CategoryService categoryService;
+  private final AuthService authService;
+  private final AdminManagementService adminManagementService;
+  private final CloudinaryService cloudinaryService;
+  private final CookieService cookieService;
 
-  @Operation(summary = "Login a admin user", description = "Login a Admin User.")
-  @PostMapping("/logIn")
-  public ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> logIn(
-      @RequestBody AdminLogInRequestDTO adminLogInRequestDTO) {
-    log.info("Received request for login admin");
-    ResponseEntity<VerifyAdminResponseDTO> responseEntity =
-        adminService.logIn(adminLogInRequestDTO);
-    return ResponseEntity.status(responseEntity.getStatusCode())
-        .headers(responseEntity.getHeaders())
-        .body(new BaseResponseDTO<>(responseEntity.getBody(), null));
-  }
+  @Operation(summary = "Initiate admin login", description = "Step 1: Send OTP to admin email")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Login initiated successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
+  @PostMapping("/initiateLogin")
+  public BaseResponseDTO<LogInResponseDTO> initiateLogin(
+      @Valid @RequestBody AdminLogInRequestDTO adminLogInRequestDTO) {
+    log.debug("Entering initiateLogin method");
+    log.info("Received request to initiate admin login for: {}", adminLogInRequestDTO.getEmail());
 
-  @Operation(summary = "Reset Password", description = "Reset Password")
-  @PostMapping("/forgetPassword")
-  public BaseResponseDTO<ForgetPasswordResponseDTO> forgetPasswordOtp(
-      @RequestBody ForgetPasswordRequestDTO forgetPasswordRequestDTO) {
-    log.info("Received request for password reset");
-    var response = adminService.forgetPassword(forgetPasswordRequestDTO);
+    var response = authService.initiateLogin(adminLogInRequestDTO.getEmail());
+    log.debug("Exiting initiateLogin method");
     return new BaseResponseDTO<>(response, null);
   }
 
   @Operation(
-      summary = "Verify otp for password reset",
-      description = "Verify otp for password reset")
-  @PostMapping("/verifyPasswordOtp")
-  public BaseResponseDTO<VerifyForgetPasswordResponseDTO> forgetVerifyPassword(
-      @RequestBody VerifyAdminRequestDTO verifyAdminRequestDTO) {
-    log.info("Received request for verify otp for password reset");
-    var response = adminService.forgetVerifyOtp(verifyAdminRequestDTO);
-    return new BaseResponseDTO<>(response, null);
+      summary = "Verify admin login OTP",
+      description = "Step 2: Verify OTP and complete login")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Login verified successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
+  @PostMapping("/verifyLoginOtp")
+  public ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(
+      @Valid @RequestBody VerifyAdminRequestDTO verifyAdminRequestDTO,
+      @RequestHeader(value = "X-Client-Type", defaultValue = "WEB", required = false)
+          String clientType) {
+    log.debug("Entering verifyLoginOtp method");
+    log.info(
+        "Received request to verify admin login OTP for: {}", verifyAdminRequestDTO.getEmail());
+    ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> response =
+        authService.verifyLoginOtp(
+            verifyAdminRequestDTO.getEmail(), verifyAdminRequestDTO.getOtp(), clientType);
+
+    log.debug("Exiting verifyLoginOtp method");
+    return AuthResponseHelper.handleResponse(clientType, response, cookieService);
   }
 
-  @Operation(summary = "Offer Section", description = "Adding offer photo.")
-  @PreAuthorize("hasRole('SUPER_ADMIN')")
-  @PostMapping("/addOfferPhoto")
-  public BaseResponseDTO<EditPhotoResponseDTO> offerUpdate(
-      @RequestBody EditPhotoRequestDTO editPhotoRequestDTO) {
-    log.info("Received request for offer update");
-    var response = adminService.offerUpdate(editPhotoRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
-
-  @Operation(summary = "Logout a admin user", description = "Logout a Admin User.")
+  @Operation(summary = "Logout admin", description = "Logout admin and clear tokens.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Logout successful",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
   @PostMapping("/logout")
   public ResponseEntity<BaseResponseDTO<AdminLogoutResponseDTO>> logout(
       @RequestHeader("Authorization") String authorization,
-      @CookieValue(value = "refreshToken", required = false) String refreshToken) {
-    log.info("Received request for logout");
+      @CookieValue(value = "refreshToken", required = false) String refreshTokenFromCookie,
+      @Valid @RequestBody(required = false) LogoutRequestDTO logoutRequestDTO) {
+
+    log.debug("Entering logout method");
     var accessToken = authorization.replace("Bearer ", "");
 
-    AdminLogoutResponseDTO response = adminService.logout(accessToken, refreshToken);
+    String refreshToken =
+        refreshTokenFromCookie != null
+            ? refreshTokenFromCookie
+            : (logoutRequestDTO != null ? logoutRequestDTO.getRefreshToken() : null);
 
-    ResponseCookie deleteCookie =
-        ResponseCookie.from("refreshToken", "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("Strict")
-            .path("/")
-            .maxAge(0)
-            .build();
+    AdminLogoutResponseDTO response = authService.logout(accessToken, refreshToken);
 
+    ResponseCookie deleteCookie = cookieService.deleteCookie("refreshToken", "/");
+
+    log.debug("Exiting logout method");
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
         .body(new BaseResponseDTO<>(response, null));
   }
 
+  @Operation(summary = "Edit admin", description = "Edit admin details.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Admin updated successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
   @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @PostMapping("/editAdmin")
+  @PostMapping(value = "/editAdmin", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public BaseResponseDTO<EditAdminResponseDTO> edit(
-      @RequestBody EditAdminRequestDTO editAdminRequestDTO) {
-    log.info("Received request for edit");
-    var response = adminService.edit(editAdminRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
+      @Valid @RequestPart("admin") String adminJson,
+      @RequestPart(value = "image", required = false) MultipartFile image)
+      throws JsonProcessingException {
 
-  @Operation(summary = "Change password", description = "Admin change password.")
-  @PostMapping("/changePassword")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  public BaseResponseDTO<ChangePasswordResponseDTO> changePassword(
-      @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO) {
-    log.info("Received request for change password");
-    var response = adminService.changePassword(changePasswordRequestDTO);
+    log.debug("Entering edit method");
+    log.info("Received request for edit");
+
+    ObjectMapper mapper = new ObjectMapper();
+
+    EditAdminRequestDTO editAdminRequestDTO =
+        mapper.readValue(adminJson, EditAdminRequestDTO.class);
+
+    if (image != null && !image.isEmpty()) {
+      log.info("New profile image received. Uploading to Cloudinary...");
+
+      String imageUrl = cloudinaryService.upload(image);
+      log.debug("Image uploaded to Cloudinary, url: {}", imageUrl);
+
+      editAdminRequestDTO.setImageUrl(imageUrl);
+
+      log.info("New profile image uploaded successfully: {}", imageUrl);
+
+    } else {
+
+      log.info("No new profile image provided. Keeping existing image.");
+    }
+    var response = adminManagementService.edit(editAdminRequestDTO);
+    log.debug("Exiting edit method");
     return new BaseResponseDTO<>(response, null);
   }
 
   @Operation(summary = "Register new Admin", description = "new admin register.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Admin registered successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
   @PostMapping("/registerAdmin")
   @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
   public BaseResponseDTO<RegisterResponseDTO> registerAdmin(
-      @RequestBody RegisterRequestDTO registerRequestDTO,
-      @RequestHeader("Authorization") String authHeader) {
+      @Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
+    log.debug("Entering registerAdmin method");
     log.info("Received request for register admin for");
-    var response = adminService.registerAdmin(registerRequestDTO);
+    var response = adminManagementService.registerAdmin(registerRequestDTO);
+    log.debug("Exiting registerAdmin method");
     return new BaseResponseDTO<>(response, null);
   }
 
   @Operation(summary = "Get Admin", description = "Get Admin.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successful retrieval",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
   @PostMapping("/getAdminByEmail")
-  @PreAuthorize("hasRole('SUPER_ADMIN')")
+  @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
   public BaseResponseDTO<GetAdminResponseDTO> getAllAdmin(
-      @RequestBody GetAdminRequestDTO getAdminRequestDTO) {
+      @Valid @RequestBody GetAdminRequestDTO getAdminRequestDTO) {
+    log.debug("Entering getAllAdmin method");
     log.info("Received request for getting admin ");
-    var response = adminService.getAdmin(getAdminRequestDTO);
+    var response = adminManagementService.getAdmin(getAdminRequestDTO);
+    log.debug("Exiting getAllAdmin method");
     return new BaseResponseDTO<>(response, null);
   }
 
   @Operation(summary = "Get All Admin", description = "Get All Admin.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successful retrieval",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
   @PostMapping("/getAllAdmin")
   @PreAuthorize("hasRole('SUPER_ADMIN')")
   public BaseResponseDTO<GetAdminListResponseDTO> getAllAdmin() {
 
+    log.debug("Entering getAllAdmin (list) method");
     log.info("Received request for getting all admin");
-    var response = adminService.getAllAdmin();
+    var response = adminManagementService.getAllAdmin();
+    log.debug("Exiting getAllAdmin (list) method");
     return new BaseResponseDTO<>(response, null);
   }
 
-  @Operation(summary = "delete Admin", description = "Delete Admin.")
+  @Operation(summary = "Delete Admin", description = "Delete Admin.")
+  @ApiResponses({
+    @ApiResponse(
+        responseCode = "200",
+        description = "Admin deleted successfully",
+        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+    @ApiResponse(
+        responseCode = "403",
+        description = "Forbidden - insufficient role",
+        content = @Content),
+    @ApiResponse(responseCode = "404", description = "Admin not found", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+  })
   @PostMapping("/deleteAdmin")
   @PreAuthorize("hasRole('SUPER_ADMIN')")
   public BaseResponseDTO<DeleteAdminResponseDTO> deleteAdmin(
-      @RequestBody DeleteAdminRequestDTO deleteAdmin) {
+      @Valid @RequestBody DeleteAdminRequestDTO deleteAdmin) {
+    log.debug("Entering deleteAdmin method");
     log.info("Received request for delete admin");
-    var response = adminService.deleteAdmin(deleteAdmin);
+    var response = adminManagementService.deleteAdmin(deleteAdmin);
+    log.debug("Exiting deleteAdmin method");
     return new BaseResponseDTO<>(response, null);
-  }
-
-  @PostMapping("/getAllProduct")
-  public Page<BaseResponseDTO<GetAllProductsResponseDTO>> getAllProducts(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-    log.info("Received request for getting all products");
-    return productService.getAllProducts(page, size);
-  }
-
-  @PostMapping("/getAllCategory")
-  public Page<BaseResponseDTO<GetCategoriesResponseDTO>> getAllCategories(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-    log.info("Received request for getting all category");
-    return categoryService.getAllCategories(page, size);
-  }
-
-  @PostMapping(value = "/addProduct", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public BaseResponseDTO<ProductAddResponseDTO> addProduct(
-      @RequestParam("data") String data, @RequestParam("image") MultipartFile image)
-      throws Exception {
-
-    ObjectMapper mapper = new ObjectMapper();
-    ProductAddRequestDTO dto = mapper.readValue(data, ProductAddRequestDTO.class);
-
-    return new BaseResponseDTO<>(productService.addProduct(dto, image), null);
-  }
-
-  @Operation(summary = "Update product")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @PutMapping("/updateProduct")
-  public BaseResponseDTO<UpdateResponseDTO> updateProduct(
-      @Valid @RequestBody UpdateRequestDTO dto) {
-    return new BaseResponseDTO<>(productService.updateProduct(dto), null);
-  }
-
-  @Operation(summary = "Get product by product id")
-  @GetMapping("/getProductById/{productId}")
-  public BaseResponseDTO<AllProductResponseDTO> getProductById(@PathVariable Long productId) {
-    return new BaseResponseDTO<>(productService.getProductById(productId), null);
-  }
-
-  @Operation(summary = "Delete product")
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-  @DeleteMapping("/deleteProduct")
-  public BaseResponseDTO<DeleteResponseDTO> deleteProduct(
-      @Valid @RequestBody DeleteProductRequestDTO dto) {
-    return new BaseResponseDTO<>(productService.deleteProduct(dto), null);
-  }
-
-  @PostMapping("/getCategory")
-  public BaseResponseDTO<GetCategoryByIdResponseDTO> getCategory(
-      @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
-    log.info("Received request for get category by Id");
-    var response = categoryService.getCategory(getCategoryByIdRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
-
-  @PostMapping("/addCategory")
-  public BaseResponseDTO<AddCategoryResponseDTO> addCategories(
-      @RequestBody AddCategoryRequestDTO addCategoryRequestDTO) {
-    log.info("Received request for adding category");
-    var response = categoryService.addCategories(addCategoryRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
-
-  @PutMapping("/updateCategory")
-  public BaseResponseDTO<UpdateCategoryResponseDTO> updateCategories(
-      @RequestBody AddCategoryRequestDTO updateCategoryRequestDTO) {
-    log.info("Received request for updating category");
-    var response = categoryService.updateCategoryRequestDTO(updateCategoryRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
-
-  @DeleteMapping("/deleteCategory")
-  public BaseResponseDTO<UpdateCategoryResponseDTO> deleteCategory(
-      @RequestBody GetCategoryByIdRequestDTO getCategoryByIdRequestDTO) {
-    log.info("Received request for deleting category");
-    var response = categoryService.deleteCategory(getCategoryByIdRequestDTO);
-    return new BaseResponseDTO<>(response, null);
-  }
-
-  @PostMapping("/uploadExcel")
-  public ResponseEntity<?> uploadExcel(
-      @RequestParam("file") MultipartFile file, @RequestParam("createdBy") String createdBy) {
-    log.info("Received excel request for adding category");
-    return categoryService.uploadExcel(file, createdBy);
   }
 }

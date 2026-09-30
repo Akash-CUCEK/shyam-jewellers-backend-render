@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface AdminRepository extends JpaRepository<AdminUsers, Long> {
   Optional<AdminUsers> findByEmail(String email);
 
-  List<AdminUsers> findByRole(Role role);
+  List<AdminUsers> findByRoleIn(List<Role> roles);
 }

@@ -9,4 +9,5 @@ import lombok.*;
 @Builder
 public class LogoutRequestDTO {
   private String token;
+  private String refreshToken;
 }
