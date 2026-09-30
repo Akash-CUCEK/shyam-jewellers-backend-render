@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class RefreshTokenResponseDTO implements Serializable {
+public class  RefreshTokenResponseDTO implements Serializable {
   private String accessToken;
   private String refreshToken;
 }

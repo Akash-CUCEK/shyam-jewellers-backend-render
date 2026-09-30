@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 public interface UserService {
   LogInResponseDTO logIn(logInRequestDTO logInRequestDTO);
 
-  ResponseEntity<OtpResponseDTO> verify(OtpRequestDTO otpRequestDTO);
+  ResponseEntity<OtpResponseDTO> verify(OtpRequestDTO otpRequestDTO, String clientType);
 
   LogoutResponseDTO logout(String accessToken, String refreshToken);
 }

@@ -1,7 +1,10 @@
 package com.shyam.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.*;
 
 @Getter
@@ -24,24 +27,26 @@ public class AddProductRequestDTO {
   @Positive(message = "Making charge value must be positive")
   private BigDecimal makingChargeValue;
 
-  @NotNull(message = "Description is required")
   private String description;
 
   @NotNull(message = "Hallmark certified is required")
   private Boolean hallmarkCertified;
 
-  @NotNull(message = "Certification number is required")
   private String certificationNumber;
 
-  @NotNull(message = "Discount type is required")
   private String discountType;
 
-  @NotNull(message = "Discount value is required")
   private BigDecimal discountValue;
 
-  @NotNull(message = "Discount valid till is required")
-  private java.time.LocalDateTime discountValidTill;
+  private LocalDateTime discountValidTill;
 
   @NotBlank(message = "Created by is required")
   private String createdBy;
+
+  @Valid
+  private List<ProductVariantRequestDTO> variants;
+
+  private List<Long> tagIds;
+
+  private Integer primaryImageIndex;
 }

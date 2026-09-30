@@ -70,7 +70,7 @@ public class UserController {
     log.info("Entering verify method");
     log.info("Received request for verify");
 
-    ResponseEntity<OtpResponseDTO> responseEntity = userService.verify(otpRequestDTO);
+    ResponseEntity<OtpResponseDTO> responseEntity = userService.verify(otpRequestDTO, clientType);
 
     ResponseEntity<BaseResponseDTO<OtpResponseDTO>> wrapped =
         ResponseEntity.status(responseEntity.getStatusCode())

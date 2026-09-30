@@ -49,4 +49,7 @@ public class ProductVariant {
 
   @Column(name = "updated_by")
   private String updatedBy;
+
+  @Column(name = "size", length = 50)
+  private String size;
 }

@@ -24,9 +24,10 @@ public interface AuthService {
    *
    * @param email the user's email address
    * @param otp the OTP provided by the user
+   * @param clientType the type of client (WEB or MOBILE) making the request
    * @return response entity containing login tokens and status
    */
-  ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(String email, String otp);
+  ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(String email, String otp, String clientType);
 
   /**
    * Logs out the user by invalidating tokens and cleaning up sessions.

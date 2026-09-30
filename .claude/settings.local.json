@@ -32,7 +32,10 @@
       "PowerShell(.\\\\gradlew.bat test --tests PricingServiceImplTest)",
       "PowerShell(.\\\\gradlew.bat -q dependencies --configuration testImplementation | findstr junit)",
       "PowerShell(.\\\\gradlew.bat dependencies --configuration testImplementation)",
-      "PowerShell(.\\\\gradlew.bat test --tests ShyamApplicationTests)"
+      "PowerShell(.\\\\gradlew.bat test --tests ShyamApplicationTests)",
+      "PowerShell(./gradlew test --tests AdminProductControllerIntegrationTest)",
+      "PowerShell(Get-Job *)",
+      "PowerShell(./gradlew test --tests PublicProductControllerIntegrationTest)"
     ]
   }
 }

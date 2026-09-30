@@ -62,7 +62,7 @@ public class AuthServiceImp implements AuthService {
 
   @Override
   public ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> verifyLoginOtp(
-      String email, String otp) {
+      String email, String otp, String clientType) {
     log.info("Processing OTP verification for admin login");
     var admin = adminDAO.findUserByEmail(email);
 
@@ -91,7 +91,7 @@ public class AuthServiceImp implements AuthService {
 
     var accessToken = JwtUtil.generateAccessToken(email, admin.getRole().name());
     var refreshToken = JwtUtil.generateRefreshToken();
-    refreshTokenService.store(email, admin.getRole().name(), refreshToken);
+    refreshTokenService.store(email, admin.getRole().name(), clientType, refreshToken);
 
     VerifyAdminResponseDTO response =
         VerifyAdminResponseDTO.builder()
@@ -114,8 +114,8 @@ public class AuthServiceImp implements AuthService {
       tokenBlacklistService.blacklistToken(accessToken, expiryInSeconds);
     }
     if (refreshToken != null) {
-      log.info("Deleting admin refresh token...");
-      refreshTokenService.delete(JwtUtil.getUsername(accessToken), JwtUtil.getRole(accessToken));
+      log.info("Revoking admin refresh token...");
+      refreshTokenService.markRevoked(refreshToken);
     }
 
     return adminMapper.mapToAdminLogoutInMessage(

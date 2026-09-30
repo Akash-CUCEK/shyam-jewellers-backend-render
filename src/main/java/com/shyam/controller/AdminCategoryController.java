@@ -93,7 +93,6 @@ public class AdminCategoryController {
       @RequestParam("image") MultipartFile image,
       @RequestParam("data") String addCategoryRequestDTOJson)
       throws JsonProcessingException {
-    log.debug("Entering addCategories method");
     log.info("Received request for adding category");
 
     if (image == null || image.isEmpty()) {
@@ -113,6 +112,7 @@ public class AdminCategoryController {
     AddCategoryRequestDTO addCategoryRequestDTO =
         mapper.readValue(addCategoryRequestDTOJson, AddCategoryRequestDTO.class);
     addCategoryRequestDTO.setImageUrl(imageUrl);
+    log.info("Add category = {}",addCategoryRequestDTO);
 
     validateOrThrow(addCategoryRequestDTO);
 

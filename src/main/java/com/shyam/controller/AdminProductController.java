@@ -18,8 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -30,33 +34,51 @@ public class AdminProductController {
 
   private final ProductService productService;
 
-  @Operation(summary = "Add product", description = "Add a new product.")
+  @Operation(
+          summary = "Add product",
+          description =
+                  "Creates a product with variants, images and tags.")
   @ApiResponses({
-    @ApiResponse(
-        responseCode = "200",
-        description = "Product added successfully",
-        content = @Content(schema = @Schema(implementation = BaseResponseDTO.class))),
-    @ApiResponse(responseCode = "400", description = "Validation failed", content = @Content),
-    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
-    @ApiResponse(
-        responseCode = "403",
-        description = "Forbidden - insufficient role",
-        content = @Content),
-    @ApiResponse(
-        responseCode = "404",
-        description = "Category/MaterialType/Purity not found",
-        content = @Content),
-    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+          @ApiResponse(
+                  responseCode = "200",
+                  description = "Product added successfully"),
+          @ApiResponse(
+                  responseCode = "400",
+                  description = "Validation failed"),
+          @ApiResponse(
+                  responseCode = "401",
+                  description = "Unauthorized"),
+          @ApiResponse(
+                  responseCode = "403",
+                  description = "Forbidden"),
+          @ApiResponse(
+                  responseCode = "404",
+                  description =
+                          "Category, material type, purity or tag not found"),
+          @ApiResponse(
+                  responseCode = "500",
+                  description = "Internal server error")
   })
-  @PostMapping
-  @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+  @PostMapping(
+          consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
   public BaseResponseDTO<AddProductResponseDTO> addProduct(
-      @Valid @RequestBody AddProductRequestDTO requestDTO) {
-    log.info("Entering addProduct method");
-    log.info("Received request to add product");
-    var response = productService.addProduct(requestDTO);
-    log.info("Exiting addProduct method");
-    return new BaseResponseDTO<>(response, null);
+
+          @Valid
+          @RequestPart("product")
+          AddProductRequestDTO requestDTO,
+
+          @RequestPart("images")
+          List<MultipartFile> images) {
+
+    AddProductResponseDTO response =
+            productService.addProduct(
+                    requestDTO,
+                    images);
+
+    return new BaseResponseDTO<>(
+            response,
+            null);
   }
 
   @Operation(summary = "Update product", description = "Update an existing product.")

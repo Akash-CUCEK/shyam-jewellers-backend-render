@@ -67,7 +67,7 @@ cloudinary:
 # ==============================
 jwt:
   secret: 12345678901234567890123456789012
-  access-token-expiration-minutes: 5
+  access-token-expiration-minutes: 1
   refresh-token-expiration-hours: 5
 
 # ==============================

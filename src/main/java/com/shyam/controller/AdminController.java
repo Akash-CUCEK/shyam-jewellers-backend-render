@@ -81,7 +81,7 @@ public class AdminController {
         "Received request to verify admin login OTP for: {}", verifyAdminRequestDTO.getEmail());
     ResponseEntity<BaseResponseDTO<VerifyAdminResponseDTO>> response =
         authService.verifyLoginOtp(
-            verifyAdminRequestDTO.getEmail(), verifyAdminRequestDTO.getOtp());
+            verifyAdminRequestDTO.getEmail(), verifyAdminRequestDTO.getOtp(), clientType);
 
     log.debug("Exiting verifyLoginOtp method");
     return AuthResponseHelper.handleResponse(clientType, response, cookieService);

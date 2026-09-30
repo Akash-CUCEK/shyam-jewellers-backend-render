@@ -68,7 +68,7 @@ public class UserServiceImp implements UserService {
 
   @Override
   @Transactional
-  public ResponseEntity<OtpResponseDTO> verify(OtpRequestDTO otpRequestDTO) {
+  public ResponseEntity<OtpResponseDTO> verify(OtpRequestDTO otpRequestDTO, String clientType) {
     log.info("Processing for verifying the otp ");
     var user = userDAO.findUser(otpRequestDTO.getEmail());
     if (user.getOtpGeneratedTime() == null
@@ -90,7 +90,7 @@ public class UserServiceImp implements UserService {
     }
     var accessToken = JwtUtil.generateAccessToken(user.getEmail(), "USER");
     var refreshToken = JwtUtil.generateRefreshToken();
-    refreshTokenService.store(user.getEmail(), "USER", refreshToken);
+    refreshTokenService.store(user.getEmail(), "USER", clientType, refreshToken);
 
     // ⚠️ Cookie logic yahan se hata di — Controller/AuthResponseHelper handle karega
     return ResponseEntity.ok(
@@ -112,8 +112,8 @@ public class UserServiceImp implements UserService {
       tokenBlacklistService.blacklistToken(accessToken, expiryInSeconds);
     }
     if (refreshToken != null) {
-      log.info("Deleting user refresh token...");
-      refreshTokenService.delete(JwtUtil.getUsername(accessToken), "USER");
+      log.info("Revoking user refresh token...");
+      refreshTokenService.markRevoked(refreshToken);
     }
     return userMapper.mapToUserLogoutInMessage(messageSourceUtil.getMessage(MESSAGE_CODE_LOG_OUT));
   }

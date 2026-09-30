@@ -2,6 +2,7 @@ package com.shyam.common.jwt;
 
 import com.shyam.common.service.TokenBlacklistService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -68,7 +69,11 @@ public class JwtUtil {
       }
       Jwts.parserBuilder().setSigningKey(getSecretKey()).build().parseClaimsJws(token);
       return true;
+    } catch (ExpiredJwtException e) {
+      log.info("Token has expired: {}", token);
+      return false;
     } catch (JwtException e) {
+      log.warn("Invalid JWT token: {}", e.getMessage());
       return false;
     }
   }
